@@ -8,7 +8,7 @@
         }
       },
       "builder_id" : "gegl:color",
-      "width" : 242,
+      "width" : 240,
       "height" : 232,
       "expanded" : true,
       "position_x" : 22,
@@ -17,38 +17,16 @@
     {
       "model" : {      },
       "builder_id" : "image:display",
-      "width" : 252,
-      "height" : 289,
+      "width" : 250,
+      "height" : 287,
       "expanded" : true,
       "position_x" : 459,
       "position_y" : 41
-    },
-    {
-      "model" : {
-        "width" : 200.0,
-        "height" : 200.0
-      },
-      "builder_id" : "gegl:crop",
-      "width" : 107,
-      "height" : 139,
-      "expanded" : false,
-      "position_x" : 310,
-      "position_y" : 210
     }
   ],
   "links" : [
     {
       "node_index" : 0,
-      "source_name" : "Output",
-      "sinks" : [
-        {
-          "node_index" : 2,
-          "sink_name" : "Input"
-        }
-      ]
-    },
-    {
-      "node_index" : 2,
       "source_name" : "Output",
       "sinks" : [
         {

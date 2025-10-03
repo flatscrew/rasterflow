@@ -32,7 +32,6 @@ dependencies = [
     dependency('gtksourceview-5'),
     meson.get_compiler('vala').find_library('posix'),
     meson.get_compiler('vala').find_library('linux'),
-
 ]
 
 # generating runtime binary
@@ -42,6 +41,15 @@ gresources = gnome.compile_resources('rasterflow-resources', resource_files, sou
 # VAPI directories
 vapi_dirs = [
   'vapi/'
+]
+
+include_dirs = [
+  'include/'
+]
+
+# c sources
+c_sources = [
+  'src/gegl/gegl_wrapper.c'
 ]
 
 # vala sources
@@ -125,15 +133,24 @@ vala_sources = [
     #'src/plugin/plugin_loader.vala',
 ]
 
+
 executable(
-  'rasterflow', 
-  vala_sources, 
-  gresources, 
-  dependencies: dependencies, 
-  vala_args: ['--vapidir', meson.current_source_dir() + '/vapi'],
+  'rasterflow',
+  c_sources,
+  vala_sources,
+  gresources,
+  dependencies: dependencies,
+  include_directories: include_dirs,
+  vala_args: [
+    '--vapidir', meson.current_source_dir() + '/vapi',
+    '--pkg=gegl_wrapper'
+  ],
   install: true,
   install_dir: join_paths(get_option('prefix'), 'bin'),
 )
+
+
+
 
 # Install the .gschema.xml file
 install_data('io.flatscrew.RasterFlow.gschema.xml',

@@ -101,9 +101,9 @@ namespace Image {
             
             data_display_view.remove_child(this.temporary_label);
             data_display_view.add_child(this.panning_area);
+            
             create_zoom_control();
             create_save_button();
-
         }
         
         private void image_replaced(Gdk.Pixbuf replaced_image) {
@@ -205,19 +205,25 @@ namespace Image {
         }
 
         internal void process_gegl() {
-           
+            Gegl.Rectangle bbox;
+            Rasterflow.node_get_bounding_box(save_as_pixbuf_node, out bbox);
 
+            if (bbox.is_infinite_plane()) {
+                log_error("Infinite plane, use crop before.");
+                warning("⚠️ Infinite bbox — skipping process()");
+                return;
+            } else if (bbox.is_empty()) {
+                log_warning("Empty plane, nothing to consume.");
+                warning("⚠️ Empty bbox — skipping process()");
+                return;
+            } 
+        
             save_as_pixbuf_node.process();
-
-
-            //  var root = GeglContext.rootNode();
-            //  var box = root.introspectable_get_bounding_box();
-            //  stdout.printf("---> %d", box.width);
-
+        
             var oper = save_as_pixbuf_node.get_gegl_operation();
             var value = Value(typeof(Gdk.Pixbuf));
             oper.get_property("pixbuf", ref value);
-            
+        
             change_image(value);
         }
     }
