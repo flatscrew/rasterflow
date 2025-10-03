@@ -354,7 +354,7 @@ public class CanvasNode : GFlow.SimpleNode {
         try {
             base.add_sink(node_sink);
         } catch (Error e) {
-            log_error(e);
+            log_error(e.message);
             error(e.message);
         }
     }
@@ -363,7 +363,7 @@ public class CanvasNode : GFlow.SimpleNode {
         try {
             base.add_source(node_source);
         } catch (Error e) {
-            log_error(e);
+            log_error(e.message);
             error(e.message);
         }
     }
@@ -374,11 +374,11 @@ public class CanvasNode : GFlow.SimpleNode {
     public virtual void deserialize(Serialize.DeserializedObject deserializer) {
     }
 
-    protected void log_error(GLib.Error error) {
-        log.error(this, error.message);
+    protected void log_error(string error_message) {
+        log.error(this, error_message);
     }
 
-    protected void log_warning(GLib.Error warning) {
-        log.warning(this, warning.message);
+    protected void log_warning(string warning_message) {
+        log.warning(this, warning_message);
     }
 }

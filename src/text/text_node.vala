@@ -9,7 +9,7 @@ namespace Text {
         public string name() {
             return "Display text";
         }
-
+        
         public string id() {
             return "text:display";
         } 

@@ -31,7 +31,7 @@
     {
       "model" : {      },
       "builder_id" : "gegl:add",
-      "width" : 246,
+      "width" : 244,
       "height" : 290,
       "expanded" : true,
       "position_x" : 294,
@@ -43,8 +43,8 @@
         "height" : 20.0
       },
       "builder_id" : "gegl:crop",
-      "width" : 288,
-      "height" : 420,
+      "width" : 286,
+      "height" : 418,
       "expanded" : true,
       "position_x" : 584,
       "position_y" : 97
@@ -52,8 +52,8 @@
     {
       "model" : {      },
       "builder_id" : "image:display",
-      "width" : 515,
-      "height" : 500,
+      "width" : 513,
+      "height" : 498,
       "expanded" : true,
       "position_x" : 969,
       "position_y" : 66

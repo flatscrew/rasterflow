@@ -116,6 +116,5 @@ namespace Data {
             toggle_button.active = false;
             return toggle_button;
         }
-        
     }
 }
