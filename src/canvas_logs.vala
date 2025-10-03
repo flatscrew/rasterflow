@@ -155,13 +155,13 @@ public class CanvasLogsArea : Gtk.Widget {
             warnings_label.visible = true;
         }
     }
-    
 
     private Gtk.Widget create_logs_list() {
         this.list_model = new GLib.ListStore(typeof(LogEntry));
         this.selection = new Gtk.SingleSelection(new Gtk.SortListModel(list_model, new TimeSorter()));
     
         this.list_view = new Gtk.ColumnView(selection);
+        list_view.set_show_column_separators(true);
         list_view.set_vscroll_policy(Gtk.ScrollablePolicy.NATURAL);
         list_view.hexpand = list_view.vexpand = true;
         list_view.append_column(time_column());
@@ -184,8 +184,9 @@ public class CanvasLogsArea : Gtk.Widget {
         severity_factory.setup.connect(setup_time);
         severity_factory.bind.connect(bind_time);
 
-        var name_column = new Gtk.ColumnViewColumn("Time", severity_factory);
-        return name_column;
+        var time_column = new Gtk.ColumnViewColumn("Time", severity_factory);
+        time_column.set_resizable(true);
+        return time_column;
     }
 
     private Gtk.ColumnViewColumn severity_column() {
@@ -193,8 +194,9 @@ public class CanvasLogsArea : Gtk.Widget {
         severity_factory.setup.connect(setup_severity);
         severity_factory.bind.connect(bind_severity);
 
-        var name_column = new Gtk.ColumnViewColumn("Severity", severity_factory);
-        return name_column;
+        var severity_column = new Gtk.ColumnViewColumn("Severity", severity_factory);
+        severity_column.set_resizable(true);
+        return severity_column;
     }
     
     private Gtk.ColumnViewColumn message_column() {

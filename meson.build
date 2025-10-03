@@ -49,6 +49,7 @@ include_dirs = [
 
 # c sources
 c_sources = [
+  # gegl wrapper for missing methods in system vapi
   'src/gegl/gegl_wrapper.c'
 ]
 
