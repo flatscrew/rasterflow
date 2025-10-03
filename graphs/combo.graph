@@ -1,0 +1,272 @@
+{
+  "nodes" : [
+    {
+      "model" : {
+        "device" : "/dev/video0",
+        "requested_sources" : [],
+        "requested_sinks" : []
+      },
+      "builder_id" : "gst:v4l2src",
+      "width" : 248,
+      "height" : 93,
+      "expanded" : false,
+      "color" : "rgb(38,162,105)",
+      "position_x" : 23,
+      "position_y" : 150
+    },
+    {
+      "model" : {
+        "caps" : {
+          "type" : "GstCaps",
+          "caps_string" : "image/jpeg, framerate=(fraction)60/1, width=(int)848, height=(int)480"
+        },
+        "requested_sources" : [],
+        "requested_sinks" : []
+      },
+      "builder_id" : "gst:capsfilter",
+      "width" : 248,
+      "height" : 142,
+      "expanded" : false,
+      "position_x" : 407,
+      "position_y" : 91
+    },
+    {
+      "model" : {
+        "requested_sources" : [],
+        "requested_sinks" : []
+      },
+      "builder_id" : "gst:jpegdec",
+      "width" : 248,
+      "height" : 164,
+      "expanded" : false,
+      "position_x" : 826,
+      "position_y" : 99
+    },
+    {
+      "model" : {
+        "requested_sources" : [],
+        "requested_sinks" : []
+      },
+      "builder_id" : "gst:videoconvert",
+      "width" : 248,
+      "height" : 164,
+      "expanded" : false,
+      "position_x" : 1089,
+      "position_y" : 101
+    },
+    {
+      "model" : {
+        "requested_sources" : [],
+        "requested_sinks" : []
+      },
+      "builder_id" : "gst:xvimagesink",
+      "width" : 248,
+      "height" : 123,
+      "expanded" : false,
+      "position_x" : 2120,
+      "position_y" : 288
+    },
+    {
+      "model" : {
+        "device" : "/dev/video2",
+        "requested_sources" : [],
+        "requested_sinks" : []
+      },
+      "builder_id" : "gst:v4l2src",
+      "width" : 299,
+      "height" : 270,
+      "expanded" : true,
+      "color" : "rgb(198,70,0)",
+      "position_x" : 41,
+      "position_y" : 468
+    },
+    {
+      "model" : {
+        "active-pad" : {
+          "type" : "GstPad",
+          "pad_name" : "sink_1"
+        },
+        "requested_sources" : [],
+        "requested_sinks" : [
+          {
+            "name" : "sink_0",
+            "template_name" : "sink_%u",
+            "properties" : {
+              "caps" : {
+                "type" : "GstCaps",
+                "caps_string" : "video/x-raw, format=(string)I420, width=(int)848, height=(int)480, interlace-mode=(string)progressive, multiview-mode=(string)mono, multiview-flags=(GstVideoMultiviewFlagsSet)0:ffffffff:/right-view-first/left-flipped/left-flopped/right-flipped/right-flopped/half-aspect/mixed-mono, pixel-aspect-ratio=(fraction)1/1, chroma-site=(string)jpeg, colorimetry=(string)1:4:0:0, framerate=(fraction)60/1"
+              }
+            }
+          },
+          {
+            "name" : "sink_1",
+            "template_name" : "sink_%u",
+            "properties" : {
+              "caps" : {
+                "type" : "GstCaps",
+                "caps_string" : "video/x-raw, width=(int)1280, height=(int)960, framerate=(fraction)15/2, pixel-aspect-ratio=(fraction)1/1, interlace-mode=(string)progressive, format=(string)YV12, colorimetry=(string)2:4:5:1"
+              }
+            }
+          }
+        ]
+      },
+      "builder_id" : "gst:input-selector",
+      "width" : 330,
+      "height" : 427,
+      "expanded" : true,
+      "color" : "rgb(97,53,131)",
+      "position_x" : 1721,
+      "position_y" : 293
+    },
+    {
+      "model" : {
+        "requested_sources" : [],
+        "requested_sinks" : []
+      },
+      "builder_id" : "gst:videoconvert",
+      "width" : 248,
+      "height" : 164,
+      "expanded" : false,
+      "position_x" : 457,
+      "position_y" : 564
+    },
+    {
+      "model" : {
+        "requested_sources" : [],
+        "requested_sinks" : []
+      },
+      "builder_id" : "gst:videoflip",
+      "width" : 248,
+      "height" : 164,
+      "expanded" : false,
+      "position_x" : 1383,
+      "position_y" : 102
+    },
+    {
+      "model" : {
+        "requested_sources" : [],
+        "requested_sinks" : []
+      },
+      "builder_id" : "gst:coloreffects",
+      "width" : 375,
+      "height" : 371,
+      "expanded" : true,
+      "position_x" : 860,
+      "position_y" : 525
+    },
+    {
+      "model" : {
+        "requested_sources" : [],
+        "requested_sinks" : []
+      },
+      "builder_id" : "gst:videoconvert",
+      "width" : 248,
+      "height" : 164,
+      "expanded" : false,
+      "position_x" : 1318,
+      "position_y" : 372
+    }
+  ],
+  "links" : [
+    {
+      "node_index" : 0,
+      "source_name" : "src",
+      "sinks" : [
+        {
+          "node_index" : 1,
+          "sink_name" : "sink"
+        }
+      ]
+    },
+    {
+      "node_index" : 1,
+      "source_name" : "src",
+      "sinks" : [
+        {
+          "node_index" : 2,
+          "sink_name" : "sink"
+        }
+      ]
+    },
+    {
+      "node_index" : 2,
+      "source_name" : "src",
+      "sinks" : [
+        {
+          "node_index" : 3,
+          "sink_name" : "sink"
+        }
+      ]
+    },
+    {
+      "node_index" : 3,
+      "source_name" : "src",
+      "sinks" : [
+        {
+          "node_index" : 8,
+          "sink_name" : "sink"
+        }
+      ]
+    },
+    {
+      "node_index" : 5,
+      "source_name" : "src",
+      "sinks" : [
+        {
+          "node_index" : 7,
+          "sink_name" : "sink"
+        }
+      ]
+    },
+    {
+      "node_index" : 6,
+      "source_name" : "src",
+      "sinks" : [
+        {
+          "node_index" : 4,
+          "sink_name" : "sink"
+        }
+      ]
+    },
+    {
+      "node_index" : 7,
+      "source_name" : "src",
+      "sinks" : [
+        {
+          "node_index" : 9,
+          "sink_name" : "sink"
+        }
+      ]
+    },
+    {
+      "node_index" : 8,
+      "source_name" : "src",
+      "sinks" : [
+        {
+          "node_index" : 6,
+          "sink_name" : "sink_0"
+        }
+      ]
+    },
+    {
+      "node_index" : 9,
+      "source_name" : "src",
+      "sinks" : [
+        {
+          "node_index" : 10,
+          "sink_name" : "sink"
+        }
+      ]
+    },
+    {
+      "node_index" : 10,
+      "source_name" : "src",
+      "sinks" : [
+        {
+          "node_index" : 6,
+          "sink_name" : "sink_1"
+        }
+      ]
+    }
+  ]
+}

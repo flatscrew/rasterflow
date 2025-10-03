@@ -1,0 +1,104 @@
+{
+  "nodes" : [
+    {
+      "model" : {
+        "value" : {
+          "type" : "GeglColor",
+          "color" : "rgb(1.000, 0.000, 0.000)"
+        }
+      },
+      "builder_id" : "gegl:color",
+      "width" : 203,
+      "height" : 232,
+      "expanded" : true,
+      "position_x" : 37,
+      "position_y" : 39
+    },
+    {
+      "model" : {
+        "value" : {
+          "type" : "GeglColor",
+          "color" : "rgb(0.000, 1.000, 0.000)"
+        }
+      },
+      "builder_id" : "gegl:color",
+      "width" : 203,
+      "height" : 232,
+      "expanded" : true,
+      "position_x" : 40,
+      "position_y" : 318
+    },
+    {
+      "model" : {      },
+      "builder_id" : "gegl:add",
+      "width" : 246,
+      "height" : 290,
+      "expanded" : true,
+      "position_x" : 294,
+      "position_y" : 147
+    },
+    {
+      "model" : {
+        "width" : 20.0,
+        "height" : 20.0
+      },
+      "builder_id" : "gegl:crop",
+      "width" : 288,
+      "height" : 420,
+      "expanded" : true,
+      "position_x" : 584,
+      "position_y" : 97
+    },
+    {
+      "model" : {      },
+      "builder_id" : "image:display",
+      "width" : 515,
+      "height" : 500,
+      "expanded" : true,
+      "position_x" : 969,
+      "position_y" : 66
+    }
+  ],
+  "links" : [
+    {
+      "node_index" : 0,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 2,
+          "sink_name" : "Aux"
+        }
+      ]
+    },
+    {
+      "node_index" : 1,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 2,
+          "sink_name" : "Input"
+        }
+      ]
+    },
+    {
+      "node_index" : 2,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 3,
+          "sink_name" : "Input"
+        }
+      ]
+    },
+    {
+      "node_index" : 3,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 4,
+          "sink_name" : "GEGL node"
+        }
+      ]
+    }
+  ]
+}

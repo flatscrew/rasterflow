@@ -1,0 +1,215 @@
+{
+  "nodes" : [
+    {
+      "model" : {      },
+      "builder_id" : "gegl:add",
+      "width" : 107,
+      "height" : 139,
+      "expanded" : false,
+      "position_x" : 618,
+      "position_y" : 66
+    },
+    {
+      "model" : {      },
+      "builder_id" : "gegl:svg-luminancetoalpha",
+      "width" : 203,
+      "height" : 110,
+      "expanded" : false,
+      "position_x" : 555,
+      "position_y" : 398
+    },
+    {
+      "model" : {      },
+      "builder_id" : "gegl:invert-linear",
+      "width" : 112,
+      "height" : 110,
+      "expanded" : false,
+      "color" : "rgb(0,0,255)",
+      "position_x" : 196,
+      "position_y" : 514
+    },
+    {
+      "model" : {
+        "path" : "/media/activey/Dane/Projekty/Models/Chair/textures/metalness.png"
+      },
+      "builder_id" : "gegl:load",
+      "width" : 141,
+      "height" : 81,
+      "expanded" : false,
+      "color" : "rgb(255,0,0)",
+      "position_x" : 78,
+      "position_y" : 36
+    },
+    {
+      "model" : {
+        "path" : "/media/activey/Dane/Projekty/Models/Chair/textures/soviet_chair_AO.png"
+      },
+      "builder_id" : "gegl:load",
+      "width" : 141,
+      "height" : 81,
+      "expanded" : false,
+      "color" : "rgb(0,255,0)",
+      "position_x" : 101,
+      "position_y" : 338
+    },
+    {
+      "model" : {
+        "path" : "/media/activey/Dane/Projekty/Models/Chair/textures/soviet_chair_Roughness.png"
+      },
+      "builder_id" : "gegl:load",
+      "width" : 141,
+      "height" : 81,
+      "expanded" : false,
+      "position_x" : 16,
+      "position_y" : 616
+    },
+    {
+      "model" : {      },
+      "builder_id" : "image:display",
+      "width" : 448,
+      "height" : 611,
+      "expanded" : true,
+      "position_x" : 1084,
+      "position_y" : 94
+    },
+    {
+      "model" : {
+        "gg-gain" : 0.0,
+        "bb-gain" : 0.0
+      },
+      "builder_id" : "gegl:channel-mixer",
+      "width" : 154,
+      "height" : 110,
+      "expanded" : false,
+      "position_x" : 356,
+      "position_y" : 13
+    },
+    {
+      "model" : {
+        "bb-gain" : 0.0,
+        "rg-gain" : 0.0,
+        "rr-gain" : 0.0
+      },
+      "builder_id" : "gegl:channel-mixer",
+      "width" : 154,
+      "height" : 110,
+      "expanded" : false,
+      "position_x" : 343,
+      "position_y" : 309
+    },
+    {
+      "model" : {      },
+      "builder_id" : "svg:dst-in",
+      "width" : 112,
+      "height" : 139,
+      "expanded" : false,
+      "position_x" : 847,
+      "position_y" : 199
+    },
+    {
+      "model" : {      },
+      "builder_id" : "image:display",
+      "width" : 254,
+      "height" : 291,
+      "expanded" : true,
+      "position_x" : 754,
+      "position_y" : 547
+    }
+  ],
+  "links" : [
+    {
+      "node_index" : 0,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 9,
+          "sink_name" : "Input"
+        }
+      ]
+    },
+    {
+      "node_index" : 1,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 9,
+          "sink_name" : "Aux"
+        },
+        {
+          "node_index" : 10,
+          "sink_name" : "GEGL node"
+        }
+      ]
+    },
+    {
+      "node_index" : 2,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 1,
+          "sink_name" : "Input"
+        }
+      ]
+    },
+    {
+      "node_index" : 3,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 7,
+          "sink_name" : "Input"
+        }
+      ]
+    },
+    {
+      "node_index" : 4,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 8,
+          "sink_name" : "Input"
+        }
+      ]
+    },
+    {
+      "node_index" : 5,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 2,
+          "sink_name" : "Input"
+        }
+      ]
+    },
+    {
+      "node_index" : 7,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 0,
+          "sink_name" : "Aux"
+        }
+      ]
+    },
+    {
+      "node_index" : 8,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 0,
+          "sink_name" : "Input"
+        }
+      ]
+    },
+    {
+      "node_index" : 9,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 6,
+          "sink_name" : "GEGL node"
+        }
+      ]
+    }
+  ]
+}

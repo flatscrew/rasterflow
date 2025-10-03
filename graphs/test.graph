@@ -1,0 +1,16 @@
+{
+  "nodes" : [
+    {
+      "model" : {
+        "path" : "/home/activey/Pictures/—Pngtree—gray creative texture overlay haze_5329438.png"
+      },
+      "builder_id" : "gegl:load",
+      "width" : 248,
+      "height" : 81,
+      "expanded" : false,
+      "position_x" : 115,
+      "position_y" : 159
+    }
+  ],
+  "links" : []
+}

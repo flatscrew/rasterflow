@@ -1,0 +1,53 @@
+.canvas_view {
+    /* background: linear-gradient(rgba(211, 211, 211, .7) .1em, transparent .1em), linear-gradient(90deg, rgba(211, 211, 211, .7) .1em, transparent .1em); */
+    background-size: 1em 1em;
+}
+
+.canvas_minimap { 
+    border-top-width: 1px;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-bottom-width: 1px;
+    border-style: dashed;
+    border-radius: 5px;
+    border-color: gray;
+    background: rgba(255, 255, 255, 0.7);
+ }
+
+.node_chooser_label_text {
+    font-size: smaller;
+}
+
+.property_label_text {
+    font-size: smaller;
+}
+
+.rounded {
+    border-radius: 5px;
+}
+
+.rounded_top {
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+
+.rounded_bottom {
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+
+.rounded_bottom_left {
+    border-bottom-left-radius: 5px;
+}
+
+.rounded_bottom_right {
+    border-bottom-right-radius: 5px;
+}
+
+.pdf_backround {
+    background-color: whitesmoke;
+}
+
+.gst_expected_pad_label {
+    color: #4CAF50;
+}

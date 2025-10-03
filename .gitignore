@@ -1,0 +1,6 @@
+.flatpak-builder/*
+**/build/*
+buildDir/*
+.vscode/*
+.idea/*
+gschemas.compiled

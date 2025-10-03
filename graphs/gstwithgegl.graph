@@ -1,0 +1,119 @@
+{
+  "nodes" : [
+    {
+      "model" : {
+        "requested_sources" : [],
+        "requested_sinks" : []
+      },
+      "builder_id" : "gst:videotestsrc",
+      "width" : 248,
+      "height" : 93,
+      "expanded" : false,
+      "position_x" : 34,
+      "position_y" : 126
+    },
+    {
+      "model" : {      },
+      "builder_id" : "gst:geglsink",
+      "width" : 248,
+      "height" : 110,
+      "expanded" : false,
+      "position_x" : 329,
+      "position_y" : 59
+    },
+    {
+      "model" : {      },
+      "builder_id" : "gegl:pixelize",
+      "width" : 350,
+      "height" : 415,
+      "expanded" : true,
+      "position_x" : 635,
+      "position_y" : 117
+    },
+    {
+      "model" : {      },
+      "builder_id" : "gst:geglsrc",
+      "width" : 248,
+      "height" : 110,
+      "expanded" : false,
+      "position_x" : 1021,
+      "position_y" : 124
+    },
+    {
+      "model" : {
+        "requested_sources" : [],
+        "requested_sinks" : []
+      },
+      "builder_id" : "gst:videoconvert",
+      "width" : 248,
+      "height" : 164,
+      "expanded" : false,
+      "position_x" : 1288,
+      "position_y" : 126
+    },
+    {
+      "model" : {
+        "requested_sources" : [],
+        "requested_sinks" : []
+      },
+      "builder_id" : "gst:xvimagesink",
+      "width" : 248,
+      "height" : 123,
+      "expanded" : false,
+      "position_x" : 1576,
+      "position_y" : 184
+    }
+  ],
+  "links" : [
+    {
+      "node_index" : 0,
+      "source_name" : "src",
+      "sinks" : [
+        {
+          "node_index" : 1,
+          "sink_name" : "sink"
+        }
+      ]
+    },
+    {
+      "node_index" : 1,
+      "source_name" : "GEGL node",
+      "sinks" : [
+        {
+          "node_index" : 2,
+          "sink_name" : "Input"
+        }
+      ]
+    },
+    {
+      "node_index" : 2,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 3,
+          "sink_name" : "GEGL node"
+        }
+      ]
+    },
+    {
+      "node_index" : 3,
+      "source_name" : "src",
+      "sinks" : [
+        {
+          "node_index" : 4,
+          "sink_name" : "sink"
+        }
+      ]
+    },
+    {
+      "node_index" : 4,
+      "source_name" : "src",
+      "sinks" : [
+        {
+          "node_index" : 5,
+          "sink_name" : "sink"
+        }
+      ]
+    }
+  ]
+}

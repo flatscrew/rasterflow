@@ -1,0 +1,80 @@
+{
+  "nodes" : [
+    {
+      "model" : {
+        "path" : "/home/activey/Pictures/test/vintage-tile1_albedo.png"
+      },
+      "builder_id" : "gegl:load",
+      "width" : 248,
+      "height" : 232,
+      "expanded" : true,
+      "position_x" : 46,
+      "position_y" : 83
+    },
+    {
+      "model" : {      },
+      "builder_id" : "gegl:gray",
+      "width" : 135,
+      "height" : 110,
+      "expanded" : false,
+      "color" : "rgb(38,162,105)",
+      "position_x" : 342,
+      "position_y" : 96
+    },
+    {
+      "model" : {      },
+      "builder_id" : "image:display",
+      "width" : 667,
+      "height" : 797,
+      "expanded" : true,
+      "position_x" : 1004,
+      "position_y" : 33
+    },
+    {
+      "model" : {
+        "scale" : 1.0,
+        "flip-x" : true,
+        "tileable" : false,
+        "flip-y" : true
+      },
+      "builder_id" : "gegl:normal-map",
+      "width" : 381,
+      "height" : 487,
+      "expanded" : true,
+      "position_x" : 542,
+      "position_y" : 71
+    }
+  ],
+  "links" : [
+    {
+      "node_index" : 0,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 1,
+          "sink_name" : "Input"
+        }
+      ]
+    },
+    {
+      "node_index" : 1,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 3,
+          "sink_name" : "Input"
+        }
+      ]
+    },
+    {
+      "node_index" : 3,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 2,
+          "sink_name" : "GEGL node"
+        }
+      ]
+    }
+  ]
+}

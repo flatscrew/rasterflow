@@ -1,0 +1,87 @@
+app-id: io.canvas.canvas
+runtime: io.elementary.Platform
+runtime-version: '7.2'
+sdk: io.elementary.Sdk
+command: canvas
+
+build-options : 
+  env:
+    CARGO_HOME: /run/build/cargo-c/cargo
+  prepend-path : /usr/lib/sdk/vala/bin/
+  prepend-ld-library-path : /usr/lib/sdk/vala/lib
+  append-path: /usr/lib/sdk/rust-stable/bin
+
+
+finish-args:
+  - '--filesystem=host'
+  - '--share=ipc'
+  - '--socket=fallback-x11'
+  - '--socket=wayland'
+  - '--socket=pulseaudio'
+  - '--device=all'
+
+modules:
+  - name: gflow
+    buildsystem: meson
+    config-opts:
+      - "-Denable_valadoc=false"
+    sources:
+      - type: git
+        url: https://notabug.org/activey/libgtkflow
+        branch: removing-pads
+  
+  # /////// opencv filters for gstreamer - does not work yet
+  # - name: opencv
+  #   buildsystem: cmake
+  #   builddir: true
+  #   sources:
+  #     - type: archive
+  #       url: https://github.com/opencv/opencv/archive/4.5.5.zip
+  #       sha256: fb16b734db3a28e5119d513bd7c61ef417edf3756165dc6259519bb9d23d04e2
+
+  - name: babl
+    buildsystem: meson
+    sources:
+      - type: git
+        url: https://gitlab.gnome.org/GNOME/babl
+  - name: gegl
+    buildsystem: meson
+    sources:
+      - type: git
+        url: https://gitlab.gnome.org/GNOME/gegl
+
+
+  - name: test
+    buildsystem: meson
+    sources:
+      - type: git
+        url: https://github.com/LinuxBeaver/GEGL---Old-Photo-Effect---Make-your-photos-have-early-20th-century-aesthetics.git
+        branch: main
+
+  # /////// gtk4paintablesink
+  # - name: cargo-c
+  #   buildsystem: simple
+  #   build-commands:
+  #     - "cargo install cargo-c --root /app"
+  #   build-options:
+  #     build-args:
+  #       - "--share=network"
+  #   cleanup:
+  #     - "*"
+  # - name: gst-plugins-rs
+  #   buildsystem: simple
+  #   sources:
+  #   - type: git
+  #     url: https://gitlab.freedesktop.org/gstreamer/gst-plugins-rs
+  #     branch: '0.10'
+  #   build-options:
+  #     build-args:
+  #       - "--share=network"
+  #   build-commands:
+  #     - "cargo cinstall -p gst-plugin-gtk4 --prefix=/app"
+
+  - name: canvas
+    buildsystem: meson
+    sources:
+      - type: dir
+        path: .

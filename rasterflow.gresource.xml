@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/data/">
+    <file>stylesheet.css</file>
+  </gresource>
+  <gresource prefix="/data/">
+    <file>iso_639-2.csv</file>
+  </gresource>
+</gresources>
