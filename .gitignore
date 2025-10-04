@@ -1,5 +1,6 @@
 .flatpak-builder/*
 **/build/*
+**/dist/*
 buildDir/*
 .vscode/*
 .idea/*
