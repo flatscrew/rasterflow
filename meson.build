@@ -134,7 +134,6 @@ vala_sources = [
     #'src/plugin/plugin_loader.vala',
 ]
 
-
 executable(
   'rasterflow',
   c_sources,
@@ -148,10 +147,8 @@ executable(
   ],
   install: true,
   install_dir: join_paths(get_option('prefix'), 'bin'),
+  gui_app: true
 )
-
-
-
 
 # Install the .gschema.xml file
 install_data('io.flatscrew.RasterFlow.gschema.xml',

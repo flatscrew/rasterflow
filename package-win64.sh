@@ -7,7 +7,7 @@ DIST_DIR="dist"
 
 echo "🧹 Cleaning old dist..."
 rm -rf "$DIST_DIR"
-mkdir -p "$DIST_DIR/bin"
+mkdir -p "$DIST_DIR"
 mkdir -p "$DIST_DIR/lib"
 mkdir -p "$DIST_DIR/share/glib-2.0/schemas"
 
@@ -26,7 +26,7 @@ copy_deps() {
     ldd "$file" | while read -r line; do
         dep=$(echo "$line" | awk '{print $3}')
         if [[ "$dep" == /mingw64/bin/* && -f "$dep" ]]; then
-            cp -u "$dep" "$DIST_DIR/bin/" && echo "   ✅ Copied: $(basename "$dep")"
+            cp -u "$dep" "$DIST_DIR/" && echo "   ✅ Copied: $(basename "$dep")"
         elif [[ "$dep" == /c/* || "$dep" == C:\\* ]]; then
             echo "   ⚠️ Skipped system DLL: $dep"
         fi
