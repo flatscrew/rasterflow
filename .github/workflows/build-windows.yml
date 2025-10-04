@@ -83,11 +83,11 @@ jobs:
       - name: Upload installer artifact
         uses: actions/upload-artifact@v4
         with:
-          name: rasterflow-installer-${{ steps.get_version.outputs.version }}
+          name: rasterflow-installer-windows-${{ steps.get_version.outputs.version }}
           path: windows_installer/*.exe
 
       - name: Upload ZIP artifact
         uses: actions/upload-artifact@v4
         with:
-          name: rasterflow-archive-${{ steps.get_version.outputs.version }}
+          name: rasterflow-archive-windows-${{ steps.get_version.outputs.version }}
           path: dist/*
