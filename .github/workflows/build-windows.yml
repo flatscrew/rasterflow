@@ -1,13 +1,4 @@
 name: Build Rasterflow (Windows)
-
-on:
-  workflow_dispatch:
-    inputs:
-      branch:
-        description: "Branch to build"
-        required: true
-        default: "main"
-
 jobs:
   build-windows:
     runs-on: windows-latest
@@ -16,7 +7,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.inputs.branch }}
+          ref: ${{ github.ref }}
 
       - name: Install MSYS2 and dependencies
         uses: msys2/setup-msys2@v2
@@ -33,7 +24,7 @@ jobs:
             mingw-w64-x86_64-libzip
             mingw-w64-x86_64-meson
             mingw-w64-x86_64-ninja
-            mingw-w64-x86_64-valac
+            valac
             zip
             unzip
 
