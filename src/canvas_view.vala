@@ -194,42 +194,62 @@ public class CanvasView : Gtk.Widget {
     }
 
     private void save_graph_as() {
-        var dialog = new Gtk.FileChooserNative("Save graph file", base.get_ancestor(typeof(Gtk.Window)) as Gtk.Window, Gtk.FileChooserAction.SAVE, "_Save", "_Cancel");
-        dialog.add_filter(file_chosse_filter());
+        var file_dialog = new Gtk.FileDialog();
 
-        dialog.response.connect((response_id) => {
-            if (response_id == Gtk.ResponseType.ACCEPT) {
-                var selected_file = dialog.get_file();
-                if (selected_file != null) {
-                    try {
-                        current_graph_file = selected_file.get_path();
-                        
-                        var serialized_graph = canvas_nodes.serialize_graph(serializers);
-                        FileUtils.set_contents_full(selected_file.get_path(), serialized_graph, serialized_graph.length, GLib.FileSetContentsFlags.CONSISTENT);
-                    } catch (FileError e) {
-                        warning(e.message);                        
-                    }
+        var filter = new Gtk.FileFilter();
+        filter.name = "Graph files";
+        filter.add_pattern("*.graph");
+
+        var filters = new GLib.ListStore(typeof(Gtk.FileFilter));
+        filters.append(filter);
+        file_dialog.set_filters(filters);
+
+        //file_dialog.set_initial_name("untitled.graph");
+        file_dialog.save.begin(base.get_ancestor(typeof(Gtk.Window)) as Gtk.Window, null, (obj, res) => {
+            try {
+                var file = file_dialog.save.end(res);
+                if (file != null) {
+                    current_graph_file = file.get_path();
+
+                    var serialized_graph = canvas_nodes.serialize_graph(serializers);
+                    FileUtils.set_contents_full(
+                        current_graph_file,
+                        serialized_graph,
+                        serialized_graph.length,
+                        GLib.FileSetContentsFlags.CONSISTENT
+                    );
                 }
+            } catch (Error e) {
+                warning("Save cancelled or failed: %s", e.message);
             }
-            dialog.destroy(); 
         });
-        dialog.show();
     }
 
-    private void load_graph() {
-        var dialog = new Gtk.FileChooserNative("Choose a File", base.get_ancestor(typeof(Gtk.Window)) as Gtk.Window, Gtk.FileChooserAction.OPEN, "_Open", "_Cancel");
-        dialog.add_filter(file_chosse_filter());
-        dialog.response.connect((response_id) => {
-            if (response_id == Gtk.ResponseType.ACCEPT) {
-                var selected_file = dialog.get_file();
-                current_graph_file = selected_file.get_path();
-                save_button.set_sensitive(true);
 
-                load_graph_async.begin(selected_file);
+    private void load_graph() {
+        var file_dialog = new Gtk.FileDialog();
+
+        var filter = new Gtk.FileFilter();
+        filter.name = "Graph files";
+        filter.add_pattern("*.graph");
+
+        var filters = new GLib.ListStore(typeof(Gtk.FileFilter));
+        filters.append(filter);
+        file_dialog.set_filters(filters);
+
+        file_dialog.open.begin(base.get_ancestor(typeof(Gtk.Window)) as Gtk.Window, null, (obj, res) => {
+            try {
+                var file = file_dialog.open.end(res);
+                if (file != null) {
+                    current_graph_file = file.get_path();
+                    save_button.set_sensitive(true);
+                    load_graph_async.begin(file);
+                }
+            } catch (Error e) {
+                warning("File dialog cancelled or failed: %s", e.message);
             }
-            dialog.destroy(); 
         });
-        dialog.show();
+
     }
 
     async void load_graph_async (GLib.File selected_file) {

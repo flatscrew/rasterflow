@@ -48,6 +48,7 @@ for dll in "$DIST_DIR"/lib/babl-0.1/*.dll; do
 done
 
 echo "🗂 Copying schemas..."
+cp /mingw64/share/glib-2.0/schemas/org.gtk.gtk4.*.xml "$DIST_DIR/share/glib-2.0/schemas/" || true
 cp io.flatscrew.RasterFlow.gschema.xml "$DIST_DIR/share/glib-2.0/schemas/" || true
 glib-compile-schemas "$DIST_DIR/share/glib-2.0/schemas/" || true
 
