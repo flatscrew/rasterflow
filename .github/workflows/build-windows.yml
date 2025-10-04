@@ -35,6 +35,7 @@ jobs:
             mingw-w64-x86_64-ninja
             mingw-w64-x86_64-vala
             mingw-w64-x86_64-gobject-introspection
+            mingw-w64-x86_64-libgee
             zip
             unzip
 
