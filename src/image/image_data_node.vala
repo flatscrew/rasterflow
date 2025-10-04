@@ -205,8 +205,8 @@ namespace Image {
         }
 
         internal void process_gegl() {
-            Gegl.Rectangle bbox;
-            Rasterflow.node_get_bounding_box(save_as_pixbuf_node, out bbox);
+            //  Gegl.Rectangle bbox;
+            var bbox = Rasterflow.node_get_bounding_box(save_as_pixbuf_node);
 
             if (bbox.is_infinite_plane()) {
                 log_error("Infinite plane, use crop before.");
