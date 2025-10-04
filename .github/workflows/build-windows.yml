@@ -1,0 +1,78 @@
+name: Build Rasterflow (Windows)
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: "Branch to build"
+        required: true
+        default: "main"
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.branch }}
+
+      - name: Install MSYS2 and dependencies
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: >-
+            mingw-w64-x86_64-gcc
+            mingw-w64-x86_64-gtk4
+            mingw-w64-x86_64-gegl
+            mingw-w64-x86_64-babl
+            mingw-w64-x86_64-glib2
+            mingw-w64-x86_64-json-glib
+            mingw-w64-x86_64-libzip
+            mingw-w64-x86_64-meson
+            mingw-w64-x86_64-ninja
+            mingw-w64-x86_64-valac
+            zip
+            unzip
+
+      - name: Clone libgtkflow (host Git)
+        shell: bash
+        run: |
+          git clone https://notabug.org/grindhold/libgtkflow.git
+
+      - name: Build and install libgtkflow
+        shell: msys2 {0}
+        run: |
+          cd libgtkflow
+          meson setup build --prefix=/mingw64 --buildtype=release
+          ninja -C build
+          ninja -C build install
+
+      - name: Configure Rasterflow build
+        shell: msys2 {0}
+        run: |
+          meson setup build --prefix=/mingw64 --buildtype=release
+
+      - name: Build Rasterflow
+        shell: msys2 {0}
+        run: ninja -C build
+
+      - name: Package Rasterflow
+        shell: msys2 {0}
+        run: bash package-win64.sh
+
+      - name: Install Inno Setup
+        run: choco install innosetup -y
+
+      - name: Build Windows installer
+        run: iscc windows_installer\installer.iss
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: rasterflow-windows
+          path: |
+            dist/*.zip
+            windows_installer/*.exe
