@@ -80,8 +80,14 @@ jobs:
       - name: Build Windows installer
         run: iscc /DVersion=${{ steps.get_version.outputs.version }} windows_installer\installer.iss
 
-      - name: Upload build artifacts
+      - name: Upload installer artifact
         uses: actions/upload-artifact@v4
         with:
-          name: rasterflow-windows
+          name: rasterflow-installer
           path: windows_installer/*.exe
+
+      - name: Upload ZIP artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: rasterflow-dist
+          path: dist/*.zip
