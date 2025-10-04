@@ -1,5 +1,3 @@
-#define Version GetEnv("Version")
-
 [Setup]
 AppName=RasterFlow
 AppVersion={#Version}
