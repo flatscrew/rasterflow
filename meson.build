@@ -1,5 +1,8 @@
+version_file = meson.project_source_root() / 'VERSION'
+version = run_command('cat', version_file).stdout().strip()
+
 project('vala app', 'vala', 'c', 'cpp',
-version : '0.1.0',
+version : version,
   default_options : ['warning_level=3', 'cpp_std=c++17', 'buildtype=debug']
 )
 

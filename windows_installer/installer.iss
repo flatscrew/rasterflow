@@ -1,13 +1,15 @@
+#define Version GetEnv("Version")
+
 [Setup]
 AppName=RasterFlow
-AppVersion=0.1.0
+AppVersion={#Version}
 AppPublisher=Flatscrew
 DefaultDirName={commonpf}\RasterFlow
 DefaultGroupName=RasterFlow
 UninstallDisplayIcon={app}\rasterflow.exe
 Compression=lzma
 SolidCompression=yes
-OutputBaseFilename=rasterflow-setup
+OutputBaseFilename=rasterflow-setup-{#MyVersion}
 OutputDir=.
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible

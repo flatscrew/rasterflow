@@ -56,6 +56,11 @@ jobs:
           ninja -C build
           ninja -C build install
 
+      - name: Get version
+        id: get_version
+        shell: bash
+        run: echo "version=$(cat VERSION)" >> $GITHUB_OUTPUT
+
       - name: Configure Rasterflow build
         shell: msys2 {0}
         run: |
@@ -73,7 +78,7 @@ jobs:
         run: choco install innosetup -y
 
       - name: Build Windows installer
-        run: iscc windows_installer\installer.iss
+        run: iscc /DVersion=${{ steps.get_version.outputs.version }} windows_installer\installer.iss
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
