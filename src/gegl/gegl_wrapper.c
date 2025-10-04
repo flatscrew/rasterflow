@@ -1,6 +1,9 @@
 #include <gegl.h>
 #include "gegl_wrapper.h"
 
-void rasterflow_node_get_bounding_box (GeglNode *node, GeglRectangle *out) {
-    *out = gegl_node_get_bounding_box(node);
+GeglRectangle* rasterflow_node_get_bounding_box(GeglNode *node) {
+    GeglRectangle rect = gegl_node_get_bounding_box(node);
+    GeglRectangle *out = g_new(GeglRectangle, 1);
+    *out = rect;
+    return out;
 }

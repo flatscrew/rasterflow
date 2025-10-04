@@ -3,16 +3,19 @@
     {
       "model" : {      },
       "builder_id" : "gegl:perlin-noise",
-      "width" : 248,
+      "width" : 246,
       "height" : 232,
       "expanded" : true,
       "position_x" : 0,
       "position_y" : 0
     },
     {
-      "model" : {      },
+      "model" : {
+        "width" : 100.0,
+        "height" : 100.0
+      },
       "builder_id" : "gegl:crop",
-      "width" : 248,
+      "width" : 246,
       "height" : 290,
       "expanded" : true,
       "position_x" : 336,
@@ -21,9 +24,9 @@
     {
       "model" : {      },
       "builder_id" : "image:display",
-      "width" : 248,
-      "height" : 110,
-      "expanded" : false,
+      "width" : 363,
+      "height" : 439,
+      "expanded" : true,
       "position_x" : 630,
       "position_y" : 67
     }
