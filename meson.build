@@ -9,7 +9,7 @@ gnome = import('gnome')
 #subdir('tesseract_wrapper')
 
 # gstreamer test
-subdir('gst_test')
+#subdir('gst_test')
 
 # Gtk.ColumnView test
 subdir('columnview_test')
