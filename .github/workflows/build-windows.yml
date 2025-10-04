@@ -80,5 +80,5 @@ jobs:
         with:
           name: rasterflow-windows
           path:
-            - dist/*.zip 
+            - dist/*.zip
             - windows_installer/*.exe
