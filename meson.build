@@ -1,11 +1,11 @@
-project(
-  'vala app', 'vala', 'c', 'cpp',
+project('vala app', 'vala', 'c', 'cpp',
+  version: '0.0.0',
   default_options : ['warning_level=3', 'cpp_std=c++17', 'buildtype=debug']
 )
 
-version = get_option('version')
-conf_data = configuration_data()
-conf_data.set('version', )
+app_version = get_option('version') 
+conf = configuration_data()
+conf.set('version', app_version)
 
 gnome = import('gnome')
 
