@@ -51,9 +51,4 @@ echo "🗂 Copying schemas..."
 cp -r /mingw64/share/glib-2.0/schemas/* "$DIST_DIR/share/glib-2.0/schemas/" || true
 glib-compile-schemas "$DIST_DIR/share/glib-2.0/schemas/" || true
 
-echo "📦 Creating ZIP..."
-cd "$DIST_DIR"
-zip -r "../${APP_NAME}-win64.zip" .
-cd ..
-
-echo "✅ Done! Package ready at: ${APP_NAME}-win64.zip"
+echo "✅ Done!"
