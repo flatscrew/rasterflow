@@ -272,10 +272,17 @@ namespace Data {
                 b = rgba.blue;
                 a = rgba.alpha;
 
-                property_value_changed(new Gegl.Color("rgba(%f,%f,%f,%f)".printf(r,g,b, a)));
+                var color_str = "rgba(%s,%s,%s,%s)".printf(
+                    color_part(r), color_part(g), color_part(b), color_part(a)
+                );
+                property_value_changed(new Gegl.Color(color_str));
             });
 
             color_button.set_parent(this);
+        }
+
+        string color_part(double v) {
+            return "%.6f".printf(v).replace(",", ".");
         }
 
         protected override void set_property_value(GLib.Value value) {
