@@ -30,8 +30,8 @@ dependencies = [
 #    dependency('gstreamer-video-1.0'),
 
 #    dependency('gtksourceview-5'),
-    meson.get_compiler('vala').find_library('posix'),
-    meson.get_compiler('vala').find_library('linux'),
+    #meson.get_compiler('vala').find_library('posix'),
+    #meson.get_compiler('vala').find_library('linux'),
 ]
 
 # generating runtime binary
@@ -71,10 +71,10 @@ vala_sources = [
     'src/serialize/json_serializer.vala',
     'src/serialize/json_deserializer.vala',
 
-    'src/guard/extractor.vala',
-    'src/guard/frame.vala',
-    'src/guard/printer.vala',
-    'src/guard/stacktrace.vala',
+    #'src/guard/extractor.vala',
+    #'src/guard/frame.vala',
+    #'src/guard/printer.vala',
+    #'src/guard/stacktrace.vala',
 
     # generic data
     'src/data/data_property.vala',
