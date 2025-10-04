@@ -41,6 +41,7 @@ jobs:
       - name: Clone libgtkflow (host Git)
         shell: bash
         run: |
+          git config --global core.autocrlf input
           git clone https://notabug.org/grindhold/libgtkflow.git
 
       - name: Build and install libgtkflow
