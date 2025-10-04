@@ -1,6 +1,6 @@
 [Setup]
 AppName=RasterFlow
-AppVersion=1.0
+AppVersion=0.1.0
 AppPublisher=Flatscrew
 DefaultDirName={commonpf}\RasterFlow
 DefaultGroupName=RasterFlow
