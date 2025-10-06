@@ -21,13 +21,12 @@ namespace Data {
     }
 
     public class FileOriginNodeFactory : Object {
-        private Gee.MultiMap<Regex, FileOriginNodeBuilder> data_type_builders = new Gee.HashMultiMap<Regex, FileOriginNodeBuilder> ();
+        private Gee.MultiMap<string, FileOriginNodeBuilder> data_type_builders = new Gee.HashMultiMap<string, FileOriginNodeBuilder> ();
 
         public void register(FileOriginNodeBuilder node_builder, string[] mime_types) {
             foreach (var mime_type in mime_types) {
                 try {
-                    Regex regex = new Regex(mime_type);
-                    data_type_builders.set(regex, node_builder);
+                    data_type_builders.set(mime_type, node_builder);
                 } catch (RegexError e) {
                     warning(e.message);
                 }
@@ -38,7 +37,8 @@ namespace Data {
             FileOriginNodeBuilder[] builders = {};
 
             foreach (var key in data_type_builders.get_keys()) {
-                if (key.match(content_type)) {
+                Regex regex = new Regex(key);
+                if (regex.match(content_type)) {
                     foreach (var builder in data_type_builders.get(key)) {
                         builders += builder;
                     }

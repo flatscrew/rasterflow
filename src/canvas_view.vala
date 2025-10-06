@@ -118,13 +118,20 @@ public class CanvasView : Gtk.Widget {
     private void add_file_data_node(GLib.File file, double x, double y) {
         try {
             var file_info = file.query_info ("*", FileQueryInfoFlags.NONE);
-            var file_node_builders = file_origin_node_factory.available_builders(file_info.get_content_type());
+            var mimetype = ContentType.get_mime_type(file_info.get_content_type());
+            var file_node_builders = file_origin_node_factory.available_builders(mimetype);
             
             if (file_node_builders.length == 0) {
-                show_error ("Not supported content type: <b>%s</b>".printf(file_info.get_content_type()));
+                show_error ("Not supported content type: <b>%s</b>".printf(mimetype));
                 return;
             }
+
+            message("builders length: %d\n", file_node_builders.length);
             
+            foreach (var builder in file_node_builders) {
+                message(">>>> %s\n", builder.node_builder_id);
+            }
+
             if (file_node_builders.length == 1) {
                 var builder = file_node_builders[0];
                 var node_builder = builder.find_builder(node_factory);
@@ -132,7 +139,6 @@ public class CanvasView : Gtk.Widget {
                     var new_node = node_builder.create();
                     canvas_nodes.add(new_node);
 
-                    //  node_view.add(new_node);
                     builder.apply_file_data(new_node, file, file_info);
                     new_node.set_position((int) x, (int) y);
                 } catch (Error e) {
