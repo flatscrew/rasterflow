@@ -47,7 +47,7 @@ jobs:
         shell: bash
         run: |
           git config --global core.autocrlf input
-          git clone https://notabug.org/grindhold/libgtkflow.git
+          git clone https://github.com/flatscrew/libgtkflow
 
       - name: Build and install libgtkflow
         shell: msys2 {0}
