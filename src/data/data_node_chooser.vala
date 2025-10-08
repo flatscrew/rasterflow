@@ -204,7 +204,7 @@ namespace Data {
             this.popover = new Gtk.Popover();
             popover.set_position(Gtk.PositionType.BOTTOM);
             this.menu_button = new Gtk.MenuButton();
-            menu_button.set_child(new Gtk.Image.from_icon_name("send-to"));
+            menu_button.set_child(new Gtk.Image.from_icon_name("insert-object-symbolic"));
             menu_button.set_parent(this);
             menu_button.set_popover(popover);
 

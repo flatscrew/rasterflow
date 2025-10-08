@@ -1,0 +1,167 @@
+{
+  "nodes" : [
+    {
+      "model" : {
+        "path" : "/home/activey/Pictures/ja.jpeg"
+      },
+      "builder_id" : "gegl:load",
+      "width" : 280,
+      "height" : 236,
+      "expanded" : true,
+      "position_x" : 54,
+      "position_y" : 115
+    },
+    {
+      "model" : {
+        "path" : "/home/activey/Pictures/podpis.png"
+      },
+      "builder_id" : "gegl:load",
+      "width" : 280,
+      "height" : 236,
+      "expanded" : true,
+      "position_x" : 46,
+      "position_y" : 446
+    },
+    {
+      "model" : {      },
+      "builder_id" : "image:display",
+      "width" : 308,
+      "height" : 513,
+      "expanded" : true,
+      "position_x" : 1839,
+      "position_y" : 58
+    },
+    {
+      "model" : {
+        "y" : 0.69999999999999996,
+        "origin-x" : 1.0,
+        "origin-y" : 1.0,
+        "x" : 0.69999999999999996
+      },
+      "builder_id" : "gegl:scale-ratio",
+      "width" : 211,
+      "height" : 265,
+      "expanded" : true,
+      "position_x" : 661,
+      "position_y" : 377
+    },
+    {
+      "model" : {      },
+      "builder_id" : "svg:src-over",
+      "width" : 203,
+      "height" : 143,
+      "expanded" : false,
+      "position_x" : 1185,
+      "position_y" : 69
+    },
+    {
+      "model" : {
+        "y" : 40.0,
+        "near-z" : 2.7755575615628914e-17,
+        "origin-x" : 0.0,
+        "origin-y" : 0.0,
+        "x" : 0.0
+      },
+      "builder_id" : "gegl:translate",
+      "width" : 211,
+      "height" : 265,
+      "expanded" : true,
+      "position_x" : 952,
+      "position_y" : 337
+    },
+    {
+      "model" : {
+        "brightness" : 1.5000000000000004
+      },
+      "builder_id" : "gegl:brightness-contrast",
+      "width" : 201,
+      "height" : 265,
+      "expanded" : true,
+      "position_x" : 382,
+      "position_y" : 403
+    },
+    {
+      "model" : {
+        "limit-exposure" : false
+      },
+      "builder_id" : "gegl:bloom",
+      "width" : 291,
+      "height" : 494,
+      "expanded" : true,
+      "position_x" : 1386,
+      "position_y" : 379
+    }
+  ],
+  "links" : [
+    {
+      "node_index" : 0,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 4,
+          "sink_name" : "Input"
+        }
+      ]
+    },
+    {
+      "node_index" : 1,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 6,
+          "sink_name" : "Input"
+        }
+      ]
+    },
+    {
+      "node_index" : 3,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 5,
+          "sink_name" : "Input"
+        }
+      ]
+    },
+    {
+      "node_index" : 4,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 7,
+          "sink_name" : "Input"
+        }
+      ]
+    },
+    {
+      "node_index" : 5,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 4,
+          "sink_name" : "Aux"
+        }
+      ]
+    },
+    {
+      "node_index" : 6,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 3,
+          "sink_name" : "Input"
+        }
+      ]
+    },
+    {
+      "node_index" : 7,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 2,
+          "sink_name" : "GEGL node"
+        }
+      ]
+    }
+  ]
+}

@@ -2,11 +2,11 @@
   "nodes" : [
     {
       "model" : {
-        "path" : "C:\\Users\\activ\\Pictures\\gomulka.png"
+        "path" : "/usr/share/backgrounds/Ashim DSilva.jpg"
       },
       "builder_id" : "gegl:load",
-      "width" : 297,
-      "height" : 272,
+      "width" : 295,
+      "height" : 270,
       "expanded" : true,
       "position_x" : 45,
       "position_y" : 45
@@ -14,11 +14,11 @@
     {
       "model" : {      },
       "builder_id" : "image:display",
-      "width" : 248,
-      "height" : 184,
+      "width" : 712,
+      "height" : 435,
       "expanded" : true,
-      "position_x" : 602,
-      "position_y" : 59
+      "position_x" : 694,
+      "position_y" : 97
     }
   ],
   "links" : [

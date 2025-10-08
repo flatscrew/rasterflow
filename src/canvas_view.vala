@@ -209,13 +209,13 @@ public class CanvasView : Gtk.Widget {
         var filters = new GLib.ListStore(typeof(Gtk.FileFilter));
         filters.append(filter);
         file_dialog.set_filters(filters);
-
-        //file_dialog.set_initial_name("untitled.graph");
+        file_dialog.set_initial_name("untitled.graph");
         file_dialog.save.begin(base.get_ancestor(typeof(Gtk.Window)) as Gtk.Window, null, (obj, res) => {
             try {
                 var file = file_dialog.save.end(res);
                 if (file != null) {
                     current_graph_file = file.get_path();
+                    save_button.set_sensitive(true);
 
                     var serialized_graph = canvas_nodes.serialize_graph(serializers);
                     FileUtils.set_contents_full(
@@ -230,7 +230,6 @@ public class CanvasView : Gtk.Widget {
             }
         });
     }
-
 
     private void load_graph() {
         var file_dialog = new Gtk.FileDialog();
@@ -255,51 +254,62 @@ public class CanvasView : Gtk.Widget {
                 warning("File dialog cancelled or failed: %s", e.message);
             }
         });
-
     }
 
     async void load_graph_async (GLib.File selected_file) {
         canvas_signals.before_file_load();
 
-        new Thread<void> ("load-graph",() => {
+        new Thread<void*> (null, () => {
             canvas_nodes.remove_all();
 
-            Idle.add(() => {
+            MainContext.default().invoke(() => {
                 canvas_nodes.deserialize_graph(selected_file, deserializers);
-                canvas_signals.after_file_load();
-                return load_graph_async.callback();
+                node_view.queue_allocate();
+                node_view.queue_draw();
+                return false;
             });
+
+            Idle.add(load_graph_async.callback);
+            return null;
         });
         yield;
+ 
+        canvas_signals.after_file_load();
     }
 
     private void export_to_png() {
-        var surface = new Cairo.ImageSurface (Cairo.Format.ARGB32, node_view.get_width(), node_view.get_height());
-        var cairo_context = new Cairo.Context (surface);
-    
-        var snapshot = new Gtk.Snapshot ();
+        var surface = new Cairo.ImageSurface(Cairo.Format.ARGB32, node_view.get_width(), node_view.get_height());
+        var cairo_context = new Cairo.Context(surface);
+
+        var snapshot = new Gtk.Snapshot();
         node_view.snapshot(snapshot);
 
         var node = snapshot.free_to_node();
         node.draw(cairo_context);
 
-        var dialog = new Gtk.FileChooserNative("Export to PNG", base.get_ancestor(typeof(Gtk.Window)) as Gtk.Window, Gtk.FileChooserAction.SAVE, "_Export", "_Cancel");
-        var png_filter = new Gtk.FileFilter();
-        png_filter.set_filter_name("PNG file");
-        png_filter.add_mime_type("image/png");
-        png_filter.add_suffix("png");
-        dialog.add_filter(png_filter);
+        var dialog = new Gtk.FileDialog();
+        dialog.title = "Export to PNG";
 
-        dialog.response.connect((response_id) => {
-            if (response_id == Gtk.ResponseType.ACCEPT) {
-                var selected_file = dialog.get_file();
-                if (selected_file != null) {
-                    surface.write_to_png (selected_file.get_path());
+        var png_filter = new Gtk.FileFilter();
+        png_filter.name = "PNG image";
+        png_filter.add_mime_type("image/png");
+        png_filter.add_pattern("*.png");
+
+        var filters = new GLib.ListStore(typeof(Gtk.FileFilter));
+        filters.append(png_filter);
+        dialog.set_filters(filters);
+        dialog.set_initial_name("export.png");
+
+        dialog.save.begin(base.get_ancestor(typeof(Gtk.Window)) as Gtk.Window, null, (obj, res) => {
+            try {
+                var file = dialog.save.end(res);
+                if (file != null) {
+                    surface.write_to_png(file.get_path());
                 }
+            } catch (Error e) {
+                warning("PNG export cancelled or failed: %s", e.message);
             }
-            dialog.destroy(); 
         });
-        dialog.show();
     }
 
     public Data.DataNodeChooser create_node_chooser() {
@@ -311,7 +321,7 @@ public class CanvasView : Gtk.Widget {
 
     public Gtk.Button create_save_graph_as_button() {
         var save_as_button = new Gtk.Button();
-        save_as_button.set_icon_name("document-save-as");
+        save_as_button.set_icon_name("document-save-as-symbolic");
         save_as_button.set_tooltip_text("Save graph as");
         save_as_button.clicked.connect(this.save_graph_as);
         return save_as_button;
@@ -320,7 +330,7 @@ public class CanvasView : Gtk.Widget {
     public Gtk.Button create_save_graph_button() {
         save_button = new Gtk.Button();
         save_button.set_sensitive(false);
-        save_button.set_icon_name("document-save");
+        save_button.set_icon_name("document-save-symbolic");
         save_button.set_tooltip_text("Save graph");
         save_button.clicked.connect(this.save_graph);
         return save_button;
@@ -328,7 +338,7 @@ public class CanvasView : Gtk.Widget {
 
     public Gtk.Button create_load_graph_button() {
         var load_button = new Gtk.Button();
-        load_button.set_icon_name("document-open");
+        load_button.set_icon_name("document-open-symbolic");
         load_button.set_tooltip_text("Load graph from file");
         load_button.clicked.connect(this.load_graph);
         return load_button;
