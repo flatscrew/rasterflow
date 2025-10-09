@@ -10,13 +10,7 @@ public class CanvasSignals : Object {
 class CanvasApplication : Gtk.Application {
 
   private CanvasView canvas_view;
-  private CanvasSignals canvas_signals;
   private CanvasHeaderbarWidgets header_widgets;
-  private CanvasNodeFactory data_node_factory;
-  private Data.FileOriginNodeFactory file_origin_node_factory;
-
-  private Serialize.CustomSerializers serializers;
-  private Serialize.CustomDeserializers deserializers;
 
   private Gtk.ApplicationWindow? window;
 
@@ -26,13 +20,13 @@ class CanvasApplication : Gtk.Application {
   }
 
   public CanvasApplication(string[] args) {
-    this.canvas_signals = new CanvasSignals();
+    var canvas_signals = new CanvasSignals();
     this.header_widgets = new CanvasHeaderbarWidgets();
 
-    this.data_node_factory = new CanvasNodeFactory();
-    this.file_origin_node_factory = new Data.FileOriginNodeFactory();
-    this.serializers = new Serialize.CustomSerializers();
-    this.deserializers = new Serialize.CustomDeserializers();
+    var data_node_factory = new CanvasNodeFactory();
+    var file_origin_node_factory = new Data.FileOriginNodeFactory();
+    var serializers = new Serialize.CustomSerializers();
+    var deserializers = new Serialize.CustomDeserializers();
 
     activate.connect (() => {
       load_css();
@@ -49,11 +43,11 @@ class CanvasApplication : Gtk.Application {
       initialize_image_plugin(plugin_contribution, args);
 
       this.canvas_view = new CanvasView(
-        this.canvas_signals,
-        this.data_node_factory,
-        this.file_origin_node_factory,
-        this.serializers,
-        this.deserializers
+        canvas_signals,
+        data_node_factory,
+        file_origin_node_factory,
+        serializers,
+        deserializers
       );
 
       canvas_signals.before_file_load.connect_after(this.before_file_load);
@@ -118,8 +112,6 @@ class CanvasApplication : Gtk.Application {
 }
 
 int main (string[] args) {
-  //  Ivy.Stacktrace.register_handlers();
-
   var app = new CanvasApplication(args);
   return app.run(args);
 }

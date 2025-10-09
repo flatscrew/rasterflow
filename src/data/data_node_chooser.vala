@@ -208,7 +208,7 @@ namespace Data {
             menu_button.set_parent(this);
             menu_button.set_popover(popover);
 
-            this.node_chooser_box = new DataNodeChooserBox(node_factory);
+            this.node_chooser_box = new DataNodeChooserBox(this.node_factory);
             node_chooser_box.builder_selected.connect(this.builder_selected);
             popover.set_child(node_chooser_box);
         }

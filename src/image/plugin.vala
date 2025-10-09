@@ -1,6 +1,24 @@
+string get_label_from_path(Gegl.Operation op, string name) {
+    GLib.Value val = GLib.Value(typeof(string));
+    op.get_property(name, ref val);
+    var path = (string) val;
+
+    if (path == null || path.strip() == "")
+        return "Load file";
+
+    return GLib.Path.get_basename(path);
+}
+
+private Gtk.Widget gegl_load_title_override(Gegl.Operation operation) {
+    var label = new Gtk.Label("Load file");
+    label.label = get_label_from_path(operation, "path");
+    operation.notify["path"].connect(() => {
+        label.label = get_label_from_path(operation, "path");
+    });
+    return label;
+}
+
 public string initialize_image_plugin(Plugin.PluginContribution plugin_contribution, string[] args) {
-    
-  
     Gegl.config().application_license = "GPL3";
     Gegl.init(ref args);
 
@@ -23,14 +41,15 @@ public string initialize_image_plugin(Plugin.PluginContribution plugin_contribut
         node_factory.register(new Image.ImageDataDisplayNodeBuilder(),
           typeof(Gdk.Pixbuf)
         );
-        node_factory.register(new Image.ImageResizeNodeBuilder(),
-          typeof(Gdk.Pixbuf)
-        );
+        //  node_factory.register(new Image.ImageResizeNodeBuilder(),
+        //    typeof(Gdk.Pixbuf)
+        //  );
         //  node_factory.register(new Image.ImageOCRNodeBuilder(),
         //    typeof(Gdk.Pixbuf)
         //  );
 
-        Image.GeglOperationsFactory.register_gegl_operations(args, node_factory);
+        Image.GeglOperationsFactory.register_gegl_operations(node_factory);
+        // TODO register title override for gegl:load
     });
 
     // serializers
@@ -50,6 +69,7 @@ public string initialize_image_plugin(Plugin.PluginContribution plugin_contribut
 
     // overrides
     Image.GeglOperationOverrides.override_operation("gegl:load", overrides => {
+        overrides.override_title(gegl_load_title_override);
         overrides.override_property("path", (param_spec) => {
           return new Data.FileLocationProperty(param_spec as ParamSpecString);
         });

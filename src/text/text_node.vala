@@ -21,7 +21,7 @@ namespace Text {
         private Gtk.Label text_label;
 
         public TextDataDisplayNode(string builder_id, TextDataNode data_node) {
-            base (builder_id, data_node);
+            base (builder_id, data_node, new GtkFlow.NodeDockLabelWidgetFactory(data_node));
             this.data_display_view = new Data.DataDisplayView();
             add_child(data_display_view);
 

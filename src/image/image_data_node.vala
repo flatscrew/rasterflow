@@ -33,7 +33,9 @@ namespace Image {
         private Data.PropertyGroup? image_details;
 
         public ImageDataDisplayNode(string builder_id, ImageDataNode data_node) {
-            base (builder_id, data_node);
+            base (builder_id, data_node, new GtkFlow.NodeDockLabelWidgetFactory(data_node));
+            build_default_title();
+            
             this.data_display_view = new Data.DataDisplayView();
             add_child(data_display_view);
 

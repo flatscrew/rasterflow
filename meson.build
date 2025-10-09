@@ -8,15 +8,6 @@ conf.set('version', app_version)
 
 gnome = import('gnome')
 
-# Tesseract wrapper
-#subdir('tesseract_wrapper')
-
-# gstreamer test
-#subdir('gst_test')
-
-# Gtk.ColumnView test
-subdir('columnview_test')
-
 # Dependencies
 dependencies = [
     dependency('glib-2.0'),
@@ -27,14 +18,7 @@ dependencies = [
     dependency('gee-0.8'),
     dependency('gio-2.0'),
     dependency('json-glib-1.0'),
-    dependency('gegl-0.4'),
-#    dependency('gstreamer-1.0'),
-#    dependency('gstreamer-base-1.0'),
-#    dependency('gstreamer-video-1.0'),
-
-#    dependency('gtksourceview-5'),
-    #meson.get_compiler('vala').find_library('posix'),
-    #meson.get_compiler('vala').find_library('linux'),
+    dependency('gegl-0.4')
 ]
 
 # generating runtime binary
@@ -74,11 +58,6 @@ vala_sources = [
     'src/serialize/json_serializer.vala',
     'src/serialize/json_deserializer.vala',
 
-    #'src/guard/extractor.vala',
-    #'src/guard/frame.vala',
-    #'src/guard/printer.vala',
-    #'src/guard/stacktrace.vala',
-
     # generic data
     'src/data/data_property.vala',
     'src/data/title_bar.vala',
@@ -95,46 +74,19 @@ vala_sources = [
     # image processing
     'src/image/image_data_node.vala',
     'src/image/image_file_data_node.vala',
-    'src/image/image_resize_node.vala',
-    #'src/image/image_ocr_node.vala',
     'src/image/image_viewer.vala',
     'src/image/gegl_operation_node.vala',
     'src/image/gegl_operation_overrides.vala',
+    'src/image/gegl_file_load_title.vala',
+    'src/image/gegl_node_operation_view.vala',
     'src/image/plugin.vala',
     
     # plain text processing
     'src/text/text_node.vala',
     'src/text/plugin.vala',
     
-    # pdf processing
-    #'src/pdf/pdf_file_data_node.vala',
-    #'src/pdf/pdf_viewer.vala',
-    #'src/pdf/extract_page_as_image_node.vala',
-    #'src/pdf/plugin.vala',
-
-    # audio/video processing
-    #'src/audiovideo/gst_pipeline.vala',
-    #'src/audiovideo/gst_pipeline_controls.vala',
-    #'src/audiovideo/gst_element_overrides.vala',
-    #'src/audiovideo/gst_element_node.vala',
-    #'src/audiovideo/gst_element_display_node.vala',
-    #'src/audiovideo/audio_video_file_data_node.vala',
-    #'src/audiovideo/gst_structure_list.vala',
-    #'src/audiovideo/gst_caps_view.vala',
-    #'src/audiovideo/gst_caps_editor.vala',
-    #'src/audiovideo/gst_structure_properties.vala',
-    #'src/audiovideo/gst_property_structure.vala',
-    #'src/audiovideo/gst_property_camera_device.vala',
-    #'src/audiovideo/gst_property_pad.vala',
-    #'src/audiovideo/gst_request_element_pad_button.vala',
-    #'src/audiovideo/gst_gtk4sink_view.vala',
-    #'src/audiovideo/gst_shader_code_editor.vala',
-    #'src/audiovideo/gst_geglfilters.vala',
-    #'src/audiovideo/plugin.vala',
-
     # plugins
-    'src/plugin/plugin_contribution.vala',
-    #'src/plugin/plugin_loader.vala',
+    'src/plugin/plugin_contribution.vala'
 ]
 
 executable(

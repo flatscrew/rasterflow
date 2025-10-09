@@ -1,13 +1,14 @@
 namespace Image {
 
     public class GeglOperationsFactory : Object {
-        public static void register_gegl_operations(string[] args, CanvasNodeFactory node_factory) {
+        public static void register_gegl_operations(CanvasNodeFactory node_factory) {
             var gegl_operations = Gegl.list_operations();
             foreach (var gegl_operation in gegl_operations) {
                 var title = Gegl.Operation.get_key(gegl_operation, "title");
                 if (title == null) {
                     title = gegl_operation;
                 }
+
                 var description = Gegl.Operation.get_key(gegl_operation, "description");
                 string pango_compatible_description = description
                     .replace("<code>", "<tt>")
@@ -18,13 +19,19 @@ namespace Image {
                     .replace(" < ", " &lt;")
                     .replace(" <= ", " &lt;=");
 
-                node_factory.register(new GeglOperationNodeBuilder(title, gegl_operation, pango_compatible_description), typeof(Gegl.Node));
+                node_factory.register(
+                    new GeglOperationNodeBuilder(
+                        title, 
+                        gegl_operation, 
+                        pango_compatible_description
+                    ), 
+                    typeof(Gegl.Node)
+                );
             }
         }
     }
 
     public class GeglOperationNodeBuilder : CanvasNodeBuilder, Object {
-
         private string node_name;
         private string gegl_operation;
         private string? gegl_description;
@@ -36,7 +43,10 @@ namespace Image {
         }
 
         public CanvasDisplayNode create() throws Error {
-            return new GeglOperationDisplayNode(id(), new GeglOperationNode(node_name, gegl_operation));
+            return new GeglOperationDisplayNode(
+                gegl_operation, 
+                new GeglOperationNode(node_name, gegl_operation)
+            );
         }
 
         public string name() {
@@ -69,7 +79,6 @@ namespace Image {
     }
 
     public class PadSink : CanvasNodeSink {
-        
         public signal void updated();
         
         public Gegl.Node gegl_node {get; private set;}
@@ -100,7 +109,6 @@ namespace Image {
             }
         }
 
-
         private void sink_updated() {
             this.updated();
         }
@@ -117,14 +125,11 @@ namespace Image {
         }
     }
 
-
     public interface GeglProcessor : Object {
         internal abstract void process_gegl();
     }
 
     public class GeglOperationNode : CanvasNode, GeglProcessor {
-
-
         private string gegl_operation;
         internal Gegl.Node gegl_node {
             get;
@@ -205,7 +210,6 @@ namespace Image {
         private void remove_from_graph() {
             var context = GeglContext.rootNode(); 
             context.remove_child(this.gegl_node);
-            debug("GEGL children count: %u\n",context.get_children().length());
         }
 
         private void gegl_node_property_changed(ParamSpec property_spec) {
@@ -233,29 +237,45 @@ namespace Image {
         }
     }
 
+    class OverridenTitleWidgetBuilder : CanvasNodeTitleWidgetBuilder, Object {
+        private Gtk.Widget title_widget;
+        
+        public OverridenTitleWidgetBuilder(Gtk.Widget title_widget) {
+            this.title_widget = title_widget;
+        }
+
+        public Gtk.Widget? build_title_widget(CanvasNode _) {
+            return title_widget;
+        }   
+    }
+
     class GeglOperationDisplayNode : CanvasDisplayNode {
         private GeglOperationNode gegl_operation_node;
-        private GeglOperationOverridesCallback? overrides_callback;
+        private GeglOperationOverridesCallback? operation_overrides_callback;
 
         public GeglOperationDisplayNode(string builder_id, GeglOperationNode node) {
             base(builder_id, node);
+
             this.gegl_operation_node = node;
-            this.overrides_callback = GeglOperationOverrides.find_operation_overrides(builder_id);
+            this.operation_overrides_callback = GeglOperationOverrides.find_operation_overrides(builder_id);
 
+            if (operation_overrides_callback != null) {
+                var title_widget = operation_overrides_callback.build_title(gegl_operation_node.get_gegl_operation());
+                build_title(new OverridenTitleWidgetBuilder(title_widget));
 
-            if (overrides_callback != null) {
-                var overriden_widget = overrides_callback.build_operation(gegl_operation_node.get_gegl_operation());
+                var overriden_widget = operation_overrides_callback.build_operation(gegl_operation_node.get_gegl_operation());
                 if (overriden_widget != null) {
                     add_child(overriden_widget);
                 } else {
-                    add_default_content();
+                    add_default_content(gegl_operation_node.get_gegl_operation());
                 }
             } else {
-                add_default_content();
+                build_default_title();
+                add_default_content(gegl_operation_node.get_gegl_operation());
             }
         }
 
-        private void add_default_content() {
+        public void add_default_content(Gegl.Operation operation) {
             var scrolled_window = new Gtk.ScrolledWindow();
             scrolled_window.vexpand = scrolled_window.hexpand = true;
             scrolled_window.set_propagate_natural_height(true);
@@ -263,8 +283,7 @@ namespace Image {
             scrolled_window.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC); 
             scrolled_window.set_placement(Gtk.CornerType.TOP_RIGHT);
 
-            var properties_editor = new Data.DataPropertiesEditor(gegl_operation_node.get_gegl_operation());
-            properties_editor.data_property_changed.connect(this.property_changed);
+            var properties_editor = new Data.DataPropertiesEditor(operation);
             properties_editor.populate_properties(
                 () => true,
                 compose_overrides
@@ -279,37 +298,14 @@ namespace Image {
         }
 
         private void compose_overrides(Data.PropertyOverridesComposer composer) {
-            if (overrides_callback == null) {
+            if (operation_overrides_callback == null) {
                 return;
             }
-            overrides_callback.copy_property_overrides(composer);
+            operation_overrides_callback.copy_property_overrides(composer);
         }
 
         internal void set_gegl_property(string name, GLib.Value value) {
             gegl_operation_node.get_gegl_operation().set_property(name, value);
-        }
-
-        private void property_changed(string property_name, GLib.Value property_value) {
-            debug("changed property: %s = %s\n", property_name, print_value(property_value));
-
-            //  unowned var node = n as GeglOperationNode;
-            //  node.process_gegl();
-        }
-
-        string print_value(GLib.Value val) {
-            switch (val.type()) {
-                case GLib.Type.INT:
-                    return "int: %d".printf((int) val);
-                case GLib.Type.STRING:
-                    return "string: %s".printf((string) val);
-                case GLib.Type.BOOLEAN:
-                    return "bool: %s".printf((bool) val ? "true" : "false");
-                case GLib.Type.DOUBLE:
-                    return "double: %g".printf((double) val);
-                case GLib.Type.FLOAT:
-                    return "float: %g".printf((float) val);
-            }
-            return "Unknown type or not handled: %s\n".printf(val.type_name());
         }
     }
 }

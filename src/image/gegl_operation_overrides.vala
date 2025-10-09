@@ -2,9 +2,9 @@ namespace Image {
 
     class GeglOperationOverrideCallback {
         
-        private GeglOperationOverrideFunc operation_func;
+        private GeglWholeOperationOverrideFunc operation_func;
         
-        public GeglOperationOverrideCallback(GeglOperationOverrideFunc element_func) {
+        public GeglOperationOverrideCallback(GeglWholeOperationOverrideFunc element_func) {
             this.operation_func = (operation) => {
                 return element_func(operation);
             };
@@ -15,7 +15,22 @@ namespace Image {
         }
     }
 
-    delegate Gtk.Widget GeglOperationOverrideFunc (Gegl.Operation operation);
+    delegate Gtk.Widget GeglWholeOperationOverrideFunc (Gegl.Operation operation);
+
+    class GeglTitleOverrideCallback {
+        private GeglOperationTitleOverrideFunc title_func;
+
+        public GeglTitleOverrideCallback(GeglOperationTitleOverrideFunc title_func) {
+            this.title_func = (operation) => {
+                return title_func(operation);
+            };
+        }
+
+        public Gtk.Widget build_title(Gegl.Operation operation) {
+            return this.title_func(operation);
+        }
+    }
+    delegate Gtk.Widget GeglOperationTitleOverrideFunc (Gegl.Operation operation);
 
     delegate void GeglOperationOverridesFunc (GeglOperationOverridesComposer composer); 
 
@@ -26,6 +41,10 @@ namespace Image {
             this.composer = new GeglOperationOverridesComposer();
 
             overrides_func(composer);
+        }
+
+        public Gtk.Widget? build_title(Gegl.Operation operation) {
+            return composer.build_title(operation);
         }
 
         public Gtk.Widget? build_operation(Gegl.Operation operation) {
@@ -39,9 +58,21 @@ namespace Image {
 
     internal class GeglOperationOverridesComposer : Data.PropertyOverridesComposer {
         private GeglOperationOverrideCallback? element_override_callback;
+        private GeglTitleOverrideCallback? title_override_callback;
 
-        internal void override_whole(GeglOperationOverrideFunc operation_override_func) {
+        internal void override_title(GeglOperationTitleOverrideFunc title_override_func) {
+            this.title_override_callback = new GeglTitleOverrideCallback(title_override_func);
+        }
+
+        internal void override_whole(GeglWholeOperationOverrideFunc operation_override_func) {
             this.element_override_callback = new GeglOperationOverrideCallback(operation_override_func);
+        }
+
+        internal Gtk.Widget? build_title(Gegl.Operation operation) {
+            if (title_override_callback != null) {
+                return title_override_callback.build_title(operation);
+            }
+            return null;
         }
 
         internal Gtk.Widget? build_operation(Gegl.Operation operation) {

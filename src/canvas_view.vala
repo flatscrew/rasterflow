@@ -25,7 +25,6 @@ public class CanvasView : Gtk.Widget {
         set_layout_manager(new Gtk.BinLayout());
     }
 
-
     ~CanvasView() {
         main_pane.unparent();
     }
@@ -124,12 +123,6 @@ public class CanvasView : Gtk.Widget {
             if (file_node_builders.length == 0) {
                 show_error ("Not supported content type: <b>%s</b>".printf(mimetype));
                 return;
-            }
-
-            message("builders length: %d\n", file_node_builders.length);
-            
-            foreach (var builder in file_node_builders) {
-                message(">>>> %s\n", builder.node_builder_id);
             }
 
             if (file_node_builders.length == 1) {

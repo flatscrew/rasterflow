@@ -3,7 +3,7 @@ namespace Data {
     public class TitleBar : Gtk.Widget {
 
         private Gtk.CenterBox action_bar;
-        private Gtk.Label title_label;
+        private Gtk.Widget title_widget;
         private Gtk.Box left_box;
         private Gtk.Box right_box;
 
@@ -21,22 +21,18 @@ namespace Data {
             action_bar.get_style_context().add_class("rounded_top");
         }
 
-        public TitleBar(string title) {
+        public TitleBar(Gtk.Widget title_widget) {
             this.left_box = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 3);
             left_box.margin_bottom = left_box.margin_top = left_box.margin_start = left_box.margin_end = 5;
 
             this.right_box = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 3);
             right_box.margin_bottom = right_box.margin_top = right_box.margin_start = right_box.margin_end = 5;
 
-            this.title_label = new Gtk.Label (title);
+            this.title_widget = title_widget;
 
             action_bar.set_start_widget(this.left_box);
-            action_bar.set_center_widget (this.title_label);
+            action_bar.set_center_widget (this.title_widget);
             action_bar.set_end_widget(this.right_box);
-        }
-
-        public void set_title(string title) {
-            this.title_label.set_markup(title);
         }
 
         public void append_left(Gtk.Widget widget) {

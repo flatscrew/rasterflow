@@ -33,7 +33,6 @@ public class CanvasNodeFactory : Object {
     }
 }
 
-
 public delegate void AfterNodeCreated(CanvasDisplayNode created_node);
 
 public interface CanvasNodeBuilder : Object {
@@ -50,14 +49,21 @@ public interface CanvasNodeBuilder : Object {
     public abstract CanvasDisplayNode create() throws Error;
 }
 
+public interface CanvasNodeTitleWidgetBuilder : Object {
+
+    public abstract Gtk.Widget? build_title_widget(CanvasNode node);
+}
+
+public class DefaultTitleWidgetBuilder : CanvasNodeTitleWidgetBuilder, Object {
+    
+    public Gtk.Widget? build_title_widget(CanvasNode node) {
+        return new Gtk.Label(node.name);
+    }
+}
+
 public class CanvasDisplayNode : GtkFlow.Node {
         
     public signal void removed(CanvasDisplayNode removed_node);
-
-    public Data.TitleBar title_bar {
-        get;
-        private set;
-    }
 
     private Gtk.Expander node_expander;
     private Gtk.Box node_box;
@@ -79,19 +85,12 @@ public class CanvasDisplayNode : GtkFlow.Node {
         debug("Destroying display node %s\n", name);
     }
 
-    public CanvasDisplayNode(string builder_id, CanvasNode node) {
-        this.with_icon(builder_id, node, null);
-    }
-
-    public CanvasDisplayNode.with_icon(string builder_id, CanvasNode node, GLib.Icon? icon, GtkFlow.NodeDockLabelWidgetFactory dock_label_factory = new GtkFlow.NodeDockLabelWidgetFactory(node)) {
+    public CanvasDisplayNode(
+        string builder_id, 
+        CanvasNode node,
+        GtkFlow.NodeDockLabelWidgetFactory dock_label_factory = new GtkFlow.NodeDockLabelWidgetFactory(node)
+    ) {
         base.with_margin(node, 0, dock_label_factory);
-        try {
-            base.set_title(this.node_header(icon));
-        } catch (GtkFlow.NodeError e) {
-            warning(e.message);
-        }
-        base.set_size_request(250, -1);
-
         this.custom_backround_css = new Gtk.CssProvider();
         var css = "
         .gtkflow_node {
@@ -109,6 +108,18 @@ public class CanvasDisplayNode : GtkFlow.Node {
         create_node();
     }
 
+    public void build_title(CanvasNodeTitleWidgetBuilder title_builder, GLib.Icon? icon = null) {
+        try {
+            base.set_title(this.node_header(n as CanvasNode, icon, title_builder));
+        } catch (GtkFlow.NodeError e) {
+            warning(e.message);
+        }
+    }
+
+    public void build_default_title(GLib.Icon? icon = null) {
+        build_title(new DefaultTitleWidgetBuilder(), null);
+    }
+
     private void create_node() {
         this.node_expander = new Gtk.Expander("Node details");
 
@@ -122,23 +133,25 @@ public class CanvasDisplayNode : GtkFlow.Node {
 
         this.node_box = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
         node_box.add_css_class("rounded_bottom");
-
         node_expander.set_child(node_box);
 
         base.add_child(node_expander);
     }
 
-    private Gtk.Widget node_header(GLib.Icon? icon) {
-        this.title_bar = new Data.TitleBar(n.name);
+    private Gtk.Widget node_header(
+        CanvasNode node, 
+        GLib.Icon? icon, 
+        CanvasNodeTitleWidgetBuilder title_widget_builder) 
+    {
+        var title_bar = new Data.TitleBar(title_widget_builder.build_title_widget(node));
         title_bar.hexpand = true;
-        add_icon(icon);
-        add_delete_button();
-        add_color_chooser();
-
+        add_icon(title_bar, icon);
+        add_delete_button(title_bar);
+        add_color_chooser(title_bar);
         return title_bar;
     }
 
-    private void add_delete_button () {
+    private void add_delete_button (Data.TitleBar title_bar) {
         this.delete_button = new Gtk.Button();
         delete_button.add_css_class("destructive-action");
         delete_button.set_icon_name("window-close-symbolic");
@@ -154,14 +167,14 @@ public class CanvasDisplayNode : GtkFlow.Node {
         removed(this);
     }
 
-    private void add_icon(GLib.Icon? icon) {
+    private void add_icon(Data.TitleBar title_bar, GLib.Icon? icon) {
         if (icon == null) {
             return;
         }
         title_bar.append_left(new Gtk.Image.from_gicon(icon));
     }
 
-    private void add_color_chooser() {
+    private void add_color_chooser(Data.TitleBar title_bar) {
         this.color_chooser_button = new Gtk.ColorButton();
         color_chooser_button.color_set.connect(() => {
             change_background_color(color_chooser_button.get_rgba());
@@ -254,7 +267,6 @@ public class CanvasDisplayNode : GtkFlow.Node {
             set_sensitive(true);
         }
     }
-
 }
 
 public class CanvasNodeSink : GFlow.SimpleSink {
