@@ -18,6 +18,35 @@ private Gtk.Widget gegl_load_title_override(Gegl.Operation operation) {
     return label;
 }
 
+private GLib.ListStore build_pixbuf_filters() {
+    var filters = new GLib.ListStore(typeof(Gtk.FileFilter));
+
+    var all_images_filter = new Gtk.FileFilter();
+    all_images_filter.name = "All supported image files";
+    foreach (var fmt in Gdk.Pixbuf.get_formats()) {
+        foreach (var ext in fmt.get_extensions()) {
+            all_images_filter.add_pattern(@"*.$ext");
+        }
+    }
+    filters.append(all_images_filter);
+
+    foreach (var fmt in Gdk.Pixbuf.get_formats()) {
+        var f = new Gtk.FileFilter();
+        f.name = fmt.get_description();
+
+        foreach (var ext in fmt.get_extensions()) {
+            f.add_pattern(@"*.$ext");
+        }
+
+        foreach (var mime in fmt.get_mime_types()) {
+            f.add_mime_type(mime);
+        }
+
+        filters.append(f);
+    }
+    return filters;
+}
+
 public string initialize_image_plugin(Plugin.PluginContribution plugin_contribution, string[] args) {
     Gegl.config().application_license = "GPL3";
     Gegl.init(ref args);
@@ -69,9 +98,10 @@ public string initialize_image_plugin(Plugin.PluginContribution plugin_contribut
 
     // overrides
     Image.GeglOperationOverrides.override_operation("gegl:load", overrides => {
-        overrides.override_title(gegl_load_title_override);
-        overrides.override_property("path", (param_spec) => {
-          return new Data.FileLocationProperty(param_spec as ParamSpecString);
+    overrides.override_title(gegl_load_title_override);
+    overrides.override_property("path", (param_spec) => {
+            var filters = build_pixbuf_filters();
+            return new Data.FileLocationProperty.with_file_filters(param_spec as ParamSpecString, filters);
         });
     });
 
