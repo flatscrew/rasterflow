@@ -25,11 +25,11 @@
     {
       "model" : {      },
       "builder_id" : "image:display",
-      "width" : 308,
-      "height" : 513,
-      "expanded" : true,
-      "position_x" : 1839,
-      "position_y" : 58
+      "width" : 153,
+      "height" : 85,
+      "expanded" : false,
+      "position_x" : 2038,
+      "position_y" : 217
     },
     {
       "model" : {
@@ -39,20 +39,22 @@
         "x" : 0.69999999999999996
       },
       "builder_id" : "gegl:scale-ratio",
-      "width" : 211,
-      "height" : 265,
+      "width" : 294,
+      "height" : 303,
       "expanded" : true,
-      "position_x" : 661,
-      "position_y" : 377
+      "position_x" : 668,
+      "position_y" : 628
     },
     {
-      "model" : {      },
+      "model" : {
+        "srgb" : false
+      },
       "builder_id" : "svg:src-over",
       "width" : 203,
       "height" : 143,
       "expanded" : false,
-      "position_x" : 1185,
-      "position_y" : 69
+      "position_x" : 1258,
+      "position_y" : 74
     },
     {
       "model" : {
@@ -66,8 +68,8 @@
       "width" : 211,
       "height" : 265,
       "expanded" : true,
-      "position_x" : 952,
-      "position_y" : 337
+      "position_x" : 921,
+      "position_y" : 267
     },
     {
       "model" : {
@@ -77,19 +79,40 @@
       "width" : 201,
       "height" : 265,
       "expanded" : true,
-      "position_x" : 382,
-      "position_y" : 403
+      "position_x" : 461,
+      "position_y" : 225
     },
     {
       "model" : {
         "limit-exposure" : false
       },
       "builder_id" : "gegl:bloom",
-      "width" : 291,
-      "height" : 494,
+      "width" : 125,
+      "height" : 114,
+      "expanded" : false,
+      "position_x" : 1816,
+      "position_y" : 62
+    },
+    {
+      "model" : {
+        "size-x" : 11,
+        "size-y" : 16
+      },
+      "builder_id" : "gegl:pixelize",
+      "width" : 228,
+      "height" : 265,
       "expanded" : true,
-      "position_x" : 1386,
-      "position_y" : 379
+      "position_x" : 1535,
+      "position_y" : 294
+    },
+    {
+      "model" : {      },
+      "builder_id" : "image:display",
+      "width" : 153,
+      "height" : 85,
+      "expanded" : false,
+      "position_x" : 1919,
+      "position_y" : 504
     }
   ],
   "links" : [
@@ -130,6 +153,10 @@
         {
           "node_index" : 7,
           "sink_name" : "Input"
+        },
+        {
+          "node_index" : 8,
+          "sink_name" : "Input"
         }
       ]
     },
@@ -159,7 +186,17 @@
       "sinks" : [
         {
           "node_index" : 2,
-          "sink_name" : "GEGL node"
+          "sink_name" : "Input"
+        }
+      ]
+    },
+    {
+      "node_index" : 8,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 9,
+          "sink_name" : "Input"
         }
       ]
     }

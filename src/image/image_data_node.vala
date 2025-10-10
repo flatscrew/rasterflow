@@ -29,6 +29,11 @@ namespace Image {
         private Gtk.Box render_button_control;
         private Gtk.Button reset_zoom_button;
 
+        private Gtk.Switch window_switch;
+        private Gtk.Entry window_title_entry;
+        private Gtk.Label title_label;
+        private ExternalImageWindow? external_window;
+        private bool external_window_active;
         private Gdk.Pixbuf? current_image;
 
         public ImageDataDisplayNode(string builder_id, ImageDataNode data_node) {
@@ -54,24 +59,25 @@ namespace Image {
         }
 
         private void create_window_display_section() {
-            var window_switch = new Gtk.Switch();
-            window_switch.valign = Gtk.Align.CENTER;
-
             var window_label = new Gtk.Label("Show in window");
             window_label.valign = Gtk.Align.CENTER;
 
-            var title_label = new Gtk.Label("Title:");
+            this.title_label = new Gtk.Label("Title:");
             title_label.visible = false;
             title_label.valign = Gtk.Align.CENTER;
 
-            var window_title_entry = new Gtk.Entry();
+            this.window_title_entry = new Gtk.Entry();
             window_title_entry.placeholder_text = "Image window";
+            window_title_entry.text = "Image window";
             window_title_entry.hexpand = true;
             window_title_entry.visible = false;
             window_title_entry.valign = Gtk.Align.CENTER;
+            window_title_entry.changed.connect(() => {
+                if (external_window != null)
+                    external_window.set_title_text(window_title_entry.text);
+            });
 
-            window_switch.bind_property("active", window_title_entry, "visible", BindingFlags.DEFAULT | BindingFlags.SYNC_CREATE);
-            window_switch.bind_property("active", title_label, "visible", BindingFlags.DEFAULT | BindingFlags.SYNC_CREATE);
+            create_window_switch();
 
             var window_display_section = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 8);
             set_margin(window_display_section, 8);
@@ -87,6 +93,30 @@ namespace Image {
 
         private void set_margin(Gtk.Widget widget, int margin) {
             widget.margin_start = widget.margin_end = widget.margin_top = widget.margin_bottom = margin;
+        }
+
+        private void create_window_switch() {
+            this.window_switch = new Gtk.Switch();
+            window_switch.valign = Gtk.Align.CENTER;
+            window_switch.bind_property("active", window_title_entry, "visible", BindingFlags.DEFAULT | BindingFlags.SYNC_CREATE);
+            window_switch.bind_property("active", title_label, "visible", BindingFlags.DEFAULT | BindingFlags.SYNC_CREATE);
+            window_switch.notify["active"].connect(() => {
+                if (window_switch.active) {
+                    this.external_window_active = true;
+                    if (external_window == null) {
+                        external_window = new ExternalImageWindow(window_title_entry.text);
+                        external_window.present();
+                    }
+                    if (current_image != null)
+                        external_window.display_pixbuf(current_image);
+                } else {
+                    this.external_window_active = false;
+                    if (external_window != null) {
+                        external_window.destroy();
+                        external_window = null;
+                    }
+                }
+            });
         }
 
         private void create_zoom_control() {
@@ -110,7 +140,6 @@ namespace Image {
             render_button.set_icon_name("media-playback-start");
             this.render_button_control = data_display_view.add_action_bar_child_start(render_button);
         }
-
 
         private void listen_data_node_changes(ImageDataNode data_node) {
             data_node.image_changed.connect(this.image_changed);
@@ -142,7 +171,7 @@ namespace Image {
                 image_added(pixbuf);
                 return;
             }
-            image_replaced(value as Gdk.Pixbuf);
+            replace_image(value as Gdk.Pixbuf);
         }
 
         private void image_removed() {
@@ -158,20 +187,22 @@ namespace Image {
         }
         
         private void image_added(Gdk.Pixbuf added_image) {
-            this.current_image = added_image;
-            this.image_viewer.replace_image(added_image);
+            replace_image(added_image);
             
             this.temporary_label.visible = false;
             this.panning_area.visible = true;
-            panning_area.refresh();
 
             create_zoom_control();
             create_save_button();
         }
         
-        private void image_replaced(Gdk.Pixbuf replaced_image) {
-            this.current_image = replaced_image;
+        private void replace_image(Gdk.Pixbuf replaced_image) {
+            if (external_window_active) {
+                external_window.display_pixbuf(replaced_image);
+                return;
+            }
 
+            this.current_image = replaced_image;
             image_viewer.replace_image(replaced_image);
             panning_area.refresh();
         }
