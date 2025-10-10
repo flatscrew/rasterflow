@@ -75,6 +75,7 @@ vala_sources = [
     'src/image/image_data_node.vala',
     'src/image/image_file_data_node.vala',
     'src/image/image_viewer.vala',
+    'src/image/image_processing_realtime_mode_switch.vala',
     'src/image/gegl_operation_node.vala',
     'src/image/gegl_operation_overrides.vala',
     'src/image/gegl_file_load_title.vala',

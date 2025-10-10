@@ -131,6 +131,8 @@ namespace Image {
 
     public class GeglOperationNode : CanvasNode, GeglProcessor {
         private string gegl_operation;
+        private ImageProcessingRealtimeGuard realtime_guard;
+        private bool realtime_processing;
         internal Gegl.Node gegl_node {
             get;
             private set;
@@ -144,10 +146,17 @@ namespace Image {
         public GeglOperationNode(string node_name, string gegl_operation) {
             base(node_name);
             this.gegl_operation = gegl_operation;
-        
+            this.realtime_guard = ImageProcessingRealtimeGuard.instance;
+            this.realtime_processing = realtime_guard.enabled;
+            this.realtime_guard.mode_changed.connect(this.realtime_mode_changed);
+
             create_gegl_node();
             create_sinks();
             create_sources();
+        }
+
+        private void realtime_mode_changed(bool is_realtime) {
+            this.realtime_processing = is_realtime;
         }
 
         private void create_gegl_node() {
@@ -163,7 +172,7 @@ namespace Image {
             foreach (string padname in gegl_node.list_input_pads()) {
                 var sink = new PadSink(gegl_node, padname);
                 sink.name = padname[0].to_string().up().concat(padname.substring(1));
-                //  sink.updated.connect(this.process_gegl);
+                sink.updated.connect(this.process_gegl);
                 this.add_sink(sink);
             }
         }
@@ -177,34 +186,35 @@ namespace Image {
         }
 
         internal void process_gegl() {
-            //  var has_connected_sinks = false;
-            //  foreach (var source in get_sources()) {
-            //      if (source.sinks.length() > 0) {
-            //          has_connected_sinks = true;
-            //          break;
-            //      }
-            //  }
-            //  if (!has_connected_sinks) {
-            //      if (get_sources().length() == 0) {
-            //          gegl_node.process();
-            //      } else {
-            //          debug("no connected sinks for node %s!\n", name);
-            //      }
-            //      return;
-            //  }
+            if (!realtime_processing) return;
 
-            //  // sending notification to all other connected nodes
-            //  foreach (var source in get_sources()) {
-            //      if (!(source is PadSource)) {
-            //          continue;
-            //      }
-            //      var pad_source = source as PadSource;
-            //      foreach (var sink in pad_source.sinks) {
-            //          var target_node = sink.node as GeglProcessor;
-            //          print("Forwarding processing to: %s\n", sink.node.name);
-            //          target_node.process_gegl();
-            //      }
-            //  }
+            var has_connected_sinks = false;
+            foreach (var source in get_sources()) {
+                if (source.sinks.length() > 0) {
+                    has_connected_sinks = true;
+                    break;
+                }
+            }
+            if (!has_connected_sinks) {
+                if (get_sources().length() == 0) {
+                    gegl_node.process();
+                } else {
+                    debug("no connected sinks for node %s!\n", name);
+                }
+                return;
+            }
+
+            // sending notification to all other connected nodes
+            foreach (var source in get_sources()) {
+                if (!(source is PadSource)) {
+                    continue;
+                }
+                var pad_source = source as PadSource;
+                foreach (var sink in pad_source.sinks) {
+                    var target_node = sink.node as GeglProcessor;
+                    target_node.process_gegl();
+                }
+            }
         }
 
         private void remove_from_graph() {
@@ -284,6 +294,7 @@ namespace Image {
             scrolled_window.set_placement(Gtk.CornerType.TOP_RIGHT);
 
             var properties_editor = new Data.DataPropertiesEditor(operation);
+            properties_editor.data_property_changed.connect(this.property_changed);
             properties_editor.populate_properties(
                 () => true,
                 compose_overrides
@@ -306,6 +317,11 @@ namespace Image {
 
         internal void set_gegl_property(string name, GLib.Value value) {
             gegl_operation_node.get_gegl_operation().set_property(name, value);
+        }
+
+        private void property_changed(string property_name, GLib.Value property_value) {
+            unowned var node = n as GeglOperationNode;
+            node.process_gegl();
         }
     }
 }
