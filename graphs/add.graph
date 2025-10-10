@@ -8,9 +8,10 @@
         }
       },
       "builder_id" : "gegl:color",
-      "width" : 203,
-      "height" : 232,
+      "width" : 232,
+      "height" : 236,
       "expanded" : true,
+      "color" : "rgb(165,29,45)",
       "position_x" : 37,
       "position_y" : 39
     },
@@ -22,17 +23,18 @@
         }
       },
       "builder_id" : "gegl:color",
-      "width" : 203,
-      "height" : 232,
+      "width" : 232,
+      "height" : 236,
       "expanded" : true,
+      "color" : "rgb(38,162,105)",
       "position_x" : 40,
       "position_y" : 318
     },
     {
       "model" : {      },
       "builder_id" : "gegl:add",
-      "width" : 244,
-      "height" : 290,
+      "width" : 242,
+      "height" : 294,
       "expanded" : true,
       "position_x" : 294,
       "position_y" : 147
@@ -43,8 +45,8 @@
         "height" : 20.0
       },
       "builder_id" : "gegl:crop",
-      "width" : 286,
-      "height" : 418,
+      "width" : 284,
+      "height" : 416,
       "expanded" : true,
       "position_x" : 584,
       "position_y" : 97
@@ -52,8 +54,8 @@
     {
       "model" : {      },
       "builder_id" : "image:display",
-      "width" : 513,
-      "height" : 498,
+      "width" : 511,
+      "height" : 496,
       "expanded" : true,
       "position_x" : 969,
       "position_y" : 66

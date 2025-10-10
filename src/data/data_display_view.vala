@@ -55,7 +55,6 @@ namespace Data {
 
             node_with_properties.set_start_child(details_scroll_window);
             node_with_properties.set_end_child(node_box);
-
             node_with_properties.set_parent(this);
         }
 

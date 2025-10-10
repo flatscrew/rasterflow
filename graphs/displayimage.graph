@@ -1,0 +1,36 @@
+{
+  "nodes" : [
+    {
+      "model" : {
+        "path" : "/home/activey/Pictures/exterior1.jpeg"
+      },
+      "builder_id" : "gegl:load",
+      "width" : 166,
+      "height" : 85,
+      "expanded" : false,
+      "position_x" : 206,
+      "position_y" : 121
+    },
+    {
+      "model" : {      },
+      "builder_id" : "image:display",
+      "width" : 432,
+      "height" : 539,
+      "expanded" : true,
+      "position_x" : 690,
+      "position_y" : 120
+    }
+  ],
+  "links" : [
+    {
+      "node_index" : 0,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 1,
+          "sink_name" : "Input"
+        }
+      ]
+    }
+  ]
+}

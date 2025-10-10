@@ -50,13 +50,15 @@ namespace Image {
         }
 
         public ImageViewer(Gdk.Pixbuf pixbuf) {
-            this.with_max_zoom(pixbuf, DEFAULT_ZOOM_MAX);
+            this.with_max_zoom(DEFAULT_ZOOM_MAX, pixbuf);
         }
 
-        public ImageViewer.with_max_zoom(Gdk.Pixbuf pixbuf, double zoom_max) {
-            this.pixbuf = pixbuf;
-            this.texture = Gdk.Texture.for_pixbuf (this.pixbuf);
+        public ImageViewer.with_max_zoom(double zoom_max, Gdk.Pixbuf? pixbuf = null) {
             this.zoom_max = zoom_max;
+            if (pixbuf != null) {
+                this.pixbuf = pixbuf;
+                this.texture = Gdk.Texture.for_pixbuf (this.pixbuf);
+            }
 
             this.realize.connect(() => {
                 this.queue_draw();

@@ -70,15 +70,7 @@ public string initialize_image_plugin(Plugin.PluginContribution plugin_contribut
         node_factory.register(new Image.ImageDataDisplayNodeBuilder(),
           typeof(Gdk.Pixbuf)
         );
-        //  node_factory.register(new Image.ImageResizeNodeBuilder(),
-        //    typeof(Gdk.Pixbuf)
-        //  );
-        //  node_factory.register(new Image.ImageOCRNodeBuilder(),
-        //    typeof(Gdk.Pixbuf)
-        //  );
-
         Image.GeglOperationsFactory.register_gegl_operations(node_factory);
-        // TODO register title override for gegl:load
     });
 
     // serializers
