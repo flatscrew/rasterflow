@@ -193,7 +193,6 @@ namespace Data {
         }
 
         private void property_changed(string property_name, GLib.Value property_value) {
-            debug("property changed: %s\n", property_name);
             property_value_changed(property_name, property_value);
         }
     }
