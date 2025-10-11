@@ -73,36 +73,12 @@ namespace Image {
         }
 
         public ExternalWindowDimensions get_dimensions() {
-            int x, y, width, height = 0;
-
-            var surface = get_surface();
-            if (surface is Gdk.X11.Surface) {
-                var x11_surface = surface as Gdk.X11.Surface;
-                var display = get_display() as Gdk.X11.Display;
-                var xid = x11_surface.get_xid();
-                unowned var xdisplay = display.get_xdisplay();
-
-                X.Window root;
-                uint w, h, border, depth;
-                xdisplay.get_geometry(xid, out root, out x, out y, out w, out h, out border, out depth);
-
-                int root_x, root_y;
-                X.Window child_return;
-                xdisplay.translate_coordinates(xid, root, 0, 0, out root_x, out root_y, out child_return);
-
-                width = (int) w;
-                height = (int) h;
-                x = root_x;
-                y = root_y;
-            } else {
-                x = y = width = height = 0;
-            }
-
-            return ExternalWindowDimensions(){
-                x = x,
-                y = y,
-                width = width,
-                height = height
+            var geom = WindowGeometryManager.get_geometry(this);
+            return ExternalWindowDimensions() {
+                x = geom.x,
+                y = geom.y,
+                width = geom.width,
+                height = geom.height
             };
         }
     }
