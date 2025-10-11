@@ -34,7 +34,6 @@ namespace Image {
             var box = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
             box.append(data_display_view);
 
-
             set_child(box);
         }
 
@@ -80,6 +79,15 @@ namespace Image {
                 width = geom.width,
                 height = geom.height
             };
+        }
+
+        public void set_dimensions(int x, int y, int width, int height) {
+            WindowGeometryManager.set_geometry(this, Image.WindowGeometry() {
+                x = x,
+                y = y,
+                width = width,
+                height = height
+            });
         }
     }
 }

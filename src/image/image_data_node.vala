@@ -16,8 +16,6 @@ namespace Image {
     }
 
     class ImageDataDisplayNode : CanvasDisplayNode {
-
-
         private Data.DataDisplayView data_display_view;
         private ImageViewerPanningArea? panning_area;
         private ImageViewer? image_viewer;
@@ -30,16 +28,17 @@ namespace Image {
         private Gtk.Button reset_zoom_button;
 
         private Gtk.Switch window_switch;
+        private bool window_switch_listen_events;
         private Gtk.Entry window_title_entry;
         private Gtk.Label title_label;
         private ExternalImageWindow? external_window;
+        private ExternalWindowDimensions? last_window_dimensions;
         private bool external_window_active;
         private Gdk.Pixbuf? current_image;
 
         public ImageDataDisplayNode(string builder_id, ImageDataNode data_node) {
             base (builder_id, data_node, new GtkFlow.NodeDockLabelWidgetFactory(data_node));
             build_default_title();
-            data_node.set_external_window_state(this.read_external_window_state);
 
             this.data_display_view = new Data.DataDisplayView();
             this.data_display_view.action_bar_visible = true;
@@ -101,24 +100,46 @@ namespace Image {
             window_switch.valign = Gtk.Align.CENTER;
             window_switch.bind_property("active", window_title_entry, "visible", BindingFlags.DEFAULT | BindingFlags.SYNC_CREATE);
             window_switch.bind_property("active", title_label, "visible", BindingFlags.DEFAULT | BindingFlags.SYNC_CREATE);
-            window_switch.notify["active"].connect(() => {
-                if (window_switch.active) {
-                    this.external_window_active = true;
+            window_switch.notify["active"].connect(external_window_switch_changed);
 
-                    if (external_window == null) {
-                        external_window = new ExternalImageWindow(window_title_entry.text);
-                        external_window.present();
-                    }
-                    if (current_image != null)
-                        external_window.display_pixbuf(current_image);
-                } else {
-                    this.external_window_active = false;
-                    if (external_window != null) {
-                        external_window.destroy();
-                        external_window = null;
+            this.window_switch_listen_events = true;
+        }
+
+        private void external_window_switch_changed() {
+            if (!window_switch_listen_events) return;
+
+            if (window_switch.active) {
+                this.external_window_active = true;
+
+                if (external_window == null) {
+                    external_window = new ExternalImageWindow(window_title_entry.text);
+                    external_window.close_request.connect(handle_window_close);
+                    external_window.present();
+
+                    if (last_window_dimensions != null) {
+                        external_window.set_dimensions(
+                            last_window_dimensions.x,
+                            last_window_dimensions.y,
+                            last_window_dimensions.width,
+                            last_window_dimensions.height
+                        );
                     }
                 }
-            });
+                if (current_image != null)
+                    external_window.display_pixbuf(current_image);
+            } else {
+                this.external_window_active = false;
+                if (external_window != null) {
+                    external_window.destroy();
+                    external_window = null;
+                }
+            }
+        }
+
+        private bool handle_window_close() {
+            this.last_window_dimensions = read_external_window_state().dimensions;
+            window_switch.active = false;
+            return false;
         }
 
         private void create_zoom_control() {
@@ -227,6 +248,59 @@ namespace Image {
                 dimensions = external_window?.get_dimensions()
             };
         }
+
+        public override void serialize(Serialize.SerializedObject serializer) {
+            base.serialize(serializer);
+
+            var state = read_external_window_state();
+
+            var external_window_settings = serializer.new_object("external-window");
+            external_window_settings.set_bool("active", state.active);
+            external_window_settings.set_string("title", state.title);
+
+            if (state.dimensions == null) return;
+
+            var dimensions = state.dimensions;
+            var window_dimensions = external_window_settings.new_object("dimensions");
+            window_dimensions.set_int("x", dimensions.x);
+            window_dimensions.set_int("y", dimensions.y);
+            window_dimensions.set_int("width", (int) dimensions.width);
+            window_dimensions.set_int("height", (int) dimensions.height);
+        }
+
+        public override void deserialize(Serialize.DeserializedObject deserializer) {
+            base.deserialize(deserializer);
+
+            this.window_switch_listen_events = false;
+
+            var external_window_settings = deserializer.get_object("external-window");
+            var active = external_window_settings.get_bool("active", false);
+            if (active) {
+                this.external_window_active = true;
+                this.window_switch.active = true;
+                
+                this.external_window = new ExternalImageWindow(window_title_entry.text);
+                this.external_window.close_request.connect(handle_window_close);
+                this.external_window.present();
+
+                var dimensions = external_window_settings.get_object("dimensions");
+                if (dimensions != null) {
+                    var x = dimensions.get_int("x", 0);
+                    var y = dimensions.get_int("y", 0);
+                    var width = dimensions.get_int("width", 0);
+                    var height = dimensions.get_int("height", 0);
+
+                    this.last_window_dimensions = ExternalWindowDimensions() {
+                        x = x,
+                        y = y,
+                        width = width,
+                        height = height
+                    };
+                    this.external_window.set_dimensions(x, y, width, height);
+                }
+            }
+            this.window_switch_listen_events = true;
+        }
     }
 
     public struct ExternalWindowSate {
@@ -249,11 +323,6 @@ namespace Image {
         private PadSink gegl_node_sink;
         private Gegl.Node save_as_pixbuf_node;
 
-        private ExternalWindowStateDelegate external_window_state_delegate;
-        //  private bool external_window_active;
-        //  private string external_window_title;
-        //  private ExternalWindowDimensions external_window_dimensions;
-        
         ~ImageDataNode() {
             GeglContext.rootNode().remove_child(this.save_as_pixbuf_node);
         }
@@ -275,10 +344,6 @@ namespace Image {
 
         private void realtime_mode_changed(bool is_realtime) {
             this.realtime_processing = is_realtime;
-        }
-
-        public void set_external_window_state(ExternalWindowStateDelegate state_delegate) {
-            this.external_window_state_delegate = state_delegate;
         }
 
         public void trigger_process_gegl() {
@@ -312,32 +377,6 @@ namespace Image {
                 return;
             }
             image_changed(value as Gdk.Pixbuf);
-        }
-
-        protected override void serialize(Serialize.SerializedObject serializer) {
-            base.serialize(serializer);
-            if (external_window_state_delegate == null) return;
-
-            var state = external_window_state_delegate();
-
-            var external_window_settings = serializer.new_object("external-window");
-            external_window_settings.set_bool("active", state.active);
-            external_window_settings.set_string("title", state.title);
-
-            if (state.dimensions == null) return;
-
-            var dimensions = state.dimensions;
-            var window_dimensions = external_window_settings.new_object("dimensions");
-            window_dimensions.set_int("x", dimensions.x);
-            window_dimensions.set_int("y", dimensions.y);
-            window_dimensions.set_int("width", (int) dimensions.width);
-            window_dimensions.set_int("height", (int) dimensions.height);
-        }
-
-        protected override void deserialize(Serialize.DeserializedObject deserializer) {
-            //  deserializer.for_each_property((name, value) => {
-            //      gegl_node.set_property(name, value);
-            //  });
         }
     }
 }

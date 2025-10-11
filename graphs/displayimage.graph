@@ -12,24 +12,23 @@
       "position_y" : 216
     },
     {
-      "model" : {
-        "external-window" : {
-          "active" : true,
-          "title" : "Image window",
-          "dimensions" : {
-            "x" : 933,
-            "y" : 631,
-            "width" : 600,
-            "height" : 400
-          }
-        }
-      },
+      "model" : {      },
       "builder_id" : "image:display",
-      "width" : 410,
-      "height" : 517,
+      "width" : 396,
+      "height" : 503,
       "expanded" : true,
       "position_x" : 998,
-      "position_y" : 308
+      "position_y" : 308,
+      "external-window" : {
+        "active" : true,
+        "title" : "Image window",
+        "dimensions" : {
+          "x" : 870,
+          "y" : 145,
+          "width" : 1140,
+          "height" : 1124
+        }
+      }
     }
   ],
   "links" : [
