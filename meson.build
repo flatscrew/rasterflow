@@ -8,6 +8,8 @@ conf.set('version', app_version)
 
 if host_machine.system() == 'windows'
   add_project_arguments('--define=WIN32', language : 'vala')
+elif host_machine.system() == 'linux'
+  add_project_arguments('--define=LINUX', language : 'vala')
 endif
 
 gnome = import('gnome')
@@ -25,7 +27,7 @@ dependencies = [
     dependency('gegl-0.4'),
 ]
 
-if host_machine.system() != 'windows'
+if host_machine.system() == 'linux'
   dependencies += [
     dependency('gtk4-x11'),
     dependency('x11')

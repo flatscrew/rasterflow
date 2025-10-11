@@ -13,10 +13,10 @@ namespace Image {
     public class WindowGeometryManager : Object {
 
         public static WindowGeometry get_geometry(Gtk.Window window) {
-            int x = 0, y = 0, width = 0, height = 0;
+            int x = 0, y = 0, width = window.get_width(), height = window.get_height();
             var surface = window.get_surface();
 
-    #if UNIX
+    #if LINUX
             if (surface is Gdk.X11.Surface) {
                 var x11_surface = surface as Gdk.X11.Surface;
                 var display = window.get_display() as Gdk.X11.Display;
@@ -48,7 +48,7 @@ namespace Image {
         public static void set_geometry(Gtk.Window window, WindowGeometry geom) {
             var surface = window.get_surface();
 
-    #if UNIX
+    #if LINUX
             if (surface is Gdk.X11.Surface) {
                 var x11_surface = surface as Gdk.X11.Surface;
                 var display = window.get_display() as Gdk.X11.Display;

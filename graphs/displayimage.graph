@@ -17,16 +17,16 @@
           "active" : true,
           "title" : "Image window",
           "dimensions" : {
-            "x" : 33,
-            "y" : 137,
-            "width" : 897,
-            "height" : 940
+            "x" : 933,
+            "y" : 631,
+            "width" : 600,
+            "height" : 400
           }
         }
       },
       "builder_id" : "image:display",
-      "width" : 414,
-      "height" : 521,
+      "width" : 410,
+      "height" : 517,
       "expanded" : true,
       "position_x" : 998,
       "position_y" : 308
