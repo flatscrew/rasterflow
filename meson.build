@@ -18,7 +18,9 @@ dependencies = [
     dependency('gee-0.8'),
     dependency('gio-2.0'),
     dependency('json-glib-1.0'),
-    dependency('gegl-0.4')
+    dependency('gegl-0.4'),
+    dependency('gtk4-x11'),
+    dependency('x11')
 ]
 
 # generating runtime binary

@@ -5,20 +5,31 @@
         "path" : "/home/activey/Pictures/exterior1.jpeg"
       },
       "builder_id" : "gegl:load",
-      "width" : 166,
-      "height" : 85,
-      "expanded" : false,
-      "position_x" : 206,
-      "position_y" : 121
+      "width" : 280,
+      "height" : 236,
+      "expanded" : true,
+      "position_x" : 175,
+      "position_y" : 216
     },
     {
-      "model" : {      },
+      "model" : {
+        "external-window" : {
+          "active" : true,
+          "title" : "Image window",
+          "dimensions" : {
+            "x" : 33,
+            "y" : 137,
+            "width" : 897,
+            "height" : 940
+          }
+        }
+      },
       "builder_id" : "image:display",
-      "width" : 432,
-      "height" : 539,
+      "width" : 414,
+      "height" : 521,
       "expanded" : true,
-      "position_x" : 690,
-      "position_y" : 120
+      "position_x" : 998,
+      "position_y" : 308
     }
   ],
   "links" : [

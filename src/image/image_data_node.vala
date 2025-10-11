@@ -17,8 +17,8 @@ namespace Image {
 
     class ImageDataDisplayNode : CanvasDisplayNode {
 
-        private Data.DataDisplayView data_display_view;
 
+        private Data.DataDisplayView data_display_view;
         private ImageViewerPanningArea? panning_area;
         private ImageViewer? image_viewer;
         private Gtk.Label? temporary_label; 
@@ -39,7 +39,8 @@ namespace Image {
         public ImageDataDisplayNode(string builder_id, ImageDataNode data_node) {
             base (builder_id, data_node, new GtkFlow.NodeDockLabelWidgetFactory(data_node));
             build_default_title();
-            
+            data_node.set_external_window_state(this.read_external_window_state);
+
             this.data_display_view = new Data.DataDisplayView();
             this.data_display_view.action_bar_visible = true;
             add_child(data_display_view);
@@ -103,6 +104,7 @@ namespace Image {
             window_switch.notify["active"].connect(() => {
                 if (window_switch.active) {
                     this.external_window_active = true;
+
                     if (external_window == null) {
                         external_window = new ExternalImageWindow(window_title_entry.text);
                         external_window.present();
@@ -217,7 +219,23 @@ namespace Image {
              save_button.set_icon_name("document-save");
              this.save_button_control = data_display_view.add_action_bar_child_start(save_button);
         }
+
+        private ExternalWindowSate? read_external_window_state() {
+            return ExternalWindowSate() {
+                active = external_window_active,
+                title = external_window?.get_title(),
+                dimensions = external_window?.get_dimensions()
+            };
+        }
     }
+
+    public struct ExternalWindowSate {
+        public bool active;
+        public string? title;
+        public ExternalWindowDimensions? dimensions;
+    }
+
+    public delegate ExternalWindowSate? ExternalWindowStateDelegate(); 
 
     class ImageDataNode : CanvasNode, GeglProcessor {
 
@@ -231,6 +249,11 @@ namespace Image {
         private PadSink gegl_node_sink;
         private Gegl.Node save_as_pixbuf_node;
 
+        private ExternalWindowStateDelegate external_window_state_delegate;
+        //  private bool external_window_active;
+        //  private string external_window_title;
+        //  private ExternalWindowDimensions external_window_dimensions;
+        
         ~ImageDataNode() {
             GeglContext.rootNode().remove_child(this.save_as_pixbuf_node);
         }
@@ -252,6 +275,10 @@ namespace Image {
 
         private void realtime_mode_changed(bool is_realtime) {
             this.realtime_processing = is_realtime;
+        }
+
+        public void set_external_window_state(ExternalWindowStateDelegate state_delegate) {
+            this.external_window_state_delegate = state_delegate;
         }
 
         public void trigger_process_gegl() {
@@ -285,6 +312,32 @@ namespace Image {
                 return;
             }
             image_changed(value as Gdk.Pixbuf);
+        }
+
+        protected override void serialize(Serialize.SerializedObject serializer) {
+            base.serialize(serializer);
+            if (external_window_state_delegate == null) return;
+
+            var state = external_window_state_delegate();
+
+            var external_window_settings = serializer.new_object("external-window");
+            external_window_settings.set_bool("active", state.active);
+            external_window_settings.set_string("title", state.title);
+
+            if (state.dimensions == null) return;
+
+            var dimensions = state.dimensions;
+            var window_dimensions = external_window_settings.new_object("dimensions");
+            window_dimensions.set_int("x", dimensions.x);
+            window_dimensions.set_int("y", dimensions.y);
+            window_dimensions.set_int("width", (int) dimensions.width);
+            window_dimensions.set_int("height", (int) dimensions.height);
+        }
+
+        protected override void deserialize(Serialize.DeserializedObject deserializer) {
+            //  deserializer.for_each_property((name, value) => {
+            //      gegl_node.set_property(name, value);
+            //  });
         }
     }
 }
