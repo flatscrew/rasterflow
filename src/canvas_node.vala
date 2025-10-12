@@ -76,9 +76,6 @@ public class CanvasDisplayNode : GtkFlow.Node {
     private string builder_id;
     private Gdk.RGBA? node_color;
 
-    private int old_width;
-    private int old_height;
-
     public bool can_delete {
         set {
             delete_button.sensitive = value;
@@ -183,14 +180,12 @@ public class CanvasDisplayNode : GtkFlow.Node {
     private void remove_node() {
         debug("references: %u\n", this.ref_count);
 
-        var parent = this.parent as GtkFlow.NodeView;
-
         this.remove();
         removed(this);
-
+        
         int x, y;
         get_position(out x, out y);
-
+        var parent = this.parent as GtkFlow.NodeView;
         changes_recorder.record(new History.RemoveNodeAction(parent, this, x, y));
     }
 
