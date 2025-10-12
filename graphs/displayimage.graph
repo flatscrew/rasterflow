@@ -6,27 +6,27 @@
       },
       "builder_id" : "gegl:load",
       "width" : 280,
-      "height" : 236,
+      "height" : 370,
       "expanded" : true,
-      "position_x" : 175,
-      "position_y" : 216
+      "position_x" : 48,
+      "position_y" : 94
     },
     {
       "model" : {      },
       "builder_id" : "image:display",
-      "width" : 396,
-      "height" : 503,
+      "width" : 390,
+      "height" : 497,
       "expanded" : true,
-      "position_x" : 998,
-      "position_y" : 308,
+      "position_x" : 387,
+      "position_y" : 99,
       "external-window" : {
         "active" : true,
-        "title" : "Image window",
+        "title" : "blebleeeeeeeeee",
         "dimensions" : {
-          "x" : 870,
-          "y" : 145,
-          "width" : 1140,
-          "height" : 1124
+          "x" : 1280,
+          "y" : 32,
+          "width" : 1280,
+          "height" : 1408
         }
       }
     }

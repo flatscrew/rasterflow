@@ -278,8 +278,9 @@ namespace Image {
             if (active) {
                 this.external_window_active = true;
                 this.window_switch.active = true;
+                this.window_title_entry.text = external_window_settings.get_string("title");
                 
-                this.external_window = new ExternalImageWindow(window_title_entry.text);
+                this.external_window = new ExternalImageWindow(external_window_settings.get_string("title"));
                 this.external_window.close_request.connect(handle_window_close);
                 this.external_window.present();
 

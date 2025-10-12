@@ -16,7 +16,7 @@ namespace Image {
         private Gtk.Box reset_zoom_control;
         private Gtk.Button reset_zoom_button;
 
-        public ExternalImageWindow(string title) {
+        public ExternalImageWindow(string title = "Image window") {
             Object(title: title);
             this.set_default_size(600, 400);
 
