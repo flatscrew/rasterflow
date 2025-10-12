@@ -182,8 +182,16 @@ public class CanvasDisplayNode : GtkFlow.Node {
 
     private void remove_node() {
         debug("references: %u\n", this.ref_count);
+
+        var parent = this.parent as GtkFlow.NodeView;
+
         this.remove();
         removed(this);
+
+        int x, y;
+        get_position(out x, out y);
+
+        changes_recorder.record(new History.RemoveNodeAction(parent, this, x, y));
     }
 
     private void add_icon(Data.TitleBar title_bar, GLib.Icon? icon) {
