@@ -11,7 +11,6 @@ class CanvasApplication : Gtk.Application {
 
   private CanvasView canvas_view;
   private CanvasHeaderbarWidgets header_widgets;
-
   private Gtk.ApplicationWindow? window;
 
   construct {
@@ -55,6 +54,7 @@ class CanvasApplication : Gtk.Application {
 
       this.window = new Gtk.ApplicationWindow(this);
       build_header_bar();
+      add_shortcuts(window);
 
       window.set_default_size(800, 600);
       window.set_child (canvas_view);
@@ -92,7 +92,8 @@ class CanvasApplication : Gtk.Application {
     load_save_box.append(canvas_view.create_save_graph_as_button());
     load_save_box.append(canvas_view.create_export_png_button());
 
-    headerbar.pack_start (load_save_box);
+    headerbar.pack_start(load_save_box);
+    headerbar.pack_start(new History.HistoryButtonsWidget());
     headerbar.pack_end(create_theme_variant_switch());
 
     add_header_widgets(headerbar);

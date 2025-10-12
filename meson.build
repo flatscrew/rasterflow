@@ -73,6 +73,7 @@ endif
 # vala sources
 vala_sources = [
     'src/main.vala',
+    'src/window_shortcuts.vala',
     'src/theme_variant_switch.vala',
     'src/data_drop_handler.vala',
     'src/canvas_view.vala',
@@ -119,7 +120,14 @@ vala_sources = [
     'src/text/plugin.vala',
     
     # plugins
-    'src/plugin/plugin_contribution.vala'
+    'src/plugin/plugin_contribution.vala',
+
+    # history
+    'src/history/history_action.vala',
+    'src/history/move_node_action.vala',
+    'src/history/history_action_stack.vala',
+    'src/history/history_of_changes.vala',
+    'src/history/history_buttons_widget.vala'
 ]
 
 executable(

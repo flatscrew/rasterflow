@@ -65,6 +65,7 @@ public class CanvasDisplayNode : GtkFlow.Node {
         
     public signal void removed(CanvasDisplayNode removed_node);
 
+    private History.HistoryOfChangesRecorder changes_recorder;
     private Gtk.Expander node_expander;
     private Gtk.Box node_box;
     private Gtk.Button delete_button;
@@ -91,6 +92,7 @@ public class CanvasDisplayNode : GtkFlow.Node {
         GtkFlow.NodeDockLabelWidgetFactory dock_label_factory = new GtkFlow.NodeDockLabelWidgetFactory(node)
     ) {
         base.with_margin(node, 0, dock_label_factory);
+        this.changes_recorder = History.HistoryOfChangesRecorder.instance;
         this.custom_backround_css = new Gtk.CssProvider();
         var css = "
         .gtkflow_node {
@@ -105,7 +107,12 @@ public class CanvasDisplayNode : GtkFlow.Node {
         this.get_style_context().add_provider(custom_backround_css, Gtk.STYLE_PROVIDER_PRIORITY_USER);
 
         this.builder_id = builder_id;
+        this.position_changed.connect(record_position_changed);
         create_node();
+    }
+
+    private void record_position_changed(int old_x, int old_y, int new_x, int new_y) {
+        changes_recorder.record_node_moved(this, old_x, old_y, new_x, new_y);
     }
 
     public void build_title(CanvasNodeTitleWidgetBuilder title_builder, GLib.Icon? icon = null) {
