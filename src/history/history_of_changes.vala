@@ -41,6 +41,10 @@ namespace History {
             this.record(new History.MoveNodeAction(moved_node, old_x, old_y, new_x, new_y));
         }
 
+        public void record_node_resized(CanvasDisplayNode moved_node, int old_width, int old_height, int new_width, int new_height) {
+            this.record(new History.NodeResizeAction(moved_node, old_width, old_height, new_width, new_height));
+        }
+
         public void undo_last() {
             var action = undo_stack.pop();
             if (action == null) return;

@@ -108,11 +108,16 @@ public class CanvasDisplayNode : GtkFlow.Node {
 
         this.builder_id = builder_id;
         this.position_changed.connect(record_position_changed);
+        this.size_changed.connect(record_size_changed);
         create_node();
     }
 
     private void record_position_changed(int old_x, int old_y, int new_x, int new_y) {
         changes_recorder.record_node_moved(this, old_x, old_y, new_x, new_y);
+    }
+
+    private void record_size_changed(int old_width, int old_height, int new_width, int new_height) {
+        changes_recorder.record_node_resized(this, old_width, old_height, new_width, new_height);
     }
 
     public void build_title(CanvasNodeTitleWidgetBuilder title_builder, GLib.Icon? icon = null) {
