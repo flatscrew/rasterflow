@@ -126,6 +126,8 @@ vala_sources = [
     'src/history/history_action.vala',
     'src/history/move_node_action.vala',
     'src/history/resize_node_action.vala',
+    'src/history/toggle_expander_action.vala',
+    'src/history/change_property_action.vala',
     'src/history/history_action_stack.vala',
     'src/history/history_of_changes.vala',
     'src/history/history_buttons_widget.vala'

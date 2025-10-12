@@ -76,6 +76,9 @@ public class CanvasDisplayNode : GtkFlow.Node {
     private string builder_id;
     private Gdk.RGBA? node_color;
 
+    private int old_width;
+    private int old_height;
+
     public bool can_delete {
         set {
             delete_button.sensitive = value;
@@ -137,17 +140,21 @@ public class CanvasDisplayNode : GtkFlow.Node {
 
         node_expander.set_resize_toplevel(true);
         node_expander.vexpand = node_expander.hexpand = true;
-        node_expander.notify["expanded"].connect(() => {
-            if (!this.node_expander.expanded) {
-                set_size_request(-1, -1);
-            }
-        });
+        node_expander.notify["expanded"].connect(node_exanded);
 
         this.node_box = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
         node_box.add_css_class("rounded_bottom");
         node_expander.set_child(node_box);
 
         base.add_child(node_expander);
+    }
+
+    private void node_exanded() {
+        changes_recorder.record(new History.ToggleExpanderAction(this.node_expander, this, get_width(), get_height()));
+
+        if (!this.node_expander.expanded) {
+            set_size_request(-1, -1);
+        }
     }
 
     private Gtk.Widget node_header(
