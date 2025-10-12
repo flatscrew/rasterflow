@@ -61,8 +61,8 @@ namespace Serialize {
             return deserializer.get_double(name);
         }
 
-        public int? get_int(string name) {
-            return deserializer.get_int(name);
+        public int? get_int(string name, int default_value = 0) {
+            return deserializer.get_int(name, default_value);
         }
 
         public bool get_bool(string name, bool default_value) {
@@ -74,9 +74,6 @@ namespace Serialize {
                 if (node.is_value()) {
                     property_delegate(name, node.get_value());
                 } else if (node.is_object()) {
-
-                    stdout.printf("BBBBBBBBB -> %s\n", name);
-
                     var deserializer = node.object_deserializer();
                     var value = deserializers.deserialize(new DeserializedObject(deserializer, deserializers), context_object);
                     if (value == null) {
@@ -99,9 +96,7 @@ namespace Serialize {
             var nested_object = deserializer.get_object(name);
             return new DeserializedObject(new JsonObjectDeserializer(nested_object), deserializers);
         }
-
     }
-
 
     public class DeserializedArray : Object {
 

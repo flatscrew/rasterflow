@@ -16,9 +16,7 @@ namespace Image {
     }
 
     class ImageDataDisplayNode : CanvasDisplayNode {
-
         private Data.DataDisplayView data_display_view;
-
         private ImageViewerPanningArea? panning_area;
         private ImageViewer? image_viewer;
         private Gtk.Label? temporary_label; 
@@ -29,12 +27,19 @@ namespace Image {
         private Gtk.Box render_button_control;
         private Gtk.Button reset_zoom_button;
 
+        private Gtk.Switch window_switch;
+        private bool window_switch_listen_events;
+        private Gtk.Entry window_title_entry;
+        private Gtk.Label title_label;
+        private ExternalImageWindow? external_window;
+        private ExternalWindowDimensions? last_window_dimensions;
+        private bool external_window_active;
         private Gdk.Pixbuf? current_image;
 
         public ImageDataDisplayNode(string builder_id, ImageDataNode data_node) {
             base (builder_id, data_node, new GtkFlow.NodeDockLabelWidgetFactory(data_node));
             build_default_title();
-            
+
             this.data_display_view = new Data.DataDisplayView();
             this.data_display_view.action_bar_visible = true;
             add_child(data_display_view);
@@ -54,24 +59,25 @@ namespace Image {
         }
 
         private void create_window_display_section() {
-            var window_switch = new Gtk.Switch();
-            window_switch.valign = Gtk.Align.CENTER;
-
             var window_label = new Gtk.Label("Show in window");
             window_label.valign = Gtk.Align.CENTER;
 
-            var title_label = new Gtk.Label("Title:");
+            this.title_label = new Gtk.Label("Title:");
             title_label.visible = false;
             title_label.valign = Gtk.Align.CENTER;
 
-            var window_title_entry = new Gtk.Entry();
+            this.window_title_entry = new Gtk.Entry();
             window_title_entry.placeholder_text = "Image window";
+            window_title_entry.text = "Image window";
             window_title_entry.hexpand = true;
             window_title_entry.visible = false;
             window_title_entry.valign = Gtk.Align.CENTER;
+            window_title_entry.changed.connect(() => {
+                if (external_window != null)
+                    external_window.set_title_text(window_title_entry.text);
+            });
 
-            window_switch.bind_property("active", window_title_entry, "visible", BindingFlags.DEFAULT | BindingFlags.SYNC_CREATE);
-            window_switch.bind_property("active", title_label, "visible", BindingFlags.DEFAULT | BindingFlags.SYNC_CREATE);
+            create_window_switch();
 
             var window_display_section = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 8);
             set_margin(window_display_section, 8);
@@ -87,6 +93,53 @@ namespace Image {
 
         private void set_margin(Gtk.Widget widget, int margin) {
             widget.margin_start = widget.margin_end = widget.margin_top = widget.margin_bottom = margin;
+        }
+
+        private void create_window_switch() {
+            this.window_switch = new Gtk.Switch();
+            window_switch.valign = Gtk.Align.CENTER;
+            window_switch.bind_property("active", window_title_entry, "visible", BindingFlags.DEFAULT | BindingFlags.SYNC_CREATE);
+            window_switch.bind_property("active", title_label, "visible", BindingFlags.DEFAULT | BindingFlags.SYNC_CREATE);
+            window_switch.notify["active"].connect(external_window_switch_changed);
+
+            this.window_switch_listen_events = true;
+        }
+
+        private void external_window_switch_changed() {
+            if (!window_switch_listen_events) return;
+
+            if (window_switch.active) {
+                this.external_window_active = true;
+
+                if (external_window == null) {
+                    external_window = new ExternalImageWindow(window_title_entry.text);
+                    external_window.close_request.connect(handle_window_close);
+                    external_window.present();
+
+                    if (last_window_dimensions != null) {
+                        external_window.set_dimensions(
+                            last_window_dimensions.x,
+                            last_window_dimensions.y,
+                            last_window_dimensions.width,
+                            last_window_dimensions.height
+                        );
+                    }
+                }
+                if (current_image != null)
+                    external_window.display_pixbuf(current_image);
+            } else {
+                this.external_window_active = false;
+                if (external_window != null) {
+                    external_window.destroy();
+                    external_window = null;
+                }
+            }
+        }
+
+        private bool handle_window_close() {
+            this.last_window_dimensions = read_external_window_state().dimensions;
+            window_switch.active = false;
+            return false;
         }
 
         private void create_zoom_control() {
@@ -110,7 +163,6 @@ namespace Image {
             render_button.set_icon_name("media-playback-start");
             this.render_button_control = data_display_view.add_action_bar_child_start(render_button);
         }
-
 
         private void listen_data_node_changes(ImageDataNode data_node) {
             data_node.image_changed.connect(this.image_changed);
@@ -142,7 +194,7 @@ namespace Image {
                 image_added(pixbuf);
                 return;
             }
-            image_replaced(value as Gdk.Pixbuf);
+            replace_image(value as Gdk.Pixbuf);
         }
 
         private void image_removed() {
@@ -158,20 +210,22 @@ namespace Image {
         }
         
         private void image_added(Gdk.Pixbuf added_image) {
-            this.current_image = added_image;
-            this.image_viewer.replace_image(added_image);
+            replace_image(added_image);
             
             this.temporary_label.visible = false;
             this.panning_area.visible = true;
-            panning_area.refresh();
 
             create_zoom_control();
             create_save_button();
         }
         
-        private void image_replaced(Gdk.Pixbuf replaced_image) {
-            this.current_image = replaced_image;
+        private void replace_image(Gdk.Pixbuf replaced_image) {
+            if (external_window_active) {
+                external_window.display_pixbuf(replaced_image);
+                return;
+            }
 
+            this.current_image = replaced_image;
             image_viewer.replace_image(replaced_image);
             panning_area.refresh();
         }
@@ -186,7 +240,77 @@ namespace Image {
              save_button.set_icon_name("document-save");
              this.save_button_control = data_display_view.add_action_bar_child_start(save_button);
         }
+
+        private ExternalWindowSate? read_external_window_state() {
+            return ExternalWindowSate() {
+                active = external_window_active,
+                title = external_window?.get_title(),
+                dimensions = external_window?.get_dimensions()
+            };
+        }
+
+        public override void serialize(Serialize.SerializedObject serializer) {
+            base.serialize(serializer);
+
+            var state = read_external_window_state();
+
+            var external_window_settings = serializer.new_object("external-window");
+            external_window_settings.set_bool("active", state.active);
+            external_window_settings.set_string("title", state.title);
+
+            if (state.dimensions == null) return;
+
+            var dimensions = state.dimensions;
+            var window_dimensions = external_window_settings.new_object("dimensions");
+            window_dimensions.set_int("x", dimensions.x);
+            window_dimensions.set_int("y", dimensions.y);
+            window_dimensions.set_int("width", (int) dimensions.width);
+            window_dimensions.set_int("height", (int) dimensions.height);
+        }
+
+        public override void deserialize(Serialize.DeserializedObject deserializer) {
+            base.deserialize(deserializer);
+
+            this.window_switch_listen_events = false;
+
+            var external_window_settings = deserializer.get_object("external-window");
+            var active = external_window_settings.get_bool("active", false);
+            if (active) {
+                this.external_window_active = true;
+                this.window_switch.active = true;
+                this.window_title_entry.text = external_window_settings.get_string("title");
+                
+                this.external_window = new ExternalImageWindow(external_window_settings.get_string("title"));
+                this.external_window.close_request.connect(handle_window_close);
+                this.external_window.present();
+
+                var dimensions = external_window_settings.get_object("dimensions");
+                if (dimensions != null) {
+                    var x = dimensions.get_int("x", 0);
+                    var y = dimensions.get_int("y", 0);
+                    var width = dimensions.get_int("width", 0);
+                    var height = dimensions.get_int("height", 0);
+
+                    this.last_window_dimensions = ExternalWindowDimensions() {
+                        x = x,
+                        y = y,
+                        width = width,
+                        height = height
+                    };
+                    this.external_window.set_dimensions(x, y, width, height);
+                }
+            }
+            this.window_switch_listen_events = true;
+        }
     }
+
+    public struct ExternalWindowSate {
+        public bool active;
+        public string? title;
+        public ExternalWindowDimensions? dimensions;
+    }
+
+    public delegate ExternalWindowSate? ExternalWindowStateDelegate(); 
 
     class ImageDataNode : CanvasNode, GeglProcessor {
 

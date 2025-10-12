@@ -6,6 +6,12 @@ app_version = get_option('version')
 conf = configuration_data()
 conf.set('version', app_version)
 
+if host_machine.system() == 'windows'
+  add_project_arguments('--define=WIN32', language : 'vala')
+elif host_machine.system() == 'linux'
+  add_project_arguments('--define=LINUX', language : 'vala')
+endif
+
 gnome = import('gnome')
 
 # Dependencies
@@ -18,12 +24,24 @@ dependencies = [
     dependency('gee-0.8'),
     dependency('gio-2.0'),
     dependency('json-glib-1.0'),
-    dependency('gegl-0.4')
+    dependency('gegl-0.4'),
 ]
+
+if host_machine.system() == 'linux'
+  dependencies += [
+    dependency('gtk4-x11'),
+    dependency('x11')
+  ]
+endif
 
 # generating runtime binary
 resource_files = files('rasterflow.gresource.xml')
 gresources = gnome.compile_resources('rasterflow-resources', resource_files, source_dir : ['data'])
+
+vala_args = [
+  '--vapidir', meson.current_source_dir() + '/vapi',
+  '--pkg=gegl_wrapper'
+]
 
 # VAPI directories
 vapi_dirs = [
@@ -39,6 +57,18 @@ c_sources = [
   # gegl wrapper for missing methods in system vapi
   'src/gegl/gegl_wrapper.c'
 ]
+
+if host_machine.system() == 'windows' 
+  c_sources += [
+    # windows implementation for getting/setting window size
+    'src/image/windows/windows_window_size.c'
+  ]
+
+  vala_args += [
+    '--vapidir', meson.current_source_dir() + '/vapi', 
+    '--pkg=windows_window_size'
+  ]
+endif
 
 # vala sources
 vala_sources = [
@@ -76,10 +106,12 @@ vala_sources = [
     'src/image/image_file_data_node.vala',
     'src/image/image_viewer.vala',
     'src/image/image_processing_realtime_mode_switch.vala',
+    'src/image/image_external_window.vala',
     'src/image/gegl_operation_node.vala',
     'src/image/gegl_operation_overrides.vala',
     'src/image/gegl_file_load_title.vala',
     'src/image/gegl_node_operation_view.vala',
+    'src/image/window_geometry.vala',
     'src/image/plugin.vala',
     
     # plain text processing
@@ -97,10 +129,7 @@ executable(
   gresources,
   dependencies: dependencies,
   include_directories: include_dirs,
-  vala_args: [
-    '--vapidir', meson.current_source_dir() + '/vapi',
-    '--pkg=gegl_wrapper'
-  ],
+  vala_args: vala_args,
   install: true,
   install_dir: join_paths(get_option('prefix'), 'bin'),
   gui_app: true
