@@ -27,5 +27,6 @@ void rf_get_window_rect(GdkSurface *surface, int *x, int *y, int *w, int *h) {
 void rf_set_window_rect(GdkSurface *surface, int x, int y, int w, int h) {
     HWND hwnd = gdk_win32_surface_get_handle(surface);
     if (!hwnd) return;
-    MoveWindow(hwnd, x, y, w, h, TRUE);
+
+    SetWindowPos(hwnd, HWND_TOP, x, y, w, h, SWP_NOZORDER);
 }

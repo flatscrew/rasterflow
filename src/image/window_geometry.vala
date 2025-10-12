@@ -39,7 +39,8 @@ namespace Image {
     #endif
 
     #if WIN32
-            rf_get_window_rect(surface, out x, out y, out width, out height);
+            int w, h;
+            rf_get_window_rect(surface, out x, out y, out w, out h);
     #endif
 
             return WindowGeometry() { x = x, y = y, width = width, height = height };
@@ -62,6 +63,7 @@ namespace Image {
 
     #if WIN32
             rf_set_window_rect(surface, geom.x, geom.y, geom.width, geom.height);
+            window.set_default_size(geom.width, geom.height);
     #endif
         }
     }

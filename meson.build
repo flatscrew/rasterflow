@@ -64,7 +64,10 @@ if host_machine.system() == 'windows'
     'src/image/windows/windows_window_size.c'
   ]
 
-  vala_args += ['--vapidir', meson.current_source_dir() + '/vapi', '--pkg=windows_window_size']
+  vala_args += [
+    '--vapidir', meson.current_source_dir() + '/vapi', 
+    '--pkg=windows_window_size'
+  ]
 endif
 
 # vala sources
