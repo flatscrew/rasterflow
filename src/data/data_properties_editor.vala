@@ -206,8 +206,8 @@ namespace Data {
         [Signal (detailed = true)]
 		public virtual signal void data_property_changed (string name, GLib.Value value);
 
+        private History.HistoryOfChangesRecorder history_recorder; 
         private Gtk.Grid properties_grid;
-
         private GLib.Object data_object;
         private Gee.Map<string, GLib.Type> changed_properties = new Gee.HashMap<string, GLib.Type>();
 
@@ -225,6 +225,7 @@ namespace Data {
         }
 
         public DataPropertiesEditor(GLib.Object data_object, int max_width = -1) {
+            this.history_recorder = History.HistoryOfChangesRecorder.instance;
             this.data_object = data_object;
             set_size_request(max_width, -1);
             
@@ -276,7 +277,22 @@ namespace Data {
         }
 
         private void data_property_value_changed(string property_name, GLib.Value property_value) {
+            //  data_object.set_property(property_name, property_value);
+            //  this.data_property_changed(property_name, property_value);
+            
+            var pspec = data_object.get_class().find_property(property_name);
+            if (pspec == null)
+                return;
+
+            GLib.Value old_value = GLib.Value(pspec.value_type);
+            data_object.get_property(property_name, ref old_value);
+
             data_object.set_property(property_name, property_value);
+
+            history_recorder.record(
+                new History.ChangePropertyAction(data_object, property_name, old_value, property_value)
+            );
+
             this.data_property_changed(property_name, property_value);
         }
 

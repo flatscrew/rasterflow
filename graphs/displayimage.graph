@@ -1,43 +1,65 @@
 {
   "nodes" : [
     {
-      "model" : {
-        "path" : "/home/activey/Pictures/exterior1.jpeg"
-      },
-      "builder_id" : "gegl:load",
-      "width" : 280,
-      "height" : 370,
+      "model" : {      },
+      "builder_id" : "image:display",
+      "width" : 469,
+      "height" : 495,
       "expanded" : true,
-      "position_x" : 48,
-      "position_y" : 94
+      "position_x" : 981,
+      "position_y" : 104,
+      "external-window" : {
+        "active" : false
+      }
     },
     {
       "model" : {      },
-      "builder_id" : "image:display",
-      "width" : 390,
-      "height" : 497,
+      "builder_id" : "gegl:cell-noise",
+      "width" : 146,
+      "height" : 85,
+      "expanded" : false,
+      "position_x" : 73,
+      "position_y" : 141
+    },
+    {
+      "model" : {
+        "width" : 2000.0,
+        "height" : 2000.0
+      },
+      "builder_id" : "gegl:crop",
+      "width" : 201,
+      "height" : 294,
       "expanded" : true,
-      "position_x" : 387,
-      "position_y" : 99,
-      "external-window" : {
-        "active" : true,
-        "title" : "blebleeeeeeeeee",
-        "dimensions" : {
-          "x" : 1280,
-          "y" : 32,
-          "width" : 1280,
-          "height" : 1408
-        }
-      }
+      "position_x" : 631,
+      "position_y" : 262
+    },
+    {
+      "model" : {      },
+      "builder_id" : "gegl:perlin-noise",
+      "width" : 157,
+      "height" : 85,
+      "expanded" : false,
+      "position_x" : 334,
+      "position_y" : 595
     }
   ],
   "links" : [
     {
-      "node_index" : 0,
+      "node_index" : 2,
       "source_name" : "Output",
       "sinks" : [
         {
-          "node_index" : 1,
+          "node_index" : 0,
+          "sink_name" : "Input"
+        }
+      ]
+    },
+    {
+      "node_index" : 3,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 2,
           "sink_name" : "Input"
         }
       ]

@@ -2,6 +2,8 @@ delegate void LongOperationDelegate();
 
 public class CanvasView : Gtk.Widget {
 
+    private History.HistoryOfChangesRecorder changes_recorder;
+
     private Gtk.Paned main_pane;
     private Gtk.ScrolledWindow scrolled_window;
     private GtkFlow.NodeView node_view;
@@ -35,6 +37,8 @@ public class CanvasView : Gtk.Widget {
             Data.FileOriginNodeFactory file_data_node_factory, 
             Serialize.CustomSerializers serializers,
             Serialize.CustomDeserializers deserializers) {
+        this.changes_recorder = History.HistoryOfChangesRecorder.instance;
+
         this.file_origin_node_factory = file_data_node_factory;
         this.file_origin_popover = new Gtk.Popover();
         file_origin_popover.set_parent(this);
@@ -106,8 +110,9 @@ public class CanvasView : Gtk.Widget {
 
     private void node_added(CanvasDisplayNode node) {
         node_view.add(node);
-
         node.set_position((int) scrolled_window.get_hadjustment().get_value(), (int) scrolled_window.get_vadjustment().get_value());
+
+        changes_recorder.record(new History.AddNodeAction(node_view, node));
     }
 
     private void add_text_data_node(string text) {

@@ -9,9 +9,9 @@ public class CanvasSignals : Object {
 
 class CanvasApplication : Gtk.Application {
 
+  private History.HistoryOfChangesRecorder changes_recorder;
   private CanvasView canvas_view;
   private CanvasHeaderbarWidgets header_widgets;
-
   private Gtk.ApplicationWindow? window;
 
   construct {
@@ -20,13 +20,15 @@ class CanvasApplication : Gtk.Application {
   }
 
   public CanvasApplication(string[] args) {
-    var canvas_signals = new CanvasSignals();
+    this.changes_recorder = History.HistoryOfChangesRecorder.instance;
     this.header_widgets = new CanvasHeaderbarWidgets();
-
+    
     var data_node_factory = new CanvasNodeFactory();
     var file_origin_node_factory = new Data.FileOriginNodeFactory();
     var serializers = new Serialize.CustomSerializers();
     var deserializers = new Serialize.CustomDeserializers();
+    
+    var canvas_signals = new CanvasSignals();
 
     activate.connect (() => {
       load_css();
@@ -55,6 +57,7 @@ class CanvasApplication : Gtk.Application {
 
       this.window = new Gtk.ApplicationWindow(this);
       build_header_bar();
+      add_shortcuts(window);
 
       window.set_default_size(800, 600);
       window.set_child (canvas_view);
@@ -66,12 +69,17 @@ class CanvasApplication : Gtk.Application {
     mark_busy();
     window.set_cursor_from_name("wait");
     window.set_sensitive(false);
+    
+    changes_recorder.pause();
   }
 
   private void after_file_load() {
     unmark_busy();
     window.set_cursor_from_name(null);
     window.set_sensitive(true);
+
+    changes_recorder.clear();
+    changes_recorder.resume();
   }
 
   private void load_css() {
@@ -92,7 +100,8 @@ class CanvasApplication : Gtk.Application {
     load_save_box.append(canvas_view.create_save_graph_as_button());
     load_save_box.append(canvas_view.create_export_png_button());
 
-    headerbar.pack_start (load_save_box);
+    headerbar.pack_start(load_save_box);
+    headerbar.pack_start(new History.HistoryButtonsWidget());
     headerbar.pack_end(create_theme_variant_switch());
 
     add_header_widgets(headerbar);

@@ -34,10 +34,13 @@ namespace Image {
         private ExternalImageWindow? external_window;
         private ExternalWindowDimensions? last_window_dimensions;
         private bool external_window_active;
+        private Gtk.Box? external_window_info_section;
+
         private Gdk.Pixbuf? current_image;
 
         public ImageDataDisplayNode(string builder_id, ImageDataNode data_node) {
             base (builder_id, data_node, new GtkFlow.NodeDockLabelWidgetFactory(data_node));
+            base.removed.connect(this.image_node_removed);
             build_default_title();
 
             this.data_display_view = new Data.DataDisplayView();
@@ -45,6 +48,7 @@ namespace Image {
             add_child(data_display_view);
 
             create_temporary_label();
+            create_external_window_active_info();
             create_image_viewer();
             create_window_display_section();
             create_render_button();
@@ -52,10 +56,42 @@ namespace Image {
             listen_data_node_changes(data_node);
         }
 
+        private void image_node_removed(CanvasDisplayNode _) {
+            if (external_window != null) {
+                external_window.destroy();
+                external_window = null;
+            }
+        }
+
+        public override void undo_remove() {
+            if (!external_window_active) return;
+
+            disable_local_image_viewer();
+            if (external_window == null) {
+                external_window = create_external_image_window();
+            }
+
+            if (current_image != null)
+                    external_window.display_pixbuf(current_image);
+        }
+
         private void create_temporary_label() {
             this.temporary_label = new Gtk.Label("No data yet");
             temporary_label.vexpand = true;
+            set_margin(temporary_label, 10);
             data_display_view.add_child(temporary_label);
+        }
+
+        private void create_external_window_active_info() {
+            this.external_window_info_section = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 3);
+            external_window_info_section.visible = false;
+            
+            var info_label = new Gtk.Label("Rendered in external window");
+            info_label.hexpand = info_label.vexpand = true;
+            set_margin(info_label, 10);
+            external_window_info_section.append(info_label);
+
+            data_display_view.add_child(external_window_info_section);
         }
 
         private void create_window_display_section() {
@@ -80,6 +116,7 @@ namespace Image {
             create_window_switch();
 
             var window_display_section = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 8);
+            window_display_section.valign = Gtk.Align.CENTER;
             set_margin(window_display_section, 8);
 
             window_display_section.append(window_label);
@@ -110,30 +147,57 @@ namespace Image {
 
             if (window_switch.active) {
                 this.external_window_active = true;
+                disable_local_image_viewer();
 
                 if (external_window == null) {
-                    external_window = new ExternalImageWindow(window_title_entry.text);
-                    external_window.close_request.connect(handle_window_close);
-                    external_window.present();
-
-                    if (last_window_dimensions != null) {
-                        external_window.set_dimensions(
-                            last_window_dimensions.x,
-                            last_window_dimensions.y,
-                            last_window_dimensions.width,
-                            last_window_dimensions.height
-                        );
-                    }
+                    external_window = create_external_image_window();
                 }
                 if (current_image != null)
                     external_window.display_pixbuf(current_image);
             } else {
                 this.external_window_active = false;
+                enable_local_image_viewer();
+
                 if (external_window != null) {
                     external_window.destroy();
                     external_window = null;
                 }
             }
+        }
+
+        private void disable_local_image_viewer() {
+            panning_area.visible = false;
+            external_window_info_section.visible = true;
+
+            data_display_view.remove_from_actionbar(this.zoom_control);
+            data_display_view.remove_from_actionbar(this.reset_zoom_control);
+            data_display_view.remove_from_actionbar(this.save_button_control);
+        }
+
+        private void enable_local_image_viewer() {
+            panning_area.visible = true;
+            external_window_info_section.visible = false;
+
+            create_zoom_control();
+            create_save_button();
+            image_viewer.replace_image(current_image);
+        }
+
+        private ExternalImageWindow create_external_image_window() {
+            var external_window =  new ExternalImageWindow(window_title_entry.text);
+            external_window.close_request.connect(handle_window_close);
+            external_window.present();
+
+            if (last_window_dimensions != null) {
+                external_window.set_dimensions(
+                    last_window_dimensions.x,
+                    last_window_dimensions.y,
+                    last_window_dimensions.width,
+                    last_window_dimensions.height
+                );
+            }
+
+            return external_window;
         }
 
         private bool handle_window_close() {
@@ -211,6 +275,7 @@ namespace Image {
         
         private void image_added(Gdk.Pixbuf added_image) {
             replace_image(added_image);
+            if (external_window_active) return;
             
             this.temporary_label.visible = false;
             this.panning_area.visible = true;
@@ -220,12 +285,13 @@ namespace Image {
         }
         
         private void replace_image(Gdk.Pixbuf replaced_image) {
+            this.current_image = replaced_image;
+            
             if (external_window_active) {
                 external_window.display_pixbuf(replaced_image);
                 return;
             }
 
-            this.current_image = replaced_image;
             image_viewer.replace_image(replaced_image);
             panning_area.refresh();
         }
@@ -276,6 +342,8 @@ namespace Image {
             var external_window_settings = deserializer.get_object("external-window");
             var active = external_window_settings.get_bool("active", false);
             if (active) {
+                this.external_window_info_section.visible = true;
+                this.temporary_label.visible = false;
                 this.external_window_active = true;
                 this.window_switch.active = true;
                 this.window_title_entry.text = external_window_settings.get_string("title");

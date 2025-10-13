@@ -65,6 +65,7 @@ public class CanvasDisplayNode : GtkFlow.Node {
         
     public signal void removed(CanvasDisplayNode removed_node);
 
+    private History.HistoryOfChangesRecorder changes_recorder;
     private Gtk.Expander node_expander;
     private Gtk.Box node_box;
     private Gtk.Button delete_button;
@@ -91,6 +92,7 @@ public class CanvasDisplayNode : GtkFlow.Node {
         GtkFlow.NodeDockLabelWidgetFactory dock_label_factory = new GtkFlow.NodeDockLabelWidgetFactory(node)
     ) {
         base.with_margin(node, 0, dock_label_factory);
+        this.changes_recorder = History.HistoryOfChangesRecorder.instance;
         this.custom_backround_css = new Gtk.CssProvider();
         var css = "
         .gtkflow_node {
@@ -105,7 +107,17 @@ public class CanvasDisplayNode : GtkFlow.Node {
         this.get_style_context().add_provider(custom_backround_css, Gtk.STYLE_PROVIDER_PRIORITY_USER);
 
         this.builder_id = builder_id;
+        this.position_changed.connect(record_position_changed);
+        this.size_changed.connect(record_size_changed);
         create_node();
+    }
+
+    private void record_position_changed(int old_x, int old_y, int new_x, int new_y) {
+        changes_recorder.record_node_moved(this, old_x, old_y, new_x, new_y);
+    }
+
+    private void record_size_changed(int old_width, int old_height, int new_width, int new_height) {
+        changes_recorder.record_node_resized(this, old_width, old_height, new_width, new_height);
     }
 
     public void build_title(CanvasNodeTitleWidgetBuilder title_builder, GLib.Icon? icon = null) {
@@ -125,17 +137,21 @@ public class CanvasDisplayNode : GtkFlow.Node {
 
         node_expander.set_resize_toplevel(true);
         node_expander.vexpand = node_expander.hexpand = true;
-        node_expander.notify["expanded"].connect(() => {
-            if (!this.node_expander.expanded) {
-                set_size_request(-1, -1);
-            }
-        });
+        node_expander.notify["expanded"].connect(node_exanded);
 
         this.node_box = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
         node_box.add_css_class("rounded_bottom");
         node_expander.set_child(node_box);
 
         base.add_child(node_expander);
+    }
+
+    private void node_exanded() {
+        changes_recorder.record(new History.ToggleExpanderAction(this.node_expander, this, get_width(), get_height()));
+
+        if (!this.node_expander.expanded) {
+            set_size_request(-1, -1);
+        }
     }
 
     private Gtk.Widget node_header(
@@ -162,9 +178,16 @@ public class CanvasDisplayNode : GtkFlow.Node {
     }
 
     private void remove_node() {
-        debug("references: %u\n", this.ref_count);
-        this.remove();
-        removed(this);
+        stop_sinks_history_recording();
+        {
+            this.remove();
+            removed(this);
+            
+            int x, y;
+            get_position(out x, out y);
+            var parent = this.parent as GtkFlow.NodeView;
+            changes_recorder.record(new History.RemoveNodeAction(parent, this, x, y), true);
+        }
     }
 
     private void add_icon(Data.TitleBar title_bar, GLib.Icon? icon) {
@@ -267,6 +290,21 @@ public class CanvasDisplayNode : GtkFlow.Node {
             set_sensitive(true);
         }
     }
+
+    private void stop_sinks_history_recording() {
+        var node = n as CanvasNode;
+        unowned var sinks = node.get_sinks();
+        foreach (var sink in sinks) {
+            if (!(sink is CanvasNodeSink)) continue;
+
+            var canvas_sink = sink as CanvasNodeSink;
+            canvas_sink.stop_history_recording();
+        }
+    }
+
+    public virtual void undo_remove() {
+        
+    }
 }
 
 public class CanvasNodeSink : GFlow.SimpleSink {
@@ -276,10 +314,29 @@ public class CanvasNodeSink : GFlow.SimpleSink {
         private set;
     }
 
+    private History.HistoryOfChangesRecorder changes_recorder;
+
     public CanvasNodeSink (GLib.Value value) {
         base(value);
+        this.changes_recorder = History.HistoryOfChangesRecorder.instance;
+
         this.value = value;
         base.changed.connect(this.value_changed);
+        base.linked.connect(this.connected);
+        base.unlinked.connect(this.disconnected);
+    }
+
+    private void disconnected(GFlow.Dock target) {
+        changes_recorder.record(new History.UnlinkDocksAction(this, target));
+    }
+
+    private void connected(GFlow.Dock target) {
+        if (target is CanvasNodeSource) {
+            var target_source = target as CanvasNodeSource;
+            changes_recorder.record(new History.LinkDocksAction(target_source, this));
+        } else {
+            warning("Not supported target source: %s\n", target.get_type().name());
+        }
     }
 
     private void value_changed(GLib.Value? new_value) {
@@ -292,6 +349,11 @@ public class CanvasNodeSink : GFlow.SimpleSink {
 
     public virtual bool can_serialize() {
         return true;
+    }
+
+    public void stop_history_recording() {
+        base.linked.disconnect(this.connected);
+        base.unlinked.disconnect(this.disconnected);
     }
 }
 
@@ -378,6 +440,10 @@ public class CanvasNode : GFlow.SimpleNode {
             log_error(e.message);
             error(e.message);
         }
+    }
+
+    public void set_sinks_silent() {
+        
     }
 
     public virtual void serialize(Serialize.SerializedObject serializer) {
