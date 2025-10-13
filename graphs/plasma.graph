@@ -1,0 +1,64 @@
+{
+  "nodes" : [
+    {
+      "model" : {
+        "y" : 0,
+        "turbulence" : 1.5000000000000004,
+        "width" : 1024,
+        "x" : 0
+      },
+      "builder_id" : "gegl:plasma",
+      "width" : 280,
+      "height" : 466,
+      "expanded" : true,
+      "position_x" : 26,
+      "position_y" : 67
+    },
+    {
+      "model" : {
+        "width" : 200.0,
+        "height" : 200.0
+      },
+      "builder_id" : "gegl:crop",
+      "width" : 201,
+      "height" : 294,
+      "expanded" : true,
+      "position_x" : 352,
+      "position_y" : 5
+    },
+    {
+      "model" : {      },
+      "builder_id" : "image:display",
+      "width" : 267,
+      "height" : 315,
+      "expanded" : true,
+      "position_x" : 706,
+      "position_y" : 80,
+      "external-window" : {
+        "active" : false
+      }
+    }
+  ],
+  "links" : [
+    {
+      "node_index" : 0,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 1,
+          "sink_name" : "Input"
+        }
+      ]
+    },
+    {
+      "node_index" : 1,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 2,
+          "sink_name" : "Input"
+        }
+      ]
+    }
+  ]
+}

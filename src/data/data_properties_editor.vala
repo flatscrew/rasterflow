@@ -277,16 +277,12 @@ namespace Data {
         }
 
         private void data_property_value_changed(string property_name, GLib.Value property_value) {
-            //  data_object.set_property(property_name, property_value);
-            //  this.data_property_changed(property_name, property_value);
-            
             var pspec = data_object.get_class().find_property(property_name);
             if (pspec == null)
                 return;
 
             GLib.Value old_value = GLib.Value(pspec.value_type);
             data_object.get_property(property_name, ref old_value);
-
             data_object.set_property(property_name, property_value);
 
             history_recorder.record(

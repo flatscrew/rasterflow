@@ -78,7 +78,7 @@ namespace Image {
         }
 
         protected override void snapshot(Gtk.Snapshot snapshot) {
-            if (texture == null) return;
+            //  if (texture == null) return;
             int width = get_allocated_width();
             int height = get_allocated_height();
             draw_checker_board(snapshot, width, height);
@@ -117,10 +117,6 @@ namespace Image {
 
         protected override void measure (Gtk.Orientation orientation, int for_size, out int minimum, out int natural, out int minimum_baseline, out int natural_baseline) {
             minimum_baseline = natural_baseline = -1;
-            if (texture == null) {
-                minimum = natural = 0;
-                return;
-            }
             var dimensions = get_dimensions();
             if (orientation == Gtk.Orientation.HORIZONTAL) {
                 minimum = natural = dimensions.width;
@@ -130,7 +126,7 @@ namespace Image {
         }
 
         internal void update_fit_scale(int width, int height) {
-            if (texture == null) return;
+            //  if (texture == null) return;
 
             double width_scale = (double) width / texture.get_width();
             double height_scale = (double) height / texture.get_height();
@@ -142,12 +138,12 @@ namespace Image {
         }
 
         public ImageDimensions get_dimensions () {
-            if (texture == null) {
-                return {
-                    width: 0,
-                    height: 0
-                };
-            };
+            //  if (texture == null) {
+            //      return {
+            //          width: 0,
+            //          height: 0
+            //      };
+            //  };
 
             var width = (int)(texture.get_width() * zoom_level * fit_scale);
             var height = (int)(texture.get_height() * zoom_level * fit_scale);
@@ -237,6 +233,7 @@ namespace Image {
             this.pixbuf = new_image;
             this.texture = Gdk.Texture.for_pixbuf (this.pixbuf);
             this.queue_resize();
+            //  this.queue_allocate();
         }
     }  
 

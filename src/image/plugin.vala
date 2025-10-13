@@ -89,7 +89,9 @@ public string initialize_image_plugin(Plugin.PluginContribution plugin_contribut
     });
 
     plugin_contribution.contribute_canvas_headerbar(headerbar_widgets => {
+        headerbar_widgets.add_widget(new Image.GXml.ExportImportButtons());
         headerbar_widgets.add_widget(new Image.ImageProcessingRealtimeModeSwitch());
+        //  headerbar_widgets.add_widget(Gtk.Widget widget)
     });
 
     // overrides

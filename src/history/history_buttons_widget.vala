@@ -9,13 +9,15 @@ namespace History {
 
         construct {
             set_layout_manager(new Gtk.BinLayout());
+        }
 
-            history = HistoryOfChangesRecorder.instance;
+        public HistoryButtonsWidget() {
+            this.history = HistoryOfChangesRecorder.instance;
 
-            box = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 0);
+            this.box = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 0);
             box.add_css_class("linked");
 
-            undo_button = new Gtk.Button.from_icon_name("edit-undo-symbolic");
+            this.undo_button = new Gtk.Button.from_icon_name("edit-undo-symbolic");
             redo_button = new Gtk.Button.from_icon_name("edit-redo-symbolic");
 
             undo_button.tooltip_text = "Undo last change (Ctrl+Z)";
