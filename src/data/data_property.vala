@@ -247,6 +247,7 @@ namespace Data {
         }
 
         protected override void set_property_value(GLib.Value value) {
+            if (text_entry.text == value.get_string()) return;
             text_entry.set_text(value.get_string());
         }
     }

@@ -4,7 +4,7 @@ namespace Image.GXml {
 
         public void export_to (Gegl.Node root_node, string output_file_path) {
             try {
-                string xml_data = root_node.to_xml (null);
+                string xml_data = root_node.to_xml_full(root_node, "/");
 
                 FileUtils.set_contents_full (
                     output_file_path,

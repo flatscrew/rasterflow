@@ -78,13 +78,16 @@ namespace Image {
         }
 
         protected override void snapshot(Gtk.Snapshot snapshot) {
-            //  if (texture == null) return;
+            if (texture == null) return;
+            
             int width = get_allocated_width();
             int height = get_allocated_height();
             draw_checker_board(snapshot, width, height);
+            
             var dimensions = get_dimensions();
             int x_offset = (width - dimensions.width) / 2;
             int y_offset = (height - dimensions.height) / 2;
+
             var rect = Graphene.Rect();
             rect.init(x_offset, y_offset, dimensions.width, dimensions.height);
             snapshot.append_texture(texture, rect);
@@ -125,32 +128,40 @@ namespace Image {
             }
         }
 
-        internal void update_fit_scale(int width, int height) {
-            //  if (texture == null) return;
+        internal void update_fit_scale (int width, int height) {
+            if (texture == null || texture.get_width () == 0 || texture.get_height () == 0)
+                return;
+            if (width == 0 || height == 0)
+                return;
 
-            double width_scale = (double) width / texture.get_width();
-            double height_scale = (double) height / texture.get_height();
-            if (width_scale < height_scale) {
-                fit_scale = width_scale;
-            } else {
-                fit_scale = height_scale;
-            }
+            double width_scale  = (double) width  / texture.get_width ();
+            double height_scale = (double) height / texture.get_height ();
+
+            double new_scale = min (width_scale, height_scale);
+            fit_scale = max (new_scale, 0.01); 
         }
 
         public ImageDimensions get_dimensions () {
-            //  if (texture == null) {
-            //      return {
-            //          width: 0,
-            //          height: 0
-            //      };
-            //  };
+            var tex_w = texture.get_width ();
+            var tex_h = texture.get_height ();
 
-            var width = (int)(texture.get_width() * zoom_level * fit_scale);
-            var height = (int)(texture.get_height() * zoom_level * fit_scale);
-            return {
-                width: width,
-                height: height
+            var w_d = tex_w * zoom_level * fit_scale;
+            var h_d = tex_h * zoom_level * fit_scale;
+
+            return { 
+                width: (int) max (1.0, w_d), 
+                height: (int) max (1.0, h_d) 
             };
+        }
+
+        private double max(double first, double second) {
+            if (first > second) return first;
+            return second;
+        }
+
+        private double min(double first, double second) {
+            if (first < second) return first;
+            return second;
         }
 
         public Gtk.Scale create_scale_widget() {
@@ -195,7 +206,7 @@ namespace Image {
                 if (response_id == Gtk.ResponseType.OK) {
                     var selected_file = dialog.get_file();
                     var selected_filter = dialog.get_filter();
-                    
+
                     string? format = null;
 
                     if (selected_filter != null) {
@@ -233,7 +244,6 @@ namespace Image {
             this.pixbuf = new_image;
             this.texture = Gdk.Texture.for_pixbuf (this.pixbuf);
             this.queue_resize();
-            //  this.queue_allocate();
         }
     }  
 
@@ -274,7 +284,6 @@ namespace Image {
             setup_scroll_controller();
 
             viewer.zoom_changed.connect(zoom_changed);
-            //  set_size_request(-1, 100);
         }
 
         private void setup_mouse_click_controller() {

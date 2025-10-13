@@ -3,45 +3,38 @@
     {
       "model" : {      },
       "builder_id" : "image:display",
-      "width" : 254,
-      "height" : 313,
+      "width" : 272,
+      "height" : 481,
       "expanded" : true,
-      "position_x" : 1224,
-      "position_y" : 277,
+      "position_x" : 1521,
+      "position_y" : 33,
       "external-window" : {
-        "active" : true,
-        "title" : "Image window",
-        "dimensions" : {
-          "x" : 1280,
-          "y" : 32,
-          "width" : 1280,
-          "height" : 1408
-        }
+        "active" : false
       }
     },
     {
       "model" : {
-        "shape" : 1.0,
-        "scale" : 0.90000000000000002
+        "scale" : 2.2000000000000011,
+        "shape" : 1.0
       },
       "builder_id" : "gegl:cell-noise",
       "width" : 218,
-      "height" : 236,
+      "height" : 686,
       "expanded" : true,
       "position_x" : 73,
       "position_y" : 141
     },
     {
       "model" : {
-        "width" : 2000.0,
+        "width" : 100.0,
         "height" : 100.0
       },
       "builder_id" : "gegl:crop",
       "width" : 201,
       "height" : 294,
       "expanded" : true,
-      "position_x" : 322,
-      "position_y" : 134
+      "position_x" : 403,
+      "position_y" : 80
     },
     {
       "model" : {      },
@@ -54,15 +47,26 @@
     },
     {
       "model" : {
-        "high" : 0.59999999999999998,
-        "value" : 0.5
+        "high" : 0.79999999999999993,
+        "value" : 0.40000000000000002
       },
       "builder_id" : "gegl:threshold",
       "width" : 193,
       "height" : 294,
       "expanded" : true,
-      "position_x" : 669,
-      "position_y" : 280
+      "position_x" : 750,
+      "position_y" : 90
+    },
+    {
+      "model" : {
+        "path" : "/tmp/test.png"
+      },
+      "builder_id" : "gegl:save",
+      "width" : 280,
+      "height" : 236,
+      "expanded" : true,
+      "position_x" : 1151,
+      "position_y" : 318
     }
   ],
   "links" : [
@@ -92,6 +96,10 @@
       "sinks" : [
         {
           "node_index" : 0,
+          "sink_name" : "Input"
+        },
+        {
+          "node_index" : 5,
           "sink_name" : "Input"
         }
       ]
