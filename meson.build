@@ -124,17 +124,17 @@ vala_sources = [
 
     # history
     'src/history/history_action.vala',
-    'src/history/move_node_action.vala',
-    'src/history/remove_node_action.vala',
-    'src/history/add_node_action.vala',
-    'src/history/resize_node_action.vala',
-    'src/history/toggle_expander_action.vala',
-    'src/history/change_property_action.vala',
-    'src/history/link_nodes_action.vala',
-    'src/history/unlink_nodes_action.vala',
     'src/history/history_action_stack.vala',
     'src/history/history_of_changes.vala',
-    'src/history/history_buttons_widget.vala'
+    'src/history/history_buttons_widget.vala',
+    'src/history/action/move_node_action.vala',
+    'src/history/action/remove_node_action.vala',
+    'src/history/action/add_node_action.vala',
+    'src/history/action/resize_node_action.vala',
+    'src/history/action/toggle_expander_action.vala',
+    'src/history/action/change_property_action.vala',
+    'src/history/action/link_nodes_action.vala',
+    'src/history/action/unlink_nodes_action.vala',
 ]
 
 executable(

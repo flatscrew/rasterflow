@@ -84,11 +84,8 @@ namespace Image {
         public Gegl.Node gegl_node {get; private set;}
         public string padname {get; private set;}
 
-        private History.HistoryOfChangesRecorder changes_recorder;
-
         public PadSink (Gegl.Node n, string padname) {
             base(n);
-            this.changes_recorder = History.HistoryOfChangesRecorder.instance;
             this.gegl_node = n;
             this.padname = padname;
 
@@ -100,8 +97,6 @@ namespace Image {
         private void disconnected(GFlow.Dock target) {
             this.gegl_node.disconnect(this.padname);
             sink_updated();
-
-            changes_recorder.record(new History.UnlinkDocksAction(this, target));
         }
 
         private void connected(GFlow.Dock target) {
@@ -109,8 +104,6 @@ namespace Image {
                 var target_source = target as PadSource;
                 target_source.gegl_node.connect_to(target_source.padname, gegl_node, padname);
                 sink_updated();
-
-                changes_recorder.record(new History.LinkDocksAction(target_source, this));
             } else {
                 warning("Not supported target source: %s\n", target.get_type().name());
             }

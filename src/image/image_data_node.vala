@@ -222,7 +222,7 @@ namespace Image {
         private void replace_image(Gdk.Pixbuf replaced_image) {
             if (external_window_active) {
                 external_window.display_pixbuf(replaced_image);
-                return;
+                //  return;
             }
 
             this.current_image = replaced_image;

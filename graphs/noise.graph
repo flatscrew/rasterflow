@@ -2,75 +2,97 @@
   "nodes" : [
     {
       "model" : {      },
-      "builder_id" : "gegl:perlin-noise",
-      "width" : 238,
-      "height" : 236,
+      "builder_id" : "image:display",
+      "width" : 256,
+      "height" : 315,
       "expanded" : true,
-      "position_x" : 117,
-      "position_y" : 147
+      "position_x" : 1224,
+      "position_y" : 277,
+      "external-window" : {
+        "active" : true,
+        "title" : "Image window",
+        "dimensions" : {
+          "x" : 430,
+          "y" : 198,
+          "width" : 1553,
+          "height" : 1052
+        }
+      }
     },
     {
       "model" : {
-        "width" : 200.0,
-        "height" : 200.0
+        "scale" : 0.90000000000000002,
+        "shape" : 1.0
+      },
+      "builder_id" : "gegl:cell-noise",
+      "width" : 218,
+      "height" : 236,
+      "expanded" : true,
+      "position_x" : 73,
+      "position_y" : 141
+    },
+    {
+      "model" : {
+        "width" : 2000.0,
+        "height" : 100.0
       },
       "builder_id" : "gegl:crop",
-      "width" : 115,
-      "height" : 143,
-      "expanded" : false,
-      "position_x" : 426,
-      "position_y" : 167
+      "width" : 201,
+      "height" : 294,
+      "expanded" : true,
+      "position_x" : 322,
+      "position_y" : 134
     },
     {
       "model" : {      },
-      "builder_id" : "image:display",
-      "width" : 355,
-      "height" : 431,
-      "expanded" : true,
-      "position_x" : 1036,
-      "position_y" : 50
+      "builder_id" : "gegl:perlin-noise",
+      "width" : 157,
+      "height" : 85,
+      "expanded" : false,
+      "position_x" : 334,
+      "position_y" : 595
     },
     {
       "model" : {
-        "scale" : 5.0,
-        "threshold" : 2.7755575615628914e-17
+        "high" : 0.59999999999999998,
+        "value" : 0.5
       },
-      "builder_id" : "gegl:unsharp-mask",
-      "width" : 231,
-      "height" : 114,
-      "expanded" : false,
-      "position_x" : 705,
-      "position_y" : 226
+      "builder_id" : "gegl:threshold",
+      "width" : 193,
+      "height" : 294,
+      "expanded" : true,
+      "position_x" : 669,
+      "position_y" : 280
     }
   ],
   "links" : [
-    {
-      "node_index" : 0,
-      "source_name" : "Output",
-      "sinks" : [
-        {
-          "node_index" : 1,
-          "sink_name" : "Input"
-        }
-      ]
-    },
     {
       "node_index" : 1,
       "source_name" : "Output",
       "sinks" : [
         {
-          "node_index" : 3,
+          "node_index" : 2,
           "sink_name" : "Input"
         }
       ]
     },
     {
-      "node_index" : 3,
+      "node_index" : 2,
       "source_name" : "Output",
       "sinks" : [
         {
-          "node_index" : 2,
-          "sink_name" : "GEGL node"
+          "node_index" : 4,
+          "sink_name" : "Input"
+        }
+      ]
+    },
+    {
+      "node_index" : 4,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 0,
+          "sink_name" : "Input"
         }
       ]
     }

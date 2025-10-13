@@ -178,15 +178,16 @@ public class CanvasDisplayNode : GtkFlow.Node {
     }
 
     private void remove_node() {
-        debug("references: %u\n", this.ref_count);
-
-        this.remove();
-        removed(this);
-        
-        int x, y;
-        get_position(out x, out y);
-        var parent = this.parent as GtkFlow.NodeView;
-        changes_recorder.record(new History.RemoveNodeAction(parent, this, x, y));
+        stop_sinks_history_recording();
+        {
+            this.remove();
+            removed(this);
+            
+            int x, y;
+            get_position(out x, out y);
+            var parent = this.parent as GtkFlow.NodeView;
+            changes_recorder.record(new History.RemoveNodeAction(parent, this, x, y), true);
+        }
     }
 
     private void add_icon(Data.TitleBar title_bar, GLib.Icon? icon) {
@@ -289,6 +290,17 @@ public class CanvasDisplayNode : GtkFlow.Node {
             set_sensitive(true);
         }
     }
+
+    private void stop_sinks_history_recording() {
+        var node = n as CanvasNode;
+        unowned var sinks = node.get_sinks();
+        foreach (var sink in sinks) {
+            if (!(sink is CanvasNodeSink)) continue;
+
+            var canvas_sink = sink as CanvasNodeSink;
+            canvas_sink.stop_history_recording();
+        }
+    }
 }
 
 public class CanvasNodeSink : GFlow.SimpleSink {
@@ -298,10 +310,29 @@ public class CanvasNodeSink : GFlow.SimpleSink {
         private set;
     }
 
+    private History.HistoryOfChangesRecorder changes_recorder;
+
     public CanvasNodeSink (GLib.Value value) {
         base(value);
+        this.changes_recorder = History.HistoryOfChangesRecorder.instance;
+
         this.value = value;
         base.changed.connect(this.value_changed);
+        base.linked.connect(this.connected);
+        base.unlinked.connect(this.disconnected);
+    }
+
+    private void disconnected(GFlow.Dock target) {
+        changes_recorder.record(new History.UnlinkDocksAction(this, target));
+    }
+
+    private void connected(GFlow.Dock target) {
+        if (target is CanvasNodeSource) {
+            var target_source = target as CanvasNodeSource;
+            changes_recorder.record(new History.LinkDocksAction(target_source, this));
+        } else {
+            warning("Not supported target source: %s\n", target.get_type().name());
+        }
     }
 
     private void value_changed(GLib.Value? new_value) {
@@ -314,6 +345,11 @@ public class CanvasNodeSink : GFlow.SimpleSink {
 
     public virtual bool can_serialize() {
         return true;
+    }
+
+    public void stop_history_recording() {
+        base.linked.disconnect(this.connected);
+        base.unlinked.disconnect(this.disconnected);
     }
 }
 
@@ -400,6 +436,10 @@ public class CanvasNode : GFlow.SimpleNode {
             log_error(e.message);
             error(e.message);
         }
+    }
+
+    public void set_sinks_silent() {
+        
     }
 
     public virtual void serialize(Serialize.SerializedObject serializer) {

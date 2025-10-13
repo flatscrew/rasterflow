@@ -23,14 +23,17 @@ namespace History {
         private ActionStack redo_stack;
         private bool recording_enabled = true;
 
+
         private HistoryOfChangesRecorder() {
             undo_stack = new ActionStack();
             redo_stack = new ActionStack();
         }
 
-        public void record(IAction action) {
-            if (!recording_enabled)
+        public void record(IAction action, bool force = false) {
+            if (!recording_enabled && !force)
                 return;
+
+            message("recording action> %s\n", action.get_type().name());
 
             undo_stack.push(action);
             redo_stack.clear();
@@ -72,6 +75,14 @@ namespace History {
             redo_stack.clear();
 
             changed();
+        }
+
+        public void pause() {
+            this.recording_enabled = false;
+        }
+
+        public void resume() {
+            this.recording_enabled = true;
         }
 
         public int count_undo { get { return undo_stack.size; } }
