@@ -113,6 +113,8 @@ vala_sources = [
     'src/image/gegl_file_load_title.vala',
     'src/image/gegl_node_operation_view.vala',
     'src/image/window_geometry.vala',
+    'src/image/gxml/gxml_export.vala',
+    'src/image/gxml/gxml_export_import_buttons.vala',
     'src/image/plugin.vala',
     
     # plain text processing

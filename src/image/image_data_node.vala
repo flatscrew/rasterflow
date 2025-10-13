@@ -393,7 +393,7 @@ namespace Image {
         private Gegl.Node save_as_pixbuf_node;
 
         ~ImageDataNode() {
-            GeglContext.rootNode().remove_child(this.save_as_pixbuf_node);
+            GeglContext.root_node().remove_child(this.save_as_pixbuf_node);
         }
 
         public ImageDataNode() {
@@ -402,7 +402,7 @@ namespace Image {
             this.realtime_processing = realtime_guard.enabled;
             this.realtime_guard.mode_changed.connect(this.realtime_mode_changed);
             
-            this.save_as_pixbuf_node = GeglContext.rootNode().create_child("gegl:save-pixbuf");
+            this.save_as_pixbuf_node = GeglContext.root_node().create_child("gegl:save-pixbuf");
             
             this.gegl_node_sink = new PadSink(save_as_pixbuf_node, "input");
             gegl_node_sink.linked.connect(this.process_gegl);

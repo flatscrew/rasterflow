@@ -46,6 +46,8 @@ namespace Image {
         }
 
         public void display_pixbuf(Gdk.Pixbuf pixbuf) {
+            message("aaaaa\n");
+
             image_viewer.replace_image(pixbuf);
             panning_area.refresh();
         }
