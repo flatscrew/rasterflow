@@ -2,7 +2,7 @@ namespace History {
 
     public class MoveNodeAction : Object, IAction {
         
-        private CanvasDisplayNode node;
+        private weak CanvasDisplayNode node;
         private int old_x;
         private int old_y;
         private int new_x;

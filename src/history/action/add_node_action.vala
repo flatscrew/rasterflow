@@ -2,7 +2,7 @@ namespace History {
 
     public class AddNodeAction : Object, IAction {
         private weak GtkFlow.NodeView parent_view;
-        private CanvasDisplayNode node;
+        private weak CanvasDisplayNode node;
 
         public AddNodeAction(GtkFlow.NodeView parent_view, CanvasDisplayNode node) {
             this.parent_view = parent_view;

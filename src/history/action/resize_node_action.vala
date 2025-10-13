@@ -1,7 +1,7 @@
 namespace History {
 
     public class NodeResizeAction : Object, IAction {
-        private CanvasDisplayNode node;
+        private weak CanvasDisplayNode node;
         private int old_width;
         private int old_height;
         private int new_width;
