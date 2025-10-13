@@ -88,6 +88,7 @@ namespace Image {
             
             var info_label = new Gtk.Label("Rendered in external window");
             info_label.hexpand = info_label.vexpand = true;
+            set_margin(info_label, 10);
             external_window_info_section.append(info_label);
 
             data_display_view.add_child(external_window_info_section);
