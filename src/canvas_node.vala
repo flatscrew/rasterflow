@@ -1,25 +1,15 @@
 public delegate void BuilderConsumer(CanvasNodeBuilder builder);
 
 public class CanvasNodeFactory : Object {
-    private Gee.MultiMap<GLib.Type, CanvasNodeBuilder> data_type_builders = new Gee.HashMultiMap<GLib.Type, CanvasNodeBuilder> ();
     private Gee.Map<string, CanvasNodeBuilder> all_builders = new Gee.HashMap<string, CanvasNodeBuilder>();
 
-    public void register(CanvasNodeBuilder node_builder, GLib.Type? input_data_type) {
-        if (input_data_type == null) {
-            return;
-        }
-        data_type_builders.set(input_data_type, node_builder);
-
+    public void register(CanvasNodeBuilder node_builder) {
         var builder_id = node_builder.id();
         if (all_builders.has_key(builder_id)) {
             warning("Node builder with id [%s] already registered!\n", builder_id);
             return;
         }
         all_builders.set(builder_id, node_builder);
-    }
-
-    public CanvasNodeBuilder[] available_buiders(GLib.Type input_type) {
-        return data_type_builders.get(input_type).to_array();
     }
 
     public CanvasNodeBuilder? find_builder(string id) {

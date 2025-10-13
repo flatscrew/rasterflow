@@ -24,8 +24,7 @@ namespace Image {
                         title, 
                         gegl_operation, 
                         pango_compatible_description
-                    ), 
-                    typeof(Gegl.Node)
+                    )
                 );
             }
         }
@@ -276,9 +275,8 @@ namespace Image {
             this.data_display_view = new Data.DataDisplayView();
             if (node.is_output_node()) {
                 create_process_gegl_button();
-                create_gegl_export_button();
             } else {
-                data_display_view.action_bar_visible = false;
+                create_gegl_export_button();
             }
 
             this.gegl_operation_node = node;
