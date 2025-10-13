@@ -3,8 +3,8 @@
     {
       "model" : {      },
       "builder_id" : "image:display",
-      "width" : 256,
-      "height" : 315,
+      "width" : 254,
+      "height" : 313,
       "expanded" : true,
       "position_x" : 1224,
       "position_y" : 277,
@@ -12,17 +12,17 @@
         "active" : true,
         "title" : "Image window",
         "dimensions" : {
-          "x" : 430,
-          "y" : 198,
-          "width" : 1553,
-          "height" : 1052
+          "x" : 1280,
+          "y" : 32,
+          "width" : 1280,
+          "height" : 1408
         }
       }
     },
     {
       "model" : {
-        "scale" : 0.90000000000000002,
-        "shape" : 1.0
+        "shape" : 1.0,
+        "scale" : 0.90000000000000002
       },
       "builder_id" : "gegl:cell-noise",
       "width" : 218,

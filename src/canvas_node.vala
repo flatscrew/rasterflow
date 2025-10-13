@@ -301,6 +301,10 @@ public class CanvasDisplayNode : GtkFlow.Node {
             canvas_sink.stop_history_recording();
         }
     }
+
+    public virtual void undo_remove() {
+        
+    }
 }
 
 public class CanvasNodeSink : GFlow.SimpleSink {

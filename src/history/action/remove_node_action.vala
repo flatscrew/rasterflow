@@ -60,6 +60,8 @@ namespace History {
             foreach (var link in saved_links) {
                 link.sink.link(link.source);
             }
+
+            node.undo_remove();
         }
 
         public void redo() {

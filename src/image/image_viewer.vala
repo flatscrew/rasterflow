@@ -130,6 +130,8 @@ namespace Image {
         }
 
         internal void update_fit_scale(int width, int height) {
+            if (texture == null) return;
+
             double width_scale = (double) width / texture.get_width();
             double height_scale = (double) height / texture.get_height();
             if (width_scale < height_scale) {
@@ -140,6 +142,13 @@ namespace Image {
         }
 
         public ImageDimensions get_dimensions () {
+            if (texture == null) {
+                return {
+                    width: 0,
+                    height: 0
+                };
+            };
+
             var width = (int)(texture.get_width() * zoom_level * fit_scale);
             var height = (int)(texture.get_height() * zoom_level * fit_scale);
             return {
