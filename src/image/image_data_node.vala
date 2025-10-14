@@ -13,6 +13,10 @@ namespace Image {
         public string id() {
             return "image:display";
         }
+        
+        public override string? description() {
+            return "Displays the image data at this point in the graph. Useful for inspecting intermediate results or debugging node connections.";
+        }
     }
 
     class ImageDataDisplayNode : CanvasDisplayNode {
@@ -166,8 +170,9 @@ namespace Image {
         }
 
         private void disable_local_image_viewer() {
-            panning_area.visible = false;
-            external_window_info_section.visible = true;
+            this.temporary_label.visible = false;
+            this.panning_area.visible = false;
+            this.external_window_info_section.visible = true;
 
             data_display_view.remove_from_actionbar(this.zoom_control);
             data_display_view.remove_from_actionbar(this.reset_zoom_control);
@@ -175,12 +180,15 @@ namespace Image {
         }
 
         private void enable_local_image_viewer() {
-            panning_area.visible = true;
             external_window_info_section.visible = false;
-
-            create_zoom_control();
-            create_save_button();
-            image_viewer.replace_image(current_image);
+            if (current_image == null) {
+                this.temporary_label.visible = true;
+            } else {
+                create_zoom_control();
+                create_save_button();
+                image_viewer.replace_image(current_image);
+                panning_area.visible = true;
+            }
         }
 
         private ExternalImageWindow create_external_image_window() {

@@ -64,12 +64,18 @@ public string initialize_image_plugin(Plugin.PluginContribution plugin_contribut
           new Image.ImageFileDataDisplayNodeBuilder(),
           mime_types
         );
+
+        // GEGL XML files
+        node_factory.register(
+            new Image.GeglXmlFileOriginNodeBuilder(), 
+            {"application/xml"}
+        );
     });
 
     plugin_contribution.contribute_canvas_node_factory(node_factory => {
-        node_factory.register(new Image.ImageDataDisplayNodeBuilder(),
-          typeof(Gdk.Pixbuf)
-        );
+        node_factory.register(new Image.ImageDataDisplayNodeBuilder());
+        node_factory.register(new Image.GeglXmlDisplayNodeBuilder());
+
         Image.GeglOperationsFactory.register_gegl_operations(node_factory);
     });
 
@@ -89,17 +95,16 @@ public string initialize_image_plugin(Plugin.PluginContribution plugin_contribut
     });
 
     plugin_contribution.contribute_canvas_headerbar(headerbar_widgets => {
-        //  headerbar_widgets.add_widget(new Image.GXml.ExportImportButtons());
         headerbar_widgets.add_widget(new Image.ImageProcessingRealtimeModeSwitch());
     });
 
     // overrides
     Image.GeglOperationOverrides.override_operation("gegl:load", overrides => {
-    overrides.override_title(gegl_load_title_override);
-    overrides.override_property("path", (param_spec) => {
-            var filters = build_pixbuf_filters();
-            return new Data.FileLocationProperty.with_file_filters(param_spec as ParamSpecString, filters);
-        });
+        overrides.override_title(gegl_load_title_override);
+        overrides.override_property("path", (param_spec) => {
+                var filters = build_pixbuf_filters();
+                return new Data.FileLocationProperty.with_file_filters(param_spec as ParamSpecString, filters);
+            });
     });
 
     // custom data types

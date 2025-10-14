@@ -2,7 +2,7 @@ namespace History {
 
     public class RemoveNodeAction : Object, IAction {
         private weak GtkFlow.NodeView parent_view;
-        private weak CanvasDisplayNode node;
+        private CanvasDisplayNode node;
         private int pos_x;
         private int pos_y;
         private int width;
