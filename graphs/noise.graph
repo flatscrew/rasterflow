@@ -3,26 +3,33 @@
     {
       "model" : {      },
       "builder_id" : "image:display",
-      "width" : 268,
-      "height" : 477,
+      "width" : 266,
+      "height" : 475,
       "expanded" : true,
       "position_x" : 1613,
       "position_y" : 64,
       "external-window" : {
-        "active" : false
+        "active" : true,
+        "title" : "Image window",
+        "dimensions" : {
+          "x" : 0,
+          "y" : 32,
+          "width" : 1280,
+          "height" : 1408
+        }
       }
     },
     {
       "model" : {
+        "scale" : 13.599999999999969,
         "rank" : 1,
         "shape" : 1.0,
-        "scale" : 13.599999999999969,
         "seed" : 19,
         "iterations" : 3
       },
       "builder_id" : "gegl:cell-noise",
-      "width" : 240,
-      "height" : 641,
+      "width" : 238,
+      "height" : 639,
       "expanded" : true,
       "position_x" : 73,
       "position_y" : 141
@@ -34,7 +41,7 @@
       },
       "builder_id" : "gegl:crop",
       "width" : 201,
-      "height" : 294,
+      "height" : 323,
       "expanded" : true,
       "position_x" : 425,
       "position_y" : 112
@@ -43,7 +50,7 @@
       "model" : {      },
       "builder_id" : "gegl:perlin-noise",
       "width" : 218,
-      "height" : 236,
+      "height" : 265,
       "expanded" : true,
       "position_x" : 1042,
       "position_y" : 537
@@ -55,7 +62,7 @@
       },
       "builder_id" : "gegl:threshold",
       "width" : 193,
-      "height" : 294,
+      "height" : 323,
       "expanded" : true,
       "position_x" : 804,
       "position_y" : 110
@@ -66,7 +73,7 @@
       },
       "builder_id" : "gegl:save",
       "width" : 280,
-      "height" : 236,
+      "height" : 265,
       "expanded" : true,
       "position_x" : 1161,
       "position_y" : 254

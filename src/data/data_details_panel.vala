@@ -84,46 +84,4 @@ namespace Data {
             }
         }
     }
-
-    protected class DataDetailsPanel : Gtk.Widget {
-        
-        construct {
-            set_layout_manager (new Gtk.BinLayout ());
-            hexpand = vexpand = true;
-            
-            set_size_request (200, -1);
-        }
-
-        ~DataDetailsPanel() {
-            this.panel_box.unparent();
-        }
-
-        private Gtk.Box panel_box;
-        private Gtk.SizeGroup label_size_group;
-        private Gtk.SizeGroup value_size_group;
-
-        public DataDetailsPanel() {
-            this.panel_box = new Gtk.Box(Gtk.Orientation.VERTICAL, 5);
-            panel_box.set_parent (this);
-            panel_box.add_css_class ("sidebar");
-            panel_box.add_css_class("rounded_bottom_left");
-
-            label_size_group = new Gtk.SizeGroup (Gtk.SizeGroupMode.HORIZONTAL);
-            value_size_group = new Gtk.SizeGroup (Gtk.SizeGroupMode.HORIZONTAL);
-        }
-
-        public PropertyGroup add_property_group(string group_name) {
-            var group = new PropertyGroup (group_name, label_size_group, value_size_group);
-            panel_box.append (group);
-            return group;
-        }
-
-        public void remove_property_group(Data.PropertyGroup? group) {
-            if (group == null) {
-                return;
-            }
-            panel_box.remove(group);
-        }
-    }
-
 }

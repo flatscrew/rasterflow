@@ -186,8 +186,6 @@ namespace Image {
         }
 
         internal void process_gegl() {
-            if (!realtime_processing) return;
-
             var has_connected_sinks = false;
             foreach (var source in get_sources()) {
                 if (source.sinks.length() > 0) {
@@ -205,6 +203,8 @@ namespace Image {
             }
 
             // sending notification to all other connected nodes
+            if (!realtime_processing) return;
+
             foreach (var source in get_sources()) {
                 if (!(source is PadSource)) {
                     continue;
@@ -273,12 +273,6 @@ namespace Image {
             base(builder_id, node);
 
             this.data_display_view = new Data.DataDisplayView();
-            if (node.is_output_node()) {
-                create_process_gegl_button();
-            } else {
-                create_gegl_export_button();
-            }
-
             this.gegl_operation_node = node;
             this.operation_overrides_callback = GeglOperationOverrides.find_operation_overrides(builder_id);
 
@@ -296,20 +290,26 @@ namespace Image {
                 build_default_title();
                 add_default_content(gegl_operation_node.get_gegl_operation());
             }
+
+            if (node.is_output_node()) {
+                create_process_gegl_button();
+            } else {
+                create_gegl_export_button();
+            }
         }
 
         private void create_process_gegl_button() {
             var render_button = new Gtk.Button.from_icon_name("media-playback-start");
             render_button.clicked.connect(gegl_operation_node.process_gegl);
             render_button.set_tooltip_text("Process");
-            data_display_view.add_action_bar_child_start(render_button);
+            add_action_bar_child_start(render_button);
         }
 
         private void create_gegl_export_button() {
             var export_button = new Gtk.Button.from_icon_name("document-export-symbolic");
             export_button.clicked.connect(export_graph_as_xml);
             export_button.set_tooltip_text("Export to XML");
-            data_display_view.add_action_bar_child_end(export_button);
+            add_action_bar_child_end(export_button);
         }
 
         public void add_default_content(Gegl.Operation operation) {
@@ -323,6 +323,7 @@ namespace Image {
             var properties_editor = new Data.DataPropertiesEditor(operation);
             properties_editor.vexpand = true;
             properties_editor.data_property_changed.connect(this.property_changed);
+            properties_editor.enable_control_override(this.check_supported_pad_data_type, "Promote as property pad");
             properties_editor.populate_properties(
                 () => true,
                 compose_overrides
@@ -336,6 +337,16 @@ namespace Image {
             } else {
                 n.resizable = false;
             }
+        }
+
+        private bool check_supported_pad_data_type(GLib.ParamSpec param_spec) {
+            if (param_spec is ParamSpecString 
+                || param_spec is ParamSpecInt
+                || param_spec is ParamSpecDouble) {
+                return true;
+            }
+            // TODO introduce one place for supported types maybe?
+            return false;
         }
 
         private void compose_overrides(Data.PropertyOverridesComposer composer) {

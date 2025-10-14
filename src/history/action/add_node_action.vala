@@ -14,6 +14,7 @@ namespace History {
                 return;
 
             node.remove();
+            parent_view.queue_allocate();
         }
 
         public void redo() {
@@ -21,7 +22,7 @@ namespace History {
                 return;
 
             parent_view.add(node);
+            parent_view.queue_allocate();
         }
     }
-
 }

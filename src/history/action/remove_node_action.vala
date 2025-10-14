@@ -62,6 +62,7 @@ namespace History {
             }
 
             node.undo_remove();
+            parent_view.queue_allocate();
         }
 
         public void redo() {

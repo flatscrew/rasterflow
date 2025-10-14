@@ -217,7 +217,8 @@ namespace Data {
 
             combobox.active = 0;
             combobox.changed.connect(() => {
-                property_value_changed(combobox.get_active());
+                EnumValue? v = enumc.get_value(combobox.get_active());
+                property_value_changed(v.value);
             });
 
             combobox.set_parent(this);

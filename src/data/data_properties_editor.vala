@@ -211,6 +211,10 @@ namespace Data {
         private GLib.Object data_object;
         private Gee.Map<string, GLib.Type> changed_properties = new Gee.HashMap<string, GLib.Type>();
 
+        private DataPropertyFilter? control_override_filter;
+        private bool property_control_override;
+        private string take_control_tooltip;
+
         public bool has_properties {
             get;
             private set;
@@ -243,7 +247,7 @@ namespace Data {
                                         DataPropertiesOverrideFunc overrides_func = () => {},
                                         PropertyDecorator property_decorator = widget => widget) {
 
-            int grid_y_count = 0;
+            int grid_row_count = 0;
 
             foreach (var param_spec in this.data_object.get_class().list_properties()) {
                 if (!filter(param_spec)) {
@@ -262,15 +266,25 @@ namespace Data {
                 property_wrapper.property_value_changed.connect(this.data_property_value_changed);
                 property_wrapper.halign = Gtk.Align.FILL;
 
-                properties_grid.attach(property_label(param_spec, property_wrapper.multiline), 0, grid_y_count, 1, 1);
-                properties_grid.attach(property_decorator(property_wrapper, param_spec), 1, grid_y_count++, 1, 1);
-
                 var description_label = description_label(param_spec);
                 description_label.wrap_mode = Pango.WrapMode.WORD_CHAR;
+                
+                var take_property_control_button = new Gtk.Button.from_icon_name("list-add-symbolic");
+                take_property_control_button.tooltip_text = this.take_control_tooltip;
+                take_property_control_button.visible = false;
+
+                properties_grid.attach(take_property_control_button, 0, grid_row_count, 1, 1);
+                properties_grid.attach(property_label(param_spec, property_wrapper.multiline), 1, grid_row_count, 1, 1);
+                properties_grid.attach(property_decorator(property_wrapper, param_spec), 2, grid_row_count++, 1, 1);
+                
+                if (property_control_override && param_type_supported_for_control_override(param_spec)) {
+                    take_property_control_button.visible = true;
+                }
+
                 if (description_label == null) {
                     continue;
                 }
-                properties_grid.attach(description_label, 1, grid_y_count++, 1, 1);
+                properties_grid.attach(description_label, 2, grid_row_count++, 2, 1);
             }
         
             return has_properties;
@@ -320,6 +334,17 @@ namespace Data {
             description_label.wrap_mode = Pango.WrapMode.CHAR;
             description_label.add_css_class("property_label_text");
             return description_label;
+        }
+
+        public void enable_control_override(DataPropertyFilter control_override_filter, string take_control_tooltip) {
+            this.take_control_tooltip = take_control_tooltip;
+            this.property_control_override = true;
+            this.control_override_filter = control_override_filter;
+        }
+
+        private bool param_type_supported_for_control_override(ParamSpec param_spec) {
+            if (control_override_filter == null) return false;
+            return control_override_filter(param_spec);
         }
     }
 }

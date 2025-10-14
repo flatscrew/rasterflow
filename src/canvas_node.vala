@@ -58,17 +58,26 @@ public class CanvasDisplayNode : GtkFlow.Node {
     private History.HistoryOfChangesRecorder changes_recorder;
     private Gtk.Expander node_expander;
     private Gtk.Box node_box;
+    private Gtk.ActionBar action_bar;
     private Gtk.Button delete_button;
     private Gtk.ColorButton color_chooser_button;
     private Gtk.CssProvider? custom_backround_css;
 
-    private bool has_any_child;
     private string builder_id;
     private Gdk.RGBA? node_color;
 
     public bool can_delete {
         set {
             delete_button.sensitive = value;
+        }
+    }
+
+    public bool action_bar_visible {
+        set {
+            action_bar.visible = value;
+        }
+        get {
+            return action_bar.visible;
         }
     }
 
@@ -99,7 +108,9 @@ public class CanvasDisplayNode : GtkFlow.Node {
         this.builder_id = builder_id;
         this.position_changed.connect(record_position_changed);
         this.size_changed.connect(record_size_changed);
-        create_node();
+
+        create_node_content();
+        create_action_bar();
     }
 
     private void record_position_changed(int old_x, int old_y, int new_x, int new_y) {
@@ -122,9 +133,10 @@ public class CanvasDisplayNode : GtkFlow.Node {
         build_title(new DefaultTitleWidgetBuilder(), null);
     }
 
-    private void create_node() {
-        this.node_expander = new Gtk.Expander("Node details");
+    private void create_node_content() {
+        this.size_changed.connect(this.node_resized);
 
+        this.node_expander = new Gtk.Expander("Node details");
         node_expander.set_resize_toplevel(true);
         node_expander.vexpand = node_expander.hexpand = true;
         node_expander.notify["expanded"].connect(node_exanded);
@@ -132,8 +144,43 @@ public class CanvasDisplayNode : GtkFlow.Node {
         this.node_box = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
         node_box.add_css_class("rounded_bottom");
         node_expander.set_child(node_box);
-
         base.add_child(node_expander);
+    }
+
+    private void node_resized(int old_width, int old_height, int new_width, int new_height) {
+        if (old_width < new_width || old_height < new_height) {
+            if (!node_expander.expanded) {
+                node_expander.expanded = true;
+            }
+        }
+    }
+
+    private void create_action_bar() {
+        this.action_bar = new Gtk.ActionBar();
+        action_bar.add_css_class("rounded_bottom_right");
+        action_bar.add_css_class("rounded_bottom_left");
+
+        base.add_child(action_bar);
+    }
+
+    public Gtk.Box add_action_bar_child_start(Gtk.Widget child) {
+        var wrapper = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 0);
+        wrapper.margin_start = 5;
+        wrapper.append(child);
+        action_bar.pack_start(wrapper);
+        return wrapper;
+    }
+
+    public Gtk.Box add_action_bar_child_end(Gtk.Widget child) {
+        var wrapper = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 0);
+        wrapper.margin_end = 5;
+        wrapper.append(child);
+        action_bar.pack_end(wrapper);
+        return wrapper;
+    }
+
+    public void remove_from_actionbar(Gtk.Widget child) {
+        action_bar.remove(child);
     }
 
     private void node_exanded() {
@@ -192,16 +239,10 @@ public class CanvasDisplayNode : GtkFlow.Node {
         color_chooser_button.color_set.connect(() => {
             change_background_color(color_chooser_button.get_rgba());
         });
-        title_bar.append_right(color_chooser_button);
+        title_bar.append_left(color_chooser_button);
     }
 
     public new void add_child(Gtk.Widget child) {
-        if (!has_any_child) {
-            node_box.append(new Gtk.Separator(Gtk.Orientation.HORIZONTAL));
-            node_box.append(child);
-            has_any_child = true;
-            return;
-        }
         node_box.append(child);
     }
 

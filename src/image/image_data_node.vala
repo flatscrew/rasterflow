@@ -48,7 +48,7 @@ namespace Image {
             build_default_title();
 
             this.data_display_view = new Data.DataDisplayView();
-            this.data_display_view.action_bar_visible = true;
+            this.action_bar_visible = true;
             add_child(data_display_view);
 
             create_temporary_label();
@@ -174,9 +174,9 @@ namespace Image {
             this.panning_area.visible = false;
             this.external_window_info_section.visible = true;
 
-            data_display_view.remove_from_actionbar(this.zoom_control);
-            data_display_view.remove_from_actionbar(this.reset_zoom_control);
-            data_display_view.remove_from_actionbar(this.save_button_control);
+            remove_from_actionbar(this.zoom_control);
+            remove_from_actionbar(this.reset_zoom_control);
+            remove_from_actionbar(this.save_button_control);
         }
 
         private void enable_local_image_viewer() {
@@ -216,12 +216,12 @@ namespace Image {
 
         private void create_zoom_control() {
             var scale = image_viewer.create_scale_widget();
-            this.zoom_control = data_display_view.add_action_bar_child_end(scale);
+            this.zoom_control = add_action_bar_child_end(scale);
 
             this.reset_zoom_button = new Gtk.Button.from_icon_name("zoom-original");
             reset_zoom_button.tooltip_text = "Reset to original size";
             reset_zoom_button.clicked.connect(image_viewer.reset_zoom);
-            this.reset_zoom_control = data_display_view.add_action_bar_child_end(reset_zoom_button);
+            this.reset_zoom_control = add_action_bar_child_end(reset_zoom_button);
            
             image_viewer.zoom_changed.connect(zoom_value => {
                 reset_zoom_button.sensitive = zoom_value != 1; 
@@ -233,7 +233,7 @@ namespace Image {
             render_button.clicked.connect(render_image);
             render_button.set_tooltip_text("Render image");
             render_button.set_icon_name("media-playback-start");
-            this.render_button_control = data_display_view.add_action_bar_child_start(render_button);
+            this.render_button_control = add_action_bar_child_start(render_button);
         }
 
         private void listen_data_node_changes(ImageDataNode data_node) {
@@ -271,14 +271,14 @@ namespace Image {
 
         private void image_removed() {
             this.current_image = null;
-            this.data_display_view.action_bar_visible = false;
+            this.action_bar_visible = false;
             
             this.panning_area.visible = false;
             this.temporary_label.visible = true;
 
-            data_display_view.remove_from_actionbar(this.zoom_control);
-            data_display_view.remove_from_actionbar(this.reset_zoom_control);
-            data_display_view.remove_from_actionbar(this.save_button_control);
+            remove_from_actionbar(this.zoom_control);
+            remove_from_actionbar(this.reset_zoom_control);
+            remove_from_actionbar(this.save_button_control);
         }
         
         private void image_added(Gdk.Pixbuf added_image) {
@@ -312,7 +312,7 @@ namespace Image {
         private void create_save_button() {
              var save_button = image_viewer.create_save_image_button();
              save_button.set_icon_name("document-save");
-             this.save_button_control = data_display_view.add_action_bar_child_start(save_button);
+             this.save_button_control = add_action_bar_child_start(save_button);
         }
 
         private ExternalWindowSate? read_external_window_state() {
@@ -330,6 +330,8 @@ namespace Image {
 
             var external_window_settings = serializer.new_object("external-window");
             external_window_settings.set_bool("active", state.active);
+
+            if (state.title == null) return;
             external_window_settings.set_string("title", state.title);
 
             if (state.dimensions == null) return;
