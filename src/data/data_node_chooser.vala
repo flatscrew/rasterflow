@@ -112,7 +112,7 @@ namespace Data {
 
             scrolled_list.set_child(item_list);
             base.append(scrolled_list);
-            
+
             populate_items.begin();
         }
 
@@ -139,10 +139,8 @@ namespace Data {
             description_label.visible = false;
             description_label.add_css_class("node_chooser_label_text");
             description_label.halign = Gtk.Align.START;
-            description_label.set_wrap(true);
-            description_label.set_wrap_mode(Pango.WrapMode.WORD_CHAR);
-            //  description_label.natural_wrap_mode = Gtk.NaturalWrapMode.NONE;
-            description_label.xalign = 0;
+            description_label.set_ellipsize(Pango.EllipsizeMode.END);
+
             node_box.append(description_label);
 
             list_item.set_child(node_box);
@@ -161,9 +159,10 @@ namespace Data {
                 var description_label = label.get_next_sibling() as Gtk.Label;
                 description_label.visible = true;
                 description_label.set_markup(description);
+
+                node_box.set_tooltip_markup(description);
             }
         }
-
 
         public async void populate_items() {
             new Thread<void> (null, () => {
