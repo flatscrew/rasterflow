@@ -54,7 +54,7 @@ jobs:
         shell: msys2 {0}
         run: |
           cd libgtkflow
-          meson setup build --prefix=/mingw64 -Denable_gtk3=false --buildtype=release
+          meson setup build --prefix=/mingw64 -Denable_gtk3=false -Denable_valadoc=false --buildtype=release
           ninja -C build
           ninja -C build install
 
