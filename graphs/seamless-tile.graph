@@ -1,0 +1,119 @@
+{
+  "nodes" : [
+    {
+      "model" : {
+        "y" : 0,
+        "turbulence" : 1.5000000000000004,
+        "width" : 50,
+        "height" : 50,
+        "x" : 0
+      },
+      "builder_id" : "gegl:plasma",
+      "width" : 274,
+      "height" : 460,
+      "expanded" : true,
+      "position_x" : 26,
+      "position_y" : 67
+    },
+    {
+      "model" : {      },
+      "builder_id" : "image:display",
+      "width" : 316,
+      "height" : 533,
+      "expanded" : true,
+      "position_x" : 1737,
+      "position_y" : 107,
+      "external-window" : {
+        "active" : false
+      }
+    },
+    {
+      "model" : {      },
+      "builder_id" : "gegl:tile",
+      "width" : 279,
+      "height" : 466,
+      "expanded" : true,
+      "position_x" : 796,
+      "position_y" : 77
+    },
+    {
+      "model" : {      },
+      "builder_id" : "gegl:tile-seamless",
+      "width" : 232,
+      "height" : 144,
+      "expanded" : true,
+      "position_x" : 453,
+      "position_y" : 138
+    },
+    {
+      "model" : {
+        "width" : 200.0,
+        "height" : 200.0
+      },
+      "builder_id" : "gegl:crop",
+      "width" : 230,
+      "height" : 323,
+      "expanded" : true,
+      "position_x" : 1308,
+      "position_y" : 129
+    },
+    {
+      "model" : {      },
+      "builder_id" : "image:display",
+      "width" : 328,
+      "height" : 415,
+      "expanded" : true,
+      "position_x" : 397,
+      "position_y" : 476,
+      "external-window" : {
+        "active" : false
+      }
+    }
+  ],
+  "links" : [
+    {
+      "node_index" : 0,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 3,
+          "sink_name" : "Input"
+        },
+        {
+          "node_index" : 5,
+          "sink_name" : "Input"
+        }
+      ]
+    },
+    {
+      "node_index" : 2,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 4,
+          "sink_name" : "Input"
+        }
+      ]
+    },
+    {
+      "node_index" : 3,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 2,
+          "sink_name" : "Input"
+        }
+      ]
+    },
+    {
+      "node_index" : 4,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 1,
+          "sink_name" : "Input"
+        }
+      ]
+    }
+  ]
+}

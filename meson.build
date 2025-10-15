@@ -73,6 +73,7 @@ endif
 # vala sources
 vala_sources = [
     'src/main.vala',
+    'src/minimap.vala',
     'src/window_shortcuts.vala',
     'src/theme_variant_switch.vala',
     'src/data_drop_handler.vala',
@@ -81,7 +82,6 @@ vala_sources = [
     'src/canvas_nodes.vala',
     'src/canvas_logs.vala',
     'src/canvas_headerbar.vala',
-    'src/minimap.vala',
     'src/colors.vala',
 
     'src/serialize/canvas_serializer.vala',

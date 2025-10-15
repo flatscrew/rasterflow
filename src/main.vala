@@ -85,7 +85,7 @@ class CanvasApplication : Gtk.Application {
   private void load_css() {
     var css_provider = new Gtk.CssProvider();
     css_provider.load_from_resource("data/stylesheet.css");
-    Gtk.StyleContext.add_provider_for_display(Gdk.Display.get_default(), css_provider, Gtk.STYLE_PROVIDER_PRIORITY_USER);
+    Gtk.StyleContext.add_provider_for_display(Gdk.Display.get_default(), css_provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION);
   }
 
   private void build_header_bar() {

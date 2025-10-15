@@ -218,7 +218,7 @@ namespace Image {
             var scale = image_viewer.create_scale_widget();
             this.zoom_control = add_action_bar_child_end(scale);
 
-            this.reset_zoom_button = new Gtk.Button.from_icon_name("zoom-original");
+            this.reset_zoom_button = new Gtk.Button.from_icon_name("zoom-original-symbolic");
             reset_zoom_button.tooltip_text = "Reset to original size";
             reset_zoom_button.clicked.connect(image_viewer.reset_zoom);
             this.reset_zoom_control = add_action_bar_child_end(reset_zoom_button);
@@ -232,7 +232,7 @@ namespace Image {
             var render_button = new Gtk.Button();
             render_button.clicked.connect(render_image);
             render_button.set_tooltip_text("Render image");
-            render_button.set_icon_name("media-playback-start");
+            render_button.set_icon_name("media-playback-start-symbolic");
             this.render_button_control = add_action_bar_child_start(render_button);
         }
 
@@ -311,7 +311,7 @@ namespace Image {
 
         private void create_save_button() {
              var save_button = image_viewer.create_save_image_button();
-             save_button.set_icon_name("document-save");
+             save_button.set_icon_name("document-save-symbolic");
              this.save_button_control = add_action_bar_child_start(save_button);
         }
 

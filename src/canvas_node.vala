@@ -96,6 +96,7 @@ public class CanvasDisplayNode : GtkFlow.Node {
         var css = "
         .gtkflow_node {
             background-color: @theme_bg_color;
+            box-shadow: none;
         }
 
         .dark {
@@ -207,6 +208,7 @@ public class CanvasDisplayNode : GtkFlow.Node {
     private void add_delete_button (Data.TitleBar title_bar) {
         this.delete_button = new Gtk.Button();
         delete_button.add_css_class("destructive-action");
+        delete_button.add_css_class("circular");
         delete_button.set_icon_name("window-close-symbolic");
         delete_button.set_focusable(false);
         delete_button.set_focus_on_click(false);
