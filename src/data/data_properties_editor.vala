@@ -201,6 +201,30 @@ namespace Data {
 
     public delegate Gtk.Widget PropertyDecorator(Gtk.Widget property_widget, GLib.ParamSpec param_spec);
 
+    private struct PropertiesGridEntry {
+        public Gtk.Label property_label;
+        public Gtk.Label? description_label;
+        public Gtk.Widget? property_decorator;
+
+        public static PropertiesGridEntry create(ParamSpec param_spec) {
+            return {};
+        }
+
+        public void hide() {
+            this.property_label.visible = false;
+            
+            if (this.property_decorator == null) {
+                return;
+            }
+            this.property_decorator.visible = false;
+
+            if (this.description_label == null) {
+                return;
+            }
+            this.description_label.visible = false;
+        }
+    }
+
     public class DataPropertiesEditor : Gtk.Widget {
 
         [Signal (detailed = true)]
@@ -214,7 +238,8 @@ namespace Data {
         private DataPropertyFilter? control_override_filter;
         private bool property_control_override;
         private string take_control_tooltip;
-
+        private GLib.Func<ParamSpec> param_spec_func;
+        
         public bool has_properties {
             get;
             private set;
@@ -267,15 +292,20 @@ namespace Data {
                 property_wrapper.halign = Gtk.Align.FILL;
 
                 var description_label = description_label(param_spec);
-                description_label.wrap_mode = Pango.WrapMode.WORD_CHAR;
-                
-                var take_property_control_button = new Gtk.Button.from_icon_name("list-add-symbolic");
-                take_property_control_button.tooltip_text = this.take_control_tooltip;
-                take_property_control_button.visible = false;
+                var property_label = property_label(param_spec, property_wrapper.multiline);
+                var decorator = property_decorator(property_wrapper, param_spec);
+                var take_property_control_button = crate_take_property_control_button(
+                    param_spec,
+                    {
+                        property_label: property_label,
+                        description_label: description_label,
+                        property_decorator: decorator,
+                    }
+                );
 
                 properties_grid.attach(take_property_control_button, 0, grid_row_count, 1, 1);
-                properties_grid.attach(property_label(param_spec, property_wrapper.multiline), 1, grid_row_count, 1, 1);
-                properties_grid.attach(property_decorator(property_wrapper, param_spec), 2, grid_row_count++, 1, 1);
+                properties_grid.attach(property_label, 1, grid_row_count, 1, 1);
+                properties_grid.attach(decorator, 2, grid_row_count++, 1, 1);
                 
                 if (property_control_override && param_type_supported_for_control_override(param_spec)) {
                     take_property_control_button.visible = true;
@@ -288,6 +318,25 @@ namespace Data {
             }
         
             return has_properties;
+        }
+
+        private Gtk.Button crate_take_property_control_button(
+            ParamSpec param_spec,
+            PropertiesGridEntry properties_grid_entry
+        ) {
+            // TODO make it possible to use a custom icon
+            var take_property_control_button = new Gtk.Button.from_icon_name("list-add-symbolic");
+            take_property_control_button.tooltip_text = this.take_control_tooltip;
+            take_property_control_button.visible = false;
+            take_property_control_button.clicked.connect(() => {
+                properties_grid_entry.hide();
+                take_property_control_button.visible = false;
+
+                // TODO pass controller/contract instead of just ParamSpec
+                this.param_spec_func(param_spec);
+            });
+
+            return take_property_control_button;
         }
 
         private void data_property_value_changed(string property_name, GLib.Value property_value) {
@@ -336,10 +385,15 @@ namespace Data {
             return description_label;
         }
 
-        public void enable_control_override(DataPropertyFilter control_override_filter, string take_control_tooltip) {
+        public void enable_control_override(
+            DataPropertyFilter control_override_filter, 
+            string take_control_tooltip,
+            GLib.Func<ParamSpec> param_spec_func
+        ) {
             this.take_control_tooltip = take_control_tooltip;
             this.property_control_override = true;
             this.control_override_filter = control_override_filter;
+            this.param_spec_func = param_spec_func;
         }
 
         private bool param_type_supported_for_control_override(ParamSpec param_spec) {
@@ -347,4 +401,5 @@ namespace Data {
             return control_override_filter(param_spec);
         }
     }
+
 }

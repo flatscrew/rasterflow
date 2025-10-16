@@ -25,6 +25,8 @@ dependencies = [
     dependency('gio-2.0'),
     dependency('json-glib-1.0'),
     dependency('gegl-0.4'),
+    dependency('libportal'),
+    dependency('libportal-gtk4')
 ]
 
 if host_machine.system() == 'linux'
@@ -84,10 +86,15 @@ vala_sources = [
     'src/canvas_headerbar.vala',
     'src/colors.vala',
 
+    # serialization
     'src/serialize/canvas_serializer.vala',
     'src/serialize/canvas_deserializer.vala',
     'src/serialize/json_serializer.vala',
     'src/serialize/json_deserializer.vala',
+
+    # property node
+    'src/property/canvas_property_bridge.vala',
+    'src/property/canvas_property_node.vala',
 
     # generic data
     'src/data/data_property.vala',
@@ -115,6 +122,8 @@ vala_sources = [
     'src/image/gegl_xml_file_node.vala',
     'src/image/gxml/gxml_export.vala',
     'src/image/window_geometry.vala',
+    'src/image/color_prober.vala',
+    'src/image/color_property.vala',
     'src/image/plugin.vala',
     
     # plain text processing

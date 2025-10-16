@@ -272,8 +272,10 @@ namespace Image {
         public GeglOperationDisplayNode(string builder_id, GeglOperationNode node) {
             base(builder_id, node);
 
+            this.details_expand_toggled.connect(this.node_details_expanded);
             this.data_display_view = new Data.DataDisplayView();
             this.gegl_operation_node = node;
+            this.gegl_operation_node.sink_added.connect_after(this.sink_added);
             this.operation_overrides_callback = GeglOperationOverrides.find_operation_overrides(builder_id);
 
             if (operation_overrides_callback != null) {
@@ -298,6 +300,12 @@ namespace Image {
             }
         }
 
+        private void node_details_expanded(bool expanded) {
+            if (!expanded) return;
+
+            this.set_size_request(400, 300);
+        }
+
         private void create_process_gegl_button() {
             var render_button = new Gtk.Button.from_icon_name("media-playback-start");
             render_button.clicked.connect(gegl_operation_node.process_gegl);
@@ -316,20 +324,24 @@ namespace Image {
             var scrolled_window = new Gtk.ScrolledWindow();
             scrolled_window.vexpand = scrolled_window.hexpand = true;
             scrolled_window.set_propagate_natural_height(true);
-            scrolled_window.set_min_content_height(150);
             scrolled_window.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC); 
             scrolled_window.set_placement(Gtk.CornerType.TOP_RIGHT);
 
             var properties_editor = new Data.DataPropertiesEditor(operation);
             properties_editor.vexpand = true;
             properties_editor.data_property_changed.connect(this.property_changed);
-            properties_editor.enable_control_override(this.check_supported_pad_data_type, "Promote as property pad");
+            properties_editor.enable_control_override(
+                this.check_supported_pad_data_type, 
+                "Promote as property pad",
+                this.on_property_promoted
+            );
             properties_editor.populate_properties(
                 () => true,
                 compose_overrides
             );
 
             data_display_view.add_child(properties_editor);
+            data_display_view.set_margin(10);
 
             if (properties_editor.has_properties) {
                 scrolled_window.set_child(data_display_view);
@@ -347,6 +359,35 @@ namespace Image {
             }
             // TODO introduce one place for supported types maybe?
             return false;
+        }
+
+        private void on_property_promoted(ParamSpec param_spec) {
+            // TODO introduce some kind of controller that will be 
+            // passed to this method instead of just param spec
+            var property_sink = new CanvasNodePropertySink(param_spec);
+            gegl_operation_node.add_sink(property_sink);
+        }
+
+        private void sink_added(GFlow.Sink new_sink) {
+            var canvas_view = get_parent() as GtkFlow.NodeView;
+            if (canvas_view == null) {
+                return;
+            }
+
+            var dock = canvas_view.retrieve_dock(new_sink);
+            if (dock == null) {
+                warning("Unable to find dock");
+            }
+            dock.resolve_color.connect_after(this.node_property_sink_edge_color);
+        }
+
+        private Gdk.RGBA node_property_sink_edge_color(GtkFlow.Dock dock, Value? value) {
+            return {
+                red: 0.63f,
+                green: 0.63f,
+                blue: 0.63f,
+                alpha: 1.0f
+            };
         }
 
         private void compose_overrides(Data.PropertyOverridesComposer composer) {

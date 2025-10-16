@@ -32,5 +32,9 @@ namespace Data {
         public new void remove_child(Gtk.Widget child) {
             node_children_box.remove(child);
         }
+
+        public void set_margin(int margin) {
+            margin_bottom = margin_top = margin_start = margin_end = margin;
+        }
     }
 }

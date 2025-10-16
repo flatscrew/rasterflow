@@ -31,12 +31,15 @@ class CanvasApplication : Gtk.Application {
     var canvas_signals = new CanvasSignals();
 
     activate.connect (() => {
+      this.window = new Gtk.ApplicationWindow(this);
+      
       load_css();
 
       var plugin_contribution = new Plugin.PluginContribution(
         canvas_signals,
         data_node_factory,
         header_widgets,
+        window,
         file_origin_node_factory,
         serializers,
         deserializers
@@ -55,10 +58,9 @@ class CanvasApplication : Gtk.Application {
       canvas_signals.before_file_load.connect_after(this.before_file_load);
       canvas_signals.after_file_load.connect_after(this.after_file_load);
 
-      this.window = new Gtk.ApplicationWindow(this);
       build_header_bar();
       add_shortcuts(window);
-
+      
       window.set_default_size(800, 600);
       window.set_child (canvas_view);
       window.present();

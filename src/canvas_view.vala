@@ -310,6 +310,11 @@ public class CanvasView : Gtk.Widget {
         });
     }
 
+    public GtkFlow.Dock? find_node_sink_dock_widget(CanvasNodeSink node_sink) {
+        message("FETCHING DOCK!!!\n");
+        return node_view.retrieve_dock(node_sink);
+    }
+
     public Data.DataNodeChooser create_node_chooser() {
         var node_chooser = new Data.DataNodeChooser.everything(node_factory);
         node_chooser.set_tooltip_text("Add new node");

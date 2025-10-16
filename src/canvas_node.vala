@@ -54,6 +54,7 @@ public class DefaultTitleWidgetBuilder : CanvasNodeTitleWidgetBuilder, Object {
 public class CanvasDisplayNode : GtkFlow.Node {
         
     public signal void removed(CanvasDisplayNode removed_node);
+    public signal void details_expand_toggled(bool expanded);
 
     private History.HistoryOfChangesRecorder changes_recorder;
     private Gtk.Expander node_expander;
@@ -140,7 +141,7 @@ public class CanvasDisplayNode : GtkFlow.Node {
         this.node_expander = new Gtk.Expander("Node details");
         node_expander.set_resize_toplevel(true);
         node_expander.vexpand = node_expander.hexpand = true;
-        node_expander.notify["expanded"].connect(node_exanded);
+        node_expander.notify["expanded"].connect(node_expanded);
 
         this.node_box = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
         node_box.add_css_class("rounded_bottom");
@@ -184,12 +185,13 @@ public class CanvasDisplayNode : GtkFlow.Node {
         action_bar.remove(child);
     }
 
-    private void node_exanded() {
+    private void node_expanded() {
         changes_recorder.record(new History.ToggleExpanderAction(this.node_expander, this, get_width(), get_height()));
-
         if (!this.node_expander.expanded) {
             set_size_request(-1, -1);
         }
+
+        details_expand_toggled(this.node_expander.expanded);
     }
 
     private Gtk.Widget node_header(
