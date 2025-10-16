@@ -78,13 +78,15 @@ public class CanvasView : Gtk.Widget {
         this.node_view = new GtkFlow.NodeView();
         this.scrolled_window = new Gtk.ScrolledWindow();
         scrolled_window.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC);
-       
+        scrolled_window.add_css_class("canvas_view");
+
+
         this.scroll_panner = new ScrollPanner();
         scroll_panner.enable_panning(scrolled_window);
 
-        node_view.add_css_class("canvas_view");
+        //  node_view.add_css_class("canvas_view");
         scrolled_window.vexpand = scrolled_window.hexpand = true;
-        scrolled_window.child = node_view;
+        scrolled_window.child = new ZoomableArea(node_view);
     }
 
     private Gtk.Overlay create_minimap_overlay() {

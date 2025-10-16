@@ -1,5 +1,27 @@
 using Gtk;
 
+public class ZoomableArea : Gtk.Fixed {
+    public float zoom { get; private set; }
+    private Gtk.Widget child;
+
+    public ZoomableArea(Gtk.Widget child) {
+        this.child = child;
+        this.put(child, 0, 0);
+        this.set_child_transform(child, new Gsk.Transform());
+
+        update_zoom(2.0f);
+    }
+
+    public void update_zoom(float new_zoom) {
+        this.zoom = new_zoom;
+        if (this.zoom < 0.1f) this.zoom = 0.1f;
+        if (this.zoom > 10.0f) this.zoom = 10.0f;
+
+        var transform = new Gsk.Transform().scale(zoom, zoom);
+        this.set_child_transform(child, transform);
+    }
+}
+
 public class ScrollPanner : Object {
     private Gtk.ScrolledWindow scrolled;
     private bool panning = false;
