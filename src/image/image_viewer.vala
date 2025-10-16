@@ -94,25 +94,19 @@ namespace Image {
         }
         
         private void draw_checker_board (Gtk.Snapshot snapshot, int width, int height) {
-             // define the size of each square in the checkerboard
-            int square_size = 20;  // You can adjust this value as needed
-
-            // colors for the checkerboard
+            int square_size = 20;
             Gdk.RGBA color1 = Gdk.RGBA() { red = 0.8f, green = 0.8f, blue = 0.8f, alpha = 0.6f }; // light gray
             Gdk.RGBA color2 = Gdk.RGBA() { red = 0.6f, green = 0.6f, blue = 0.6f, alpha = 0.6f }; // darker gray
 
             bool useFirstColor;
             
             for (int x = 0; x < width; x += square_size) {
-                useFirstColor = (x / square_size) % 2 == 0;  // alternate starting color for each row
+                useFirstColor = (x / square_size) % 2 == 0;
                 
                 for (int y = 0; y < height; y += square_size) {
                     var rect = Graphene.Rect();
                     rect.init(x, y, square_size, square_size);
-
                     snapshot.append_color(useFirstColor ? color1 : color2, rect);
-
-                    // alternate the color for the next square in the row
                     useFirstColor = !useFirstColor;
                 }
             }
@@ -181,6 +175,13 @@ namespace Image {
                 adjustment.set_value(zoom_value);
             });
             return scale_widget;
+        }
+
+        public Gtk.Button create_reset_scale_button() {
+            var reset_zoom_button = new Gtk.Button.from_icon_name("zoom-original-symbolic");
+            reset_zoom_button.tooltip_text = "Reset to original size";
+            reset_zoom_button.clicked.connect(this.reset_zoom);
+            return reset_zoom_button;
         }
 
         private void save_button_clicked() {

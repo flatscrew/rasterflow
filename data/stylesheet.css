@@ -10,10 +10,23 @@
     border-left-width: 1px;
     border-right-width: 1px;
     border-bottom-width: 1px;
-    border-style: dashed;
     border-radius: 5px;
     border-color: gray;
-    background: rgba(255, 255, 255, 0.7);
+    border-style: solid;
+    background: rgba(255, 255, 255, 0.1);
+ }
+
+ .canvas_scale { 
+    border-top-width: 1px;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-bottom-width: 1px;
+    border-radius: 5px;
+    border-color: gray;
+    background: rgba(255, 255, 255, 0.1);
+    border-style: solid;
+    padding: 10px;
+    margin: 10px;
  }
 
 .node_chooser_label_text {

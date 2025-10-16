@@ -4,9 +4,11 @@ public class CanvasView : Gtk.Widget {
 
     private History.HistoryOfChangesRecorder changes_recorder;
 
+    private Gtk.Box node_view_box;
     private Gtk.Paned main_pane;
     private Gtk.ScrolledWindow scrolled_window;
     private ScrollPanner scroll_panner;
+    private ZoomableArea zoomable_area;
     private GtkFlow.NodeView node_view;
 
     private Data.FileOriginNodeFactory file_origin_node_factory;
@@ -57,11 +59,9 @@ public class CanvasView : Gtk.Widget {
         this.canvas_nodes = new CanvasNodes(node_factory);
         canvas_nodes.node_added.connect_after(this.node_added);
         
-        var node_view_box = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
+        this.node_view_box = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
         create_node_view();
-        node_view_box.append(scrolled_window);
-        node_view_box.append(create_minimap_overlay());
-        
+        create_minimap_overlay();
         create_logs_area();
 
         this.main_pane = new Gtk.Paned(Gtk.Orientation.VERTICAL);
@@ -76,28 +76,51 @@ public class CanvasView : Gtk.Widget {
 
     private void create_node_view() {
         this.node_view = new GtkFlow.NodeView();
-        this.scrolled_window = new Gtk.ScrolledWindow();
-        scrolled_window.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC);
-        scrolled_window.add_css_class("canvas_view");
 
+        this.zoomable_area = new ZoomableArea(node_view, 0.5f, 2f);
+
+        this.scrolled_window = new Gtk.ScrolledWindow();
+        scrolled_window.set_policy(Gtk.PolicyType.EXTERNAL, Gtk.PolicyType.EXTERNAL);
+        scrolled_window.add_css_class("canvas_view");
+        scrolled_window.vexpand = scrolled_window.hexpand = true;
+        scrolled_window.child = this.zoomable_area;
 
         this.scroll_panner = new ScrollPanner();
         scroll_panner.enable_panning(scrolled_window);
 
-        //  node_view.add_css_class("canvas_view");
-        scrolled_window.vexpand = scrolled_window.hexpand = true;
-        scrolled_window.child = new ZoomableArea(node_view);
+        this.node_view_box.append(scrolled_window);
+
+        create_zoom_control_overlay();
     }
 
-    private Gtk.Overlay create_minimap_overlay() {
+    private void create_zoom_control_overlay() {
         var overlay = new Gtk.Overlay();
-        var miniMap = new MiniMap(node_view);
-        miniMap.set_valign(Gtk.Align.END);
-        miniMap.set_halign(Gtk.Align.END);
-        miniMap.set_can_focus(false);
+        var scale_widget = zoomable_area.create_scale_widget();
+        scale_widget.set_can_focus(false);
 
-        overlay.add_overlay(miniMap);
-        return overlay;
+        var reset_scale = zoomable_area.create_reset_scale_button();
+
+        var control_box = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 5);
+        control_box.append(scale_widget);
+        control_box.append(reset_scale);
+        control_box.set_valign(Gtk.Align.END);
+        control_box.set_halign(Gtk.Align.START);
+        control_box.add_css_class("canvas_scale");
+
+        overlay.add_overlay(control_box);
+        node_view_box.append(overlay);
+    }
+
+    private void create_minimap_overlay() {
+        var overlay = new Gtk.Overlay();
+        var mini_map = new MiniMap(node_view);
+        mini_map.set_valign(Gtk.Align.END);
+        mini_map.set_halign(Gtk.Align.END);
+        mini_map.set_can_focus(false);
+
+        overlay.add_overlay(mini_map);
+
+        node_view_box.append(overlay);
     }
 
     private void create_logs_area() {

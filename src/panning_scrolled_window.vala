@@ -1,24 +1,65 @@
 using Gtk;
 
 public class ZoomableArea : Gtk.Fixed {
-    public float zoom { get; private set; }
+
+    public signal void zoom_changed(float new_zoom_value, float old_zoom_value);
+
+    private float zoom;
+    private float min_zoom;
+    private float max_zoom;
+    private bool internal_adjustment;
+
     private Gtk.Widget child;
 
-    public ZoomableArea(Gtk.Widget child) {
+    public ZoomableArea(Gtk.Widget child, float min_zoom = 0.1f, float max_zoom = 10f) {
+        this.min_zoom = min_zoom;
+        this.max_zoom = max_zoom;
         this.child = child;
         this.put(child, 0, 0);
         this.set_child_transform(child, new Gsk.Transform());
-
-        update_zoom(2.0f);
     }
 
-    public void update_zoom(float new_zoom) {
+    private void update_zoom(float new_zoom) {
+        float old_zoom = zoom;
         this.zoom = new_zoom;
-        if (this.zoom < 0.1f) this.zoom = 0.1f;
-        if (this.zoom > 10.0f) this.zoom = 10.0f;
-
+        
+        if (this.zoom < min_zoom) this.zoom = min_zoom;
+        if (this.zoom > max_zoom) this.zoom = max_zoom;
+        
         var transform = new Gsk.Transform().scale(zoom, zoom);
         this.set_child_transform(child, transform);
+
+        zoom_changed(zoom, old_zoom);
+    }
+
+    private void reset_zoom() {
+        update_zoom(1f);
+    }
+
+    public Gtk.Scale create_scale_widget() {
+        var adjustment = new Gtk.Adjustment(1, min_zoom, max_zoom, 0.1, 1, 0);
+        var scale_widget = new Gtk.Scale(Gtk.Orientation.HORIZONTAL, adjustment);
+        scale_widget.set_value(1);
+        scale_widget.set_size_request(150, -1);
+        scale_widget.value_changed.connect(() => {
+            if (internal_adjustment) {
+                internal_adjustment = false;
+                return;
+            }
+            this.update_zoom((float) adjustment.get_value());
+        });
+        zoom_changed.connect(zoom_value => {
+            internal_adjustment = true;
+            adjustment.set_value(zoom_value);
+        });
+        return scale_widget;
+    }
+
+    public Gtk.Button create_reset_scale_button() {
+        var reset_zoom_button = new Gtk.Button.from_icon_name("zoom-original-symbolic");
+        reset_zoom_button.tooltip_text = "Reset to original size";
+        reset_zoom_button.clicked.connect(this.reset_zoom);
+        return reset_zoom_button;
     }
 }
 
