@@ -392,8 +392,8 @@ namespace Data {
         ) {
             this.take_control_tooltip = take_control_tooltip;
             this.property_control_override = true;
-            this.control_override_filter = control_override_filter;
-            this.param_spec_func = param_spec_func;
+            this.control_override_filter = (param_spec) => control_override_filter(param_spec);
+            this.param_spec_func = (param_spec) => param_spec_func(param_spec);
         }
 
         private bool param_type_supported_for_control_override(ParamSpec param_spec) {

@@ -6,6 +6,7 @@ public class CanvasView : Gtk.Widget {
 
     private Gtk.Paned main_pane;
     private Gtk.ScrolledWindow scrolled_window;
+    private ScrollPanner scroll_panner;
     private GtkFlow.NodeView node_view;
 
     private Data.FileOriginNodeFactory file_origin_node_factory;
@@ -75,11 +76,15 @@ public class CanvasView : Gtk.Widget {
 
     private void create_node_view() {
         this.node_view = new GtkFlow.NodeView();
-        node_view.add_css_class("canvas_view");
-
         this.scrolled_window = new Gtk.ScrolledWindow();
+        scrolled_window.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC);
+       
+        this.scroll_panner = new ScrollPanner();
+        scroll_panner.enable_panning(scrolled_window);
+
+        node_view.add_css_class("canvas_view");
+        scrolled_window.vexpand = scrolled_window.hexpand = true;
         scrolled_window.child = node_view;
-        scrolled_window.vexpand = true;
     }
 
     private Gtk.Overlay create_minimap_overlay() {
@@ -259,15 +264,13 @@ public class CanvasView : Gtk.Widget {
 
         new Thread<void*> (null, () => {
             canvas_nodes.remove_all();
+            canvas_nodes.deserialize_graph(selected_file, deserializers);
 
-            MainContext.default().invoke(() => {
-                canvas_nodes.deserialize_graph(selected_file, deserializers);
+            Idle.add(() => {
                 node_view.queue_allocate();
                 node_view.queue_draw();
-                return false;
+                return load_graph_async.callback();
             });
-
-            Idle.add(load_graph_async.callback);
             return null;
         });
         yield;

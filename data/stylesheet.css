@@ -1,5 +1,4 @@
 .canvas_view {
-    background-color: var(--editor-bg, #2a2a2a);
     background-image:
     linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px),
     linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px);
