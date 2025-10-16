@@ -276,7 +276,10 @@ public class CanvasDisplayNode : GtkFlow.Node {
         
         var expanded = deserializer.get_bool("expanded", false);
         if (expanded) {
-            node_expander.expanded = true;
+            Idle.add(() => {
+                node_expander.expanded = true;
+                return false;
+            });
         }
         set_size_request(deserializer.get_int("width"), deserializer.get_int("height"));
         set_position(deserializer.get_int("position_x"), deserializer.get_int("position_y"));

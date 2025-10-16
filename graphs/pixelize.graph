@@ -9,9 +9,9 @@
         "ratio-y" : 0.40000000000000013
       },
       "builder_id" : "gegl:pixelize",
-      "width" : 262,
-      "height" : 470,
-      "expanded" : true,
+      "width" : 131,
+      "height" : 144,
+      "expanded" : false,
       "position_x" : 694,
       "position_y" : 77
     },
@@ -21,26 +21,26 @@
         "height" : 200.0
       },
       "builder_id" : "gegl:crop",
-      "width" : 230,
-      "height" : 402,
-      "expanded" : true,
+      "width" : 114,
+      "height" : 173,
+      "expanded" : false,
       "position_x" : 412,
       "position_y" : 144
     },
     {
       "model" : {      },
       "builder_id" : "gegl:cell-noise",
-      "width" : 339,
-      "height" : 683,
-      "expanded" : true,
+      "width" : 145,
+      "height" : 115,
+      "expanded" : false,
       "position_x" : 36,
       "position_y" : 79
     },
     {
       "model" : {      },
       "builder_id" : "image:display",
-      "width" : 492,
-      "height" : 570,
+      "width" : 490,
+      "height" : 568,
       "expanded" : true,
       "position_x" : 1423,
       "position_y" : 183,
@@ -51,7 +51,7 @@
     {
       "model" : {      },
       "builder_id" : "gegl:antialias",
-      "width" : 202,
+      "width" : 204,
       "height" : 144,
       "expanded" : false,
       "position_x" : 1106,

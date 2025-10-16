@@ -76,15 +76,12 @@ public class CanvasView : Gtk.Widget {
 
     private void create_node_view() {
         this.node_view = new GtkFlow.NodeView();
-
-        this.zoomable_area = new ZoomableArea(node_view, 0.5f, 2f);
-
         this.scrolled_window = new Gtk.ScrolledWindow();
+        scrolled_window.set_kinetic_scrolling(false);
         scrolled_window.set_policy(Gtk.PolicyType.EXTERNAL, Gtk.PolicyType.EXTERNAL);
         scrolled_window.add_css_class("canvas_view");
         scrolled_window.vexpand = scrolled_window.hexpand = true;
-        scrolled_window.child = this.zoomable_area;
-
+        
         this.scroll_panner = new ScrollPanner();
         scroll_panner.enable_panning(scrolled_window);
 
@@ -94,6 +91,8 @@ public class CanvasView : Gtk.Widget {
     }
 
     private void create_zoom_control_overlay() {
+        this.zoomable_area = new ZoomableArea(scrolled_window, node_view, 0.5f, 2f);
+
         var overlay = new Gtk.Overlay();
         var scale_widget = zoomable_area.create_scale_widget();
         scale_widget.set_can_focus(false);

@@ -333,7 +333,6 @@ namespace Image {
                 return true;
             });
         }
-        
 
         protected override void snapshot(Gtk.Snapshot snapshot) {
             base.snapshot(snapshot);

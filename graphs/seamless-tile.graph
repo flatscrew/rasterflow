@@ -9,18 +9,18 @@
         "x" : 0
       },
       "builder_id" : "gegl:plasma",
-      "width" : 272,
-      "height" : 458,
-      "expanded" : true,
+      "width" : 131,
+      "height" : 115,
+      "expanded" : false,
       "position_x" : 26,
       "position_y" : 67
     },
     {
       "model" : {      },
       "builder_id" : "image:display",
-      "width" : 314,
-      "height" : 531,
-      "expanded" : true,
+      "width" : 152,
+      "height" : 115,
+      "expanded" : false,
       "position_x" : 1281,
       "position_y" : 98,
       "external-window" : {
@@ -30,9 +30,9 @@
     {
       "model" : {      },
       "builder_id" : "gegl:tile",
-      "width" : 247,
-      "height" : 294,
-      "expanded" : true,
+      "width" : 112,
+      "height" : 144,
+      "expanded" : false,
       "position_x" : 679,
       "position_y" : 107
     },
@@ -41,7 +41,7 @@
       "builder_id" : "gegl:tile-seamless",
       "width" : 232,
       "height" : 144,
-      "expanded" : true,
+      "expanded" : false,
       "position_x" : 385,
       "position_y" : 100
     },
@@ -51,18 +51,18 @@
         "height" : 200.0
       },
       "builder_id" : "gegl:crop",
-      "width" : 230,
-      "height" : 323,
-      "expanded" : true,
+      "width" : 114,
+      "height" : 173,
+      "expanded" : false,
       "position_x" : 998,
       "position_y" : 97
     },
     {
       "model" : {      },
       "builder_id" : "image:display",
-      "width" : 276,
-      "height" : 340,
-      "expanded" : true,
+      "width" : 152,
+      "height" : 115,
+      "expanded" : false,
       "position_x" : 359,
       "position_y" : 422,
       "external-window" : {

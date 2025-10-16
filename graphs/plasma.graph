@@ -8,9 +8,9 @@
         "x" : 0
       },
       "builder_id" : "gegl:plasma",
-      "width" : 280,
-      "height" : 466,
-      "expanded" : true,
+      "width" : 131,
+      "height" : 115,
+      "expanded" : false,
       "position_x" : 26,
       "position_y" : 67
     },
@@ -20,18 +20,18 @@
         "height" : 200.0
       },
       "builder_id" : "gegl:crop",
-      "width" : 201,
-      "height" : 294,
-      "expanded" : true,
+      "width" : 114,
+      "height" : 173,
+      "expanded" : false,
       "position_x" : 352,
       "position_y" : 5
     },
     {
       "model" : {      },
       "builder_id" : "image:display",
-      "width" : 267,
-      "height" : 315,
-      "expanded" : true,
+      "width" : 152,
+      "height" : 115,
+      "expanded" : false,
       "position_x" : 706,
       "position_y" : 80,
       "external-window" : {
