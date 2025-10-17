@@ -8,8 +8,8 @@
         }
       },
       "builder_id" : "gegl:color",
-      "width" : 232,
-      "height" : 236,
+      "width" : 257,
+      "height" : 245,
       "expanded" : true,
       "color" : "rgb(165,29,45)",
       "position_x" : 37,
@@ -23,8 +23,8 @@
         }
       },
       "builder_id" : "gegl:color",
-      "width" : 232,
-      "height" : 236,
+      "width" : 268,
+      "height" : 288,
       "expanded" : true,
       "color" : "rgb(38,162,105)",
       "position_x" : 40,
@@ -33,32 +33,35 @@
     {
       "model" : {      },
       "builder_id" : "gegl:add",
-      "width" : 242,
-      "height" : 294,
-      "expanded" : true,
-      "position_x" : 294,
-      "position_y" : 147
+      "width" : 112,
+      "height" : 173,
+      "expanded" : false,
+      "position_x" : 626,
+      "position_y" : 70
     },
     {
       "model" : {
-        "width" : 20.0,
-        "height" : 20.0
+        "width" : 200.0,
+        "height" : 200.0
       },
       "builder_id" : "gegl:crop",
-      "width" : 284,
-      "height" : 416,
+      "width" : 398,
+      "height" : 298,
       "expanded" : true,
-      "position_x" : 584,
-      "position_y" : 97
+      "position_x" : 815,
+      "position_y" : 57
     },
     {
       "model" : {      },
       "builder_id" : "image:display",
-      "width" : 511,
-      "height" : 496,
+      "width" : 509,
+      "height" : 494,
       "expanded" : true,
-      "position_x" : 969,
-      "position_y" : 66
+      "position_x" : 1285,
+      "position_y" : 65,
+      "external-window" : {
+        "active" : false
+      }
     }
   ],
   "links" : [
@@ -98,7 +101,7 @@
       "sinks" : [
         {
           "node_index" : 4,
-          "sink_name" : "GEGL node"
+          "sink_name" : "Input"
         }
       ]
     }

@@ -86,6 +86,7 @@ vala_sources = [
     'src/canvas_headerbar.vala',
     'src/colors.vala',
     'src/panning_scrolled_window.vala',
+    'src/zoomable_area.vala',
 
     # serialization
     'src/serialize/canvas_serializer.vala',

@@ -5,8 +5,8 @@
         "path" : "/home/activey/Pictures/test/vintage-tile1_albedo.png"
       },
       "builder_id" : "gegl:load",
-      "width" : 248,
-      "height" : 232,
+      "width" : 398,
+      "height" : 298,
       "expanded" : true,
       "position_x" : 46,
       "position_y" : 83
@@ -14,21 +14,24 @@
     {
       "model" : {      },
       "builder_id" : "gegl:gray",
-      "width" : 135,
-      "height" : 110,
+      "width" : 148,
+      "height" : 144,
       "expanded" : false,
       "color" : "rgb(38,162,105)",
-      "position_x" : 342,
-      "position_y" : 96
+      "position_x" : 545,
+      "position_y" : 74
     },
     {
       "model" : {      },
       "builder_id" : "image:display",
-      "width" : 667,
-      "height" : 797,
+      "width" : 426,
+      "height" : 448,
       "expanded" : true,
-      "position_x" : 1004,
-      "position_y" : 33
+      "position_x" : 1318,
+      "position_y" : 24,
+      "external-window" : {
+        "active" : false
+      }
     },
     {
       "model" : {
@@ -38,11 +41,11 @@
         "flip-y" : true
       },
       "builder_id" : "gegl:normal-map",
-      "width" : 381,
-      "height" : 487,
+      "width" : 398,
+      "height" : 298,
       "expanded" : true,
-      "position_x" : 542,
-      "position_y" : 71
+      "position_x" : 813,
+      "position_y" : 80
     }
   ],
   "links" : [
@@ -72,7 +75,7 @@
       "sinks" : [
         {
           "node_index" : 2,
-          "sink_name" : "GEGL node"
+          "sink_name" : "Input"
         }
       ]
     }
