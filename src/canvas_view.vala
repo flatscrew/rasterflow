@@ -93,14 +93,14 @@ public class CanvasView : Gtk.Widget {
         this.zoomable_area = new ZoomableArea(scrolled_window, node_view);
 
         var overlay = new Gtk.Overlay();
-        //  var scale_widget = zoomable_area.create_scale_widget();
-        //  scale_widget.set_can_focus(false);
+        var scale_widget = zoomable_area.create_scale_widget();
+        scale_widget.set_can_focus(false);
 
-        //  var reset_scale = zoomable_area.create_reset_scale_button();
+        var reset_scale = zoomable_area.create_reset_scale_button();
 
         var control_box = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 5);
-        //  control_box.append(scale_widget);
-        //  control_box.append(reset_scale);
+        control_box.append(scale_widget);
+        control_box.append(reset_scale);
         control_box.set_valign(Gtk.Align.END);
         control_box.set_halign(Gtk.Align.START);
         control_box.add_css_class("canvas_scale");
@@ -109,8 +109,6 @@ public class CanvasView : Gtk.Widget {
         node_view_box.append(overlay);
     }
 
-    
-    
     private void create_minimap_overlay() {
         var overlay = new Gtk.Overlay();
         var mini_map = new MiniMap(node_view);

@@ -3,11 +3,11 @@
     {
       "model" : {
         "transparency-threshold" : 0.20000000000000004,
+        "opacity-threshold" : 0.30000000000000016,
         "color" : {
           "type" : "GeglColor",
           "color" : "rgb(0.102, 0.373, 0.706)"
-        },
-        "opacity-threshold" : 0.30000000000000016
+        }
       },
       "builder_id" : "gegl:color-to-alpha",
       "width" : 166,
@@ -40,7 +40,7 @@
         "title" : "Image window",
         "dimensions" : {
           "x" : 256,
-          "y" : 214,
+          "y" : 246,
           "width" : 1571,
           "height" : 987
         }
@@ -49,8 +49,8 @@
     {
       "model" : {
         "hue" : 6.5999999999999925,
-        "chroma" : 16.89999999999997,
-        "lightness" : -6.3999999999999932
+        "lightness" : -6.3999999999999932,
+        "chroma" : 16.89999999999997
       },
       "builder_id" : "gegl:hue-chroma",
       "width" : 159,
