@@ -204,7 +204,7 @@ public class CanvasView : Gtk.Widget {
         warning(error_markup);
     }
 
-    private Gtk.FileFilter file_chosse_filter() {
+    private Gtk.FileFilter file_chooser_filter() {
         var filter = new Gtk.FileFilter();
         filter.set_filter_name("Graph file");
         filter.add_mime_type("text/json");
@@ -227,13 +227,10 @@ public class CanvasView : Gtk.Widget {
 
     private void save_graph_as() {
         var file_dialog = new Gtk.FileDialog();
-
-        var filter = new Gtk.FileFilter();
-        filter.name = "Graph files";
-        filter.add_pattern("*.graph");
-
+        var filter = file_chooser_filter();
         var filters = new GLib.ListStore(typeof(Gtk.FileFilter));
         filters.append(filter);
+        
         file_dialog.set_filters(filters);
         file_dialog.set_initial_name("untitled.graph");
         file_dialog.save.begin(base.get_ancestor(typeof(Gtk.Window)) as Gtk.Window, null, (obj, res) => {
@@ -259,11 +256,7 @@ public class CanvasView : Gtk.Widget {
 
     private void load_graph() {
         var file_dialog = new Gtk.FileDialog();
-
-        var filter = new Gtk.FileFilter();
-        filter.name = "Graph files";
-        filter.add_pattern("*.graph");
-
+        var filter = file_chooser_filter();
         var filters = new GLib.ListStore(typeof(Gtk.FileFilter));
         filters.append(filter);
         file_dialog.set_filters(filters);
@@ -274,7 +267,7 @@ public class CanvasView : Gtk.Widget {
                 if (file != null) {
                     current_graph_file = file.get_path();
                     save_button.set_sensitive(true);
-                    load_graph_async.begin(file);
+                    load_graph_sync(file);
                 }
             } catch (Error e) {
                 warning("File dialog cancelled or failed: %s", e.message);
@@ -282,22 +275,18 @@ public class CanvasView : Gtk.Widget {
         });
     }
 
-    async void load_graph_async (GLib.File selected_file) {
+    void load_graph_sync (GLib.File selected_file) {
         canvas_signals.before_file_load();
 
-        new Thread<void*> (null, () => {
-            canvas_nodes.remove_all();
-            canvas_nodes.deserialize_graph(selected_file, deserializers);
-
-            Idle.add(() => {
-                node_view.queue_allocate();
-                node_view.queue_draw();
-                return load_graph_async.callback();
-            });
-            return null;
+        canvas_nodes.remove_all();
+        canvas_nodes.deserialize_graph(selected_file, deserializers);
+        
+        Idle.add(() => {
+            node_view.queue_resize();
+            node_view.queue_allocate();
+            return false;
         });
-        yield;
- 
+
         canvas_signals.after_file_load();
     }
 

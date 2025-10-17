@@ -5,7 +5,7 @@ public class ZoomableArea : Gtk.Widget {
     
     private Gtk.Widget? child;
     private Gtk.ScrolledWindow scrolled;
-    private float zoom = 1.0f;
+    private float zoom;
     private float min_zoom;
     private float max_zoom;
     private bool internal_adjustment;
@@ -18,7 +18,8 @@ public class ZoomableArea : Gtk.Widget {
         this.scrolled = scrolled_window;
         this.min_zoom = min_zoom;
         this.max_zoom = max_zoom;
-
+        this.zoom = 1f;
+        
         this.set_layout_manager(new ZoomLayout (this));
         scrolled_window.set_child(this);
         set_content(content);
@@ -85,6 +86,9 @@ public class ZoomableArea : Gtk.Widget {
         zoom_changed (zoom, old);
 
         do_zoom_changed(zoom, old);
+
+        child.queue_resize();
+        child.queue_allocate();
     }
 
     private void do_zoom_changed(double new_zoom, double old_zoom) {
