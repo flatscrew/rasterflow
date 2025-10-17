@@ -272,7 +272,6 @@ namespace Image {
         public GeglOperationDisplayNode(string builder_id, GeglOperationNode node) {
             base(builder_id, node);
 
-            this.details_expand_toggled.connect(this.node_details_expanded);
             this.data_display_view = new Data.DataDisplayView();
             this.gegl_operation_node = node;
             this.gegl_operation_node.sink_added.connect_after(this.sink_added);
@@ -300,11 +299,7 @@ namespace Image {
             }
         }
 
-        private void node_details_expanded(bool expanded) {
-            if (!expanded) return;
-
-            this.set_size_request(400, 300);
-        }
+        
 
         private void create_process_gegl_button() {
             var render_button = new Gtk.Button.from_icon_name("media-playback-start");
@@ -364,6 +359,7 @@ namespace Image {
         private void on_property_promoted(ParamSpec param_spec) {
             // TODO introduce some kind of controller that will be 
             // passed to this method instead of just param spec
+            // as there needs to be a way to turn it back
             var property_sink = new CanvasNodePropertySink(param_spec);
             gegl_operation_node.add_sink(property_sink);
         }

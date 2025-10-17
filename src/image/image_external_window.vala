@@ -1,12 +1,5 @@
 namespace Image {
 
-    public struct ExternalWindowDimensions {
-        public int x;
-		public int y;
-		public int width;
-		public int height;
-    }
-
     public class ExternalImageWindow : Gtk.Window {
         private ImageViewerPanningArea panning_area;
         private ImageViewer image_viewer;
@@ -78,9 +71,9 @@ namespace Image {
             });
         }
 
-        public ExternalWindowDimensions get_dimensions() {
+        public Gdk.Rectangle get_dimensions() {
             var geom = WindowGeometryManager.get_geometry(this);
-            return ExternalWindowDimensions() {
+            return Gdk.Rectangle() {
                 x = geom.x,
                 y = geom.y,
                 width = geom.width,

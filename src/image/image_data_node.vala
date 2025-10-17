@@ -36,7 +36,7 @@ namespace Image {
         private Gtk.Entry window_title_entry;
         private Gtk.Label title_label;
         private ExternalImageWindow? external_window;
-        private ExternalWindowDimensions? last_window_dimensions;
+        private Gdk.Rectangle? last_window_dimensions;
         private bool external_window_active;
         private Gtk.Box? external_window_info_section;
 
@@ -367,7 +367,7 @@ namespace Image {
                     var width = dimensions.get_int("width", 0);
                     var height = dimensions.get_int("height", 0);
 
-                    this.last_window_dimensions = ExternalWindowDimensions() {
+                    this.last_window_dimensions = Gdk.Rectangle() {
                         x = x,
                         y = y,
                         width = width,
@@ -383,7 +383,7 @@ namespace Image {
     public struct ExternalWindowSate {
         public bool active;
         public string? title;
-        public ExternalWindowDimensions? dimensions;
+        public Gdk.Rectangle? dimensions;
     }
 
     public delegate ExternalWindowSate? ExternalWindowStateDelegate(); 

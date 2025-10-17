@@ -58,11 +58,3 @@
 .rounded_bottom_right {
     border-bottom-right-radius: 5px;
 }
-
-.pdf_backround {
-    background-color: whitesmoke;
-}
-
-.gst_expected_pad_label {
-    color: #4CAF50;
-}

@@ -54,9 +54,9 @@ public class DefaultTitleWidgetBuilder : CanvasNodeTitleWidgetBuilder, Object {
 public class CanvasDisplayNode : GtkFlow.Node {
         
     public signal void removed(CanvasDisplayNode removed_node);
-    public signal void details_expand_toggled(bool expanded);
 
     private History.HistoryOfChangesRecorder changes_recorder;
+    private Graphene.Size previous_node_size = {width: 100, height: 200};
     private Gtk.Expander node_expander;
     private Gtk.Box node_box;
     private Gtk.ActionBar action_bar;
@@ -114,12 +114,16 @@ public class CanvasDisplayNode : GtkFlow.Node {
         create_node_content();
         create_action_bar();
     }
-
+    
     private void record_position_changed(int old_x, int old_y, int new_x, int new_y) {
         changes_recorder.record_node_moved(this, old_x, old_y, new_x, new_y);
     }
 
     private void record_size_changed(int old_width, int old_height, int new_width, int new_height) {
+        this.previous_node_size = Graphene.Size(){ 
+            width = new_width, 
+            height = new_height
+        };
         changes_recorder.record_node_resized(this, old_width, old_height, new_width, new_height);
     }
 
@@ -188,10 +192,14 @@ public class CanvasDisplayNode : GtkFlow.Node {
     private void node_expanded() {
         changes_recorder.record(new History.ToggleExpanderAction(this.node_expander, this, get_width(), get_height()));
         if (!this.node_expander.expanded) {
+            this.previous_node_size = Graphene.Size(){
+                width = get_width(),
+                height = get_height()
+            };
             set_size_request(-1, -1);
+        } else {
+            set_size_request((int) previous_node_size.width, (int) previous_node_size.height);
         }
-
-        details_expand_toggled(this.node_expander.expanded);
     }
 
     private Gtk.Widget node_header(
@@ -305,6 +313,7 @@ public class CanvasDisplayNode : GtkFlow.Node {
         var css = "
         .gtkflow_node {
             background-color: %s;
+            box-shadow: none;
         }
 
         .dark {
