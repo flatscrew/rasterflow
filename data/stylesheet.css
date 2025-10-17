@@ -29,6 +29,10 @@
     margin: 10px;
  }
 
+ .canvas_node_expander {
+    margin: 6px;
+ }
+ 
 .node_chooser_label_text {
     font-size: smaller;
 }

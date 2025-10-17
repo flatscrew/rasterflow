@@ -18,6 +18,10 @@ public class ScrollPanner : Object {
         var button_controller = new Gtk.GestureClick ();
         scrolled.add_controller(button_controller);
         button_controller.pressed.connect((button, x, y) => {
+            var mods = button_controller.get_current_event_state();
+            if ((mods & Gdk.ModifierType.CONTROL_MASK) == 0)
+                return;
+            
             panning = true;
             last_x = x;
             last_y = y;

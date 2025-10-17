@@ -3,15 +3,15 @@
     {
       "model" : {
         "transparency-threshold" : 0.20000000000000004,
+        "opacity-threshold" : 0.30000000000000016,
         "color" : {
           "type" : "GeglColor",
           "color" : "rgb(0.102, 0.373, 0.706)"
-        },
-        "opacity-threshold" : 0.30000000000000016
+        }
       },
       "builder_id" : "gegl:color-to-alpha",
       "width" : 166,
-      "height" : 144,
+      "height" : 156,
       "expanded" : false,
       "position_x" : 297,
       "position_y" : 68
@@ -21,8 +21,8 @@
         "path" : "/home/activey/Pictures/ja.jpeg"
       },
       "builder_id" : "gegl:load",
-      "width" : 126,
-      "height" : 115,
+      "width" : 208,
+      "height" : 127,
       "expanded" : false,
       "position_x" : 77,
       "position_y" : 96
@@ -31,7 +31,7 @@
       "model" : {      },
       "builder_id" : "image:display",
       "width" : 152,
-      "height" : 115,
+      "height" : 127,
       "expanded" : false,
       "position_x" : 2141,
       "position_y" : 231,
@@ -40,7 +40,7 @@
         "title" : "Image window",
         "dimensions" : {
           "x" : 256,
-          "y" : 278,
+          "y" : 310,
           "width" : 1571,
           "height" : 987
         }
@@ -49,12 +49,12 @@
     {
       "model" : {
         "hue" : 6.5999999999999925,
-        "chroma" : 16.89999999999997,
-        "lightness" : -6.3999999999999932
+        "lightness" : -6.3999999999999932,
+        "chroma" : 16.89999999999997
       },
       "builder_id" : "gegl:hue-chroma",
       "width" : 159,
-      "height" : 144,
+      "height" : 156,
       "expanded" : false,
       "position_x" : 552,
       "position_y" : 41
@@ -65,7 +65,7 @@
       },
       "builder_id" : "gegl:saturation",
       "width" : 146,
-      "height" : 144,
+      "height" : 156,
       "expanded" : false,
       "position_x" : 807,
       "position_y" : 24
@@ -75,8 +75,8 @@
         "path" : "/home/activey/Pictures/cosmic-space-galaxy-stockcake.jpg"
       },
       "builder_id" : "gegl:load",
-      "width" : 292,
-      "height" : 115,
+      "width" : 208,
+      "height" : 127,
       "expanded" : false,
       "position_x" : 109,
       "position_y" : 786
@@ -85,7 +85,7 @@
       "model" : {      },
       "builder_id" : "svg:dst-over",
       "width" : 135,
-      "height" : 173,
+      "height" : 185,
       "expanded" : false,
       "position_x" : 1299,
       "position_y" : 190
@@ -97,7 +97,7 @@
       },
       "builder_id" : "gegl:crop",
       "width" : 114,
-      "height" : 173,
+      "height" : 185,
       "expanded" : false,
       "position_x" : 1036,
       "position_y" : 376
@@ -110,7 +110,7 @@
       },
       "builder_id" : "gegl:crop",
       "width" : 114,
-      "height" : 173,
+      "height" : 185,
       "expanded" : false,
       "position_x" : 1534,
       "position_y" : 192
@@ -122,7 +122,7 @@
       },
       "builder_id" : "gegl:pixelize",
       "width" : 131,
-      "height" : 144,
+      "height" : 156,
       "expanded" : false,
       "position_x" : 1941,
       "position_y" : 214
@@ -134,7 +134,7 @@
       },
       "builder_id" : "gegl:lens-flare",
       "width" : 147,
-      "height" : 144,
+      "height" : 156,
       "expanded" : false,
       "position_x" : 1713,
       "position_y" : 210
@@ -146,7 +146,7 @@
       },
       "builder_id" : "gegl:scale-ratio",
       "width" : 148,
-      "height" : 144,
+      "height" : 156,
       "expanded" : false,
       "position_x" : 545,
       "position_y" : 322

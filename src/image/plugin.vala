@@ -12,6 +12,8 @@ string get_label_from_path(Gegl.Operation op, string name) {
 private Gtk.Widget gegl_load_title_override(Gegl.Operation operation) {
     var label = new Gtk.Label("Load file");
     label.label = get_label_from_path(operation, "path");
+    label.ellipsize = Pango.EllipsizeMode.MIDDLE;
+    label.set_size_request(120, -1);
     operation.notify["path"].connect(() => {
         label.label = get_label_from_path(operation, "path");
     });

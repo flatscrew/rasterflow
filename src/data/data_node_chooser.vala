@@ -210,6 +210,18 @@ namespace Data {
             this.node_chooser_box = new DataNodeChooserBox(this.node_factory);
             node_chooser_box.builder_selected.connect(this.builder_selected);
             popover.set_child(node_chooser_box);
+            
+            // ESC key to close popover no mater the child focused
+            var key_controller = new Gtk.EventControllerKey();
+            key_controller.set_propagation_phase(Gtk.PropagationPhase.CAPTURE);
+            key_controller.key_pressed.connect((keyval, keycode, state) => {
+                if (keyval == Gdk.Key.Escape) {
+                    popover.popdown();
+                    return true;
+                }
+                return false;
+            });
+            ((Gtk.Widget)popover).add_controller(key_controller);
         }
 
         private void builder_selected(CanvasNodeBuilder builder) {

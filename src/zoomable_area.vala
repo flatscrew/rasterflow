@@ -5,6 +5,7 @@ public class ZoomableArea : Gtk.Widget {
     
     private Gtk.Widget? child;
     private Gtk.ScrolledWindow scrolled;
+    private Gtk.EventControllerScroll scroll_controller;
     private float zoom;
     private float min_zoom;
     private float max_zoom;
@@ -29,16 +30,23 @@ public class ZoomableArea : Gtk.Widget {
     }
 
     private void setup_scroll_controller() {
-        var scroll = new Gtk.EventControllerScroll (Gtk.EventControllerScrollFlags.VERTICAL);
-        scrolled.add_controller (scroll);
-
-        scroll.scroll.connect ((dx, dy) => {
-            if (dy < 0)
-                zoom_in ();
-            else if (dy > 0)
-                zoom_out ();
-            return true;
-        });
+        this.scroll_controller = new Gtk.EventControllerScroll(Gtk.EventControllerScrollFlags.VERTICAL);
+        scroll_controller.set_propagation_phase(Gtk.PropagationPhase.CAPTURE);
+        scrolled.add_controller(scroll_controller);
+        scroll_controller.scroll.connect(this.on_scroll);
+    }
+    
+    private bool on_scroll(double dx, double dy) {
+        var mods = scroll_controller.get_current_event_state();
+        if ((mods & Gdk.ModifierType.CONTROL_MASK) == 0)
+            return false;
+        
+        this.mouse_initiated_zoom = true;
+        if (dy < 0)
+            zoom_in ();
+        else if (dy > 0)
+            zoom_out ();
+        return true;
     }
 
     private void setup_motion_controller() {

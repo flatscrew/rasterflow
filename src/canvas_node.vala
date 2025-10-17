@@ -143,6 +143,7 @@ public class CanvasDisplayNode : GtkFlow.Node {
         this.size_changed.connect(this.node_resized);
 
         this.node_expander = new Gtk.Expander("Node details");
+        node_expander.add_css_class("canvas_node_expander");
         node_expander.set_resize_toplevel(true);
         node_expander.vexpand = node_expander.hexpand = true;
         node_expander.notify["expanded"].connect(node_expanded);
