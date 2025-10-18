@@ -12,6 +12,13 @@ public class CanvasNodePropertySink : CanvasNodeSink {
         
         control_contract.released.connect(this.on_contract_released);
         control_contract.renewed.connect(this.on_contract_renewed);
+        
+        changed.connect(this.sink_value_changed);
+    }
+    
+    private void sink_value_changed(GLib.Value? value = null, string? flow_id = null) {
+        message("Value changed\n");
+        control_contract.set_value(value);
     }
     
     private void on_contract_released() {

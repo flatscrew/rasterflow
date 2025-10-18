@@ -357,19 +357,12 @@ public class CanvasDisplayNode : GtkFlow.Node {
 
 public class CanvasNodeSink : GFlow.SimpleSink {
 
-    protected GLib.Value? value {
-        get;
-        private set;
-    }
-
     private History.HistoryOfChangesRecorder changes_recorder;
 
     public CanvasNodeSink (GLib.Value value) {
         base(value);
         this.changes_recorder = History.HistoryOfChangesRecorder.instance;
 
-        this.value = value;
-        base.changed.connect(this.value_changed);
         base.linked.connect(this.connected);
         base.unlinked.connect(this.disconnected);
     }
@@ -385,10 +378,6 @@ public class CanvasNodeSink : GFlow.SimpleSink {
         } else {
             warning("Not supported target source: %s\n", target.get_type().name());
         }
-    }
-
-    private void value_changed(GLib.Value? new_value) {
-        this.value = new_value;
     }
 
     public CanvasNodeSink.with_type (GLib.Type type) {
@@ -475,6 +464,15 @@ public class CanvasNode : GFlow.SimpleNode {
     public new void add_sink(CanvasNodeSink node_sink) {
         try {
             base.add_sink(node_sink);
+        } catch (Error e) {
+            log_error(e.message);
+            error(e.message);
+        }
+    }
+    
+    public new void remove_sink(CanvasNodeSink node_sink) {
+        try {
+            base.remove_sink(node_sink);
         } catch (Error e) {
             log_error(e.message);
             error(e.message);

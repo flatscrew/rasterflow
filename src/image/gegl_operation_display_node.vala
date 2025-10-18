@@ -97,6 +97,9 @@ namespace Image {
             property_sink.contract_renewed.connect(() => {
                 gegl_operation_node.add_sink(property_sink);
             });
+            property_sink.contract_released.connect(() => {
+                gegl_operation_node.remove_sink(property_sink);
+            });
             
             gegl_operation_node.add_sink(property_sink);
             changes_recorder.record(new PropertyControlTakenAction(control_contract, gegl_operation_node));

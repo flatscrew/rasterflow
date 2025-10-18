@@ -451,13 +451,13 @@ namespace Data {
         }
     
         public GLib.Value get_value() {
-            GLib.Value v = GLib.Value(param_spec.value_type);
-            data_object.get_property(param_spec.name, ref v);
-            return v;
+            GLib.Value value = GLib.Value(param_spec.value_type);
+            data_object.get_property(param_spec.name, ref value);
+            return value;
         }
     
-        public void set_value(GLib.Value v) {
-            data_object.set_property(param_spec.name, v);
+        public void set_value(GLib.Value? value) {
+            data_object.set_property(param_spec.name, value);
         }
     
         public void release() {
