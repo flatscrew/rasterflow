@@ -4,8 +4,8 @@ namespace Image {
         public GeglNodePropertyBridgeSinkLabelFactory(GeglOperationNode gegl_node) {
             base(gegl_node);
         }
-        
-		public override Gtk.Widget create_dock_label (GFlow.Dock dock) {
+		
+        public override Gtk.Widget create_dock_label (GFlow.Dock dock) {
             var node_property_sink = dock as CanvasNodePropertySink;
             if (node_property_sink == null) {
                 return base.create_dock_label(dock);

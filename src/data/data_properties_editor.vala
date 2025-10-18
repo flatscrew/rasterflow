@@ -201,27 +201,47 @@ namespace Data {
 
     public delegate Gtk.Widget PropertyDecorator(Gtk.Widget property_widget, GLib.ParamSpec param_spec);
 
-    private struct PropertiesGridEntry {
+    private class PropertiesGridEntry : Object {
         public Gtk.Label property_label;
         public Gtk.Label? description_label;
-        public Gtk.Widget? property_decorator;
-
-        public static PropertiesGridEntry create(ParamSpec param_spec) {
-            return {};
+        public Gtk.Widget property_decorator;
+        public Gtk.Button? override_button;
+    
+        public int row_start { get; private set; }
+        public int row_span { get; private set; }
+    
+        public void attach_to_grid(Gtk.Grid grid, ref int current_row) {
+            if (override_button != null) {
+                message("adding button\n");
+                grid.attach(override_button, 0, current_row, 1, 1);
+            }
+    
+            grid.attach(property_label, 1, current_row, 1, 1);
+            grid.attach(property_decorator, 2, current_row, 1, 1);
+            row_start = current_row;
+    
+            if (description_label != null) {
+                grid.attach(description_label, 2, ++current_row, 2, 1);
+                row_span = 2;
+            } else {
+                row_span = 1;
+            }
+    
+            current_row++;
         }
-
+    
         public void hide() {
-            this.property_label.visible = false;
-            
-            if (this.property_decorator == null) {
-                return;
-            }
-            this.property_decorator.visible = false;
-
-            if (this.description_label == null) {
-                return;
-            }
-            this.description_label.visible = false;
+            property_label.visible = false;
+            if (property_decorator != null) property_decorator.visible = false;
+            if (description_label != null) description_label.visible = false;
+            if (override_button != null) override_button.visible = false;
+        }
+    
+        public void show() {
+            property_label.visible = true;
+            if (property_decorator != null) property_decorator.visible = true;
+            if (description_label != null) description_label.visible = true;
+            if (override_button != null) override_button.visible = true;
         }
     }
 
@@ -268,66 +288,71 @@ namespace Data {
             properties_grid.set_parent (this);
         }
 
-        public bool populate_properties(DataPropertyFilter filter = param_spec => true, 
-                                        DataPropertiesOverrideFunc overrides_func = () => {},
-                                        PropertyDecorator property_decorator = widget => widget) {
-
-            int grid_row_count = 0;
-
-            foreach (var param_spec in this.data_object.get_class().list_properties()) {
-                if (!filter(param_spec)) {
+        public bool populate_properties(
+            DataPropertyFilter filter = param_spec => true, 
+            DataPropertiesOverrideFunc overrides_func = () => {},
+            PropertyDecorator property_decorator = widget => widget
+        ) {
+            int row = 0;
+            foreach (var param_spec in data_object.get_class().list_properties()) {
+                if (!filter(param_spec))
                     continue;
-                }
+
                 this.has_properties = true;
 
-                var property_wrapper = new DataPropertyWrapper(param_spec, data_object, new DataPropertiesOverrideCallback(overrides_func));
-                data_object.notify[param_spec.name].connect(property_spec => {
-                    GLib.Value value = GLib.Value(property_spec.value_type);
-                    data_object.get_property(property_spec.name, ref value);
-                    changed_properties.set(property_spec.name, property_spec.value_type);
-
-                    property_wrapper.object_property_value_changed(value);
-                });
-                property_wrapper.property_value_changed.connect(this.data_property_value_changed);
-                property_wrapper.halign = Gtk.Align.FILL;
-
-                var description_label = description_label(param_spec);
-                var property_label = property_label(param_spec, property_wrapper.multiline);
-                var decorator = property_decorator(property_wrapper, param_spec);
-                var take_property_control_button = crate_take_property_control_button(
-                    param_spec,
-                    {
-                        property_label: property_label,
-                        description_label: description_label,
-                        property_decorator: decorator,
-                    }
-                );
-
-                properties_grid.attach(take_property_control_button, 0, grid_row_count, 1, 1);
-                properties_grid.attach(property_label, 1, grid_row_count, 1, 1);
-                properties_grid.attach(decorator, 2, grid_row_count++, 1, 1);
-                
-                if (property_control_override && param_type_supported_for_control_override(param_spec)) {
-                    take_property_control_button.visible = true;
-                }
-
-                if (description_label == null) {
-                    continue;
-                }
-                properties_grid.attach(description_label, 2, grid_row_count++, 2, 1);
+                var entry = create_property_entry(param_spec, overrides_func, property_decorator);
+                entry.attach_to_grid(properties_grid, ref row);
             }
-        
+
             return has_properties;
         }
-
-        private Gtk.Button crate_take_property_control_button(
+        
+        private PropertiesGridEntry create_property_entry(
+            ParamSpec param_spec,
+            DataPropertiesOverrideFunc overrides_func,
+            PropertyDecorator property_decorator
+        ) {
+            var property_wrapper = new DataPropertyWrapper(
+                param_spec,
+                data_object,
+                new DataPropertiesOverrideCallback(overrides_func)
+            );
+        
+            data_object.notify[param_spec.name].connect(property_spec => {
+                GLib.Value value = GLib.Value(property_spec.value_type);
+                data_object.get_property(property_spec.name, ref value);
+                changed_properties.set(property_spec.name, property_spec.value_type);
+                property_wrapper.object_property_value_changed(value);
+            });
+        
+            property_wrapper.property_value_changed.connect(this.data_property_value_changed);
+            property_wrapper.halign = Gtk.Align.FILL;
+        
+            var desc_label = description_label(param_spec);
+            var label = property_label(param_spec, property_wrapper.multiline);
+            var decorator = property_decorator(property_wrapper, param_spec);
+        
+            var entry = new PropertiesGridEntry() {
+                property_label = label,
+                description_label = desc_label,
+                property_decorator = decorator
+            };
+        
+            if (property_control_override && param_type_supported_for_control_override(param_spec)) {
+                var override_btn = create_property_control_override_button(param_spec, entry);
+                entry.override_button = override_btn;
+            }
+        
+            return entry;
+        }
+        
+        private Gtk.Button create_property_control_override_button(
             ParamSpec param_spec,
             PropertiesGridEntry properties_grid_entry
         ) {
             // TODO make it possible to use a custom icon
             var take_property_control_button = new Gtk.Button.from_icon_name("list-add-symbolic");
             take_property_control_button.tooltip_text = this.take_control_tooltip;
-            take_property_control_button.visible = false;
             take_property_control_button.clicked.connect(() => {
                 properties_grid_entry.hide();
                 take_property_control_button.visible = false;

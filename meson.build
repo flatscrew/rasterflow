@@ -106,7 +106,6 @@ vala_sources = [
     'src/data/data_details_panel.vala',
     'src/data/data_display_view.vala',
     'src/data/data_properties_editor.vala',
-    'src/data/data_properties_toggle.vala',
     'src/data/data_property_file_location.vala',
     'src/data/file_origin_node_factory.vala',
     'src/data/file_origin_node_chooser.vala',
