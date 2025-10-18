@@ -23,7 +23,6 @@ namespace History {
         private ActionStack redo_stack;
         private bool recording_enabled = true;
 
-
         private HistoryOfChangesRecorder() {
             undo_stack = new ActionStack();
             redo_stack = new ActionStack();

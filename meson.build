@@ -127,6 +127,7 @@ vala_sources = [
     'src/image/window_geometry.vala',
     'src/image/color_prober.vala',
     'src/image/color_property.vala',
+    'src/image/history/gegl_node_property_control_taken_action.vala',
     'src/image/plugin.vala',
     
     # plain text processing

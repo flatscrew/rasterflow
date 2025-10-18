@@ -4,10 +4,12 @@ namespace Image {
         private GeglOperationNode gegl_operation_node;
         private GeglOperationOverridesCallback? operation_overrides_callback;
         private Data.DataDisplayView data_display_view;
+        private History.HistoryOfChangesRecorder changes_recorder;
 
         public GeglOperationDisplayNode(string builder_id, GeglOperationNode node) {
             base(builder_id, node, new GeglNodePropertyBridgeSinkLabelFactory(node));
 
+            this.changes_recorder = History.HistoryOfChangesRecorder.instance;
             this.data_display_view = new Data.DataDisplayView();
             this.gegl_operation_node = node;
             this.gegl_operation_node.sink_added.connect_after(this.sink_added);
@@ -90,12 +92,14 @@ namespace Image {
             return false;
         }
 
-        private void on_property_control_taken(ParamSpec param_spec) {
-            // TODO introduce some kind of controller that will be 
-            // passed to this method instead of just param spec
-            // as there needs to be a way return property control back
-            var property_sink = new CanvasNodePropertySink(param_spec);
+        private void on_property_control_taken(Data.PropertyControlContract control_contract) {
+            var property_sink = new CanvasNodePropertySink(control_contract);
+            property_sink.contract_renewed.connect(() => {
+                gegl_operation_node.add_sink(property_sink);
+            });
+            
             gegl_operation_node.add_sink(property_sink);
+            changes_recorder.record(new PropertyControlTakenAction(control_contract, gegl_operation_node));
         }
 
         private void sink_added(GFlow.Sink new_sink) {

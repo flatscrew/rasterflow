@@ -201,7 +201,7 @@ namespace Data {
 
     public delegate Gtk.Widget PropertyDecorator(Gtk.Widget property_widget, GLib.ParamSpec param_spec);
 
-    private class PropertiesGridEntry : Object {
+    public class PropertiesGridEntry : Object {
         public Gtk.Label property_label;
         public Gtk.Label? description_label;
         public Gtk.Widget property_decorator;
@@ -255,10 +255,10 @@ namespace Data {
         private GLib.Object data_object;
         private Gee.Map<string, GLib.Type> changed_properties = new Gee.HashMap<string, GLib.Type>();
 
+        private PropertyControlRequestHandler on_take_control;
         private DataPropertyFilter? control_override_filter;
         private bool property_control_override;
         private string take_control_tooltip;
-        private GLib.Func<ParamSpec> param_spec_func;
         
         public bool has_properties {
             get;
@@ -355,10 +355,11 @@ namespace Data {
             take_property_control_button.tooltip_text = this.take_control_tooltip;
             take_property_control_button.clicked.connect(() => {
                 properties_grid_entry.hide();
-                take_property_control_button.visible = false;
 
-                // TODO pass controller/contract instead of just ParamSpec
-                this.param_spec_func(param_spec);
+                if (on_take_control != null) {
+                    var contract = new PropertyControlContract(this, data_object, param_spec, properties_grid_entry);
+                    on_take_control(contract);
+                }
             });
 
             return take_property_control_button;
@@ -413,12 +414,12 @@ namespace Data {
         public void enable_control_override(
             DataPropertyFilter control_override_filter, 
             string take_control_tooltip,
-            GLib.Func<ParamSpec> param_spec_func
+            PropertyControlRequestHandler on_take_control
         ) {
             this.take_control_tooltip = take_control_tooltip;
             this.property_control_override = true;
             this.control_override_filter = (param_spec) => control_override_filter(param_spec);
-            this.param_spec_func = (param_spec) => param_spec_func(param_spec);
+            this.on_take_control = (contract) => on_take_control(contract);
         }
 
         private bool param_type_supported_for_control_override(ParamSpec param_spec) {
@@ -426,5 +427,47 @@ namespace Data {
             return control_override_filter(param_spec);
         }
     }
-
+    
+    public delegate void PropertyControlRequestHandler(PropertyControlContract contract);
+    
+    public class PropertyControlContract : Object {
+        public signal void released();
+        public signal void renewed();
+        
+        public ParamSpec param_spec { public get; private set;}
+        private GLib.Object data_object;
+        private PropertiesGridEntry entry;
+    
+        private unowned DataPropertiesEditor owner;
+    
+        public PropertyControlContract(DataPropertiesEditor owner,
+                                       GLib.Object data_object,
+                                       ParamSpec param_spec,
+                                       PropertiesGridEntry entry) {
+            this.owner = owner;
+            this.data_object = data_object;
+            this.param_spec = param_spec;
+            this.entry = entry;
+        }
+    
+        public GLib.Value get_value() {
+            GLib.Value v = GLib.Value(param_spec.value_type);
+            data_object.get_property(param_spec.name, ref v);
+            return v;
+        }
+    
+        public void set_value(GLib.Value v) {
+            data_object.set_property(param_spec.name, v);
+        }
+    
+        public void release() {
+            entry.show();
+            released();
+        }
+        
+        public void renew() {
+            entry.hide();
+            renewed();
+        }
+    }
 }
