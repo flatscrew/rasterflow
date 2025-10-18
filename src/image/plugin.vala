@@ -12,6 +12,8 @@ string get_label_from_path(Gegl.Operation op, string name) {
 private Gtk.Widget gegl_load_title_override(Gegl.Operation operation) {
     var label = new Gtk.Label("Load file");
     label.label = get_label_from_path(operation, "path");
+    label.ellipsize = Pango.EllipsizeMode.MIDDLE;
+    label.set_size_request(120, -1);
     operation.notify["path"].connect(() => {
         label.label = get_label_from_path(operation, "path");
     });
@@ -98,6 +100,10 @@ public string initialize_image_plugin(Plugin.PluginContribution plugin_contribut
         headerbar_widgets.add_widget(new Image.ImageProcessingRealtimeModeSwitch());
     });
 
+    plugin_contribution.contribute_app_window(app_window => {
+        Image.ColorProber.init(app_window);
+    });
+
     // overrides
     Image.GeglOperationOverrides.override_operation("gegl:load", overrides => {
         overrides.override_title(gegl_load_title_override);
@@ -107,10 +113,10 @@ public string initialize_image_plugin(Plugin.PluginContribution plugin_contribut
             });
     });
 
-    // custom data types
+    // custom data types for property editor
     Data.CustomPropertyFactory.get_instance()
         .register(typeof(Gegl.Color), param_spec => {
-            return new Data.ColorProperty(param_spec);
+            return new Image.ColorProperty(param_spec);
         });
 
 	return "image";

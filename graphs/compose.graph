@@ -5,8 +5,8 @@
         "path" : "/home/activey/Pictures/ja.jpeg"
       },
       "builder_id" : "gegl:load",
-      "width" : 280,
-      "height" : 236,
+      "width" : 314,
+      "height" : 265,
       "expanded" : true,
       "position_x" : 54,
       "position_y" : 115
@@ -16,20 +16,23 @@
         "path" : "/home/activey/Pictures/podpis.png"
       },
       "builder_id" : "gegl:load",
-      "width" : 280,
-      "height" : 236,
-      "expanded" : true,
-      "position_x" : 46,
-      "position_y" : 446
+      "width" : 149,
+      "height" : 115,
+      "expanded" : false,
+      "position_x" : 44,
+      "position_y" : 567
     },
     {
       "model" : {      },
       "builder_id" : "image:display",
-      "width" : 153,
-      "height" : 85,
-      "expanded" : false,
-      "position_x" : 2038,
-      "position_y" : 217
+      "width" : 252,
+      "height" : 310,
+      "expanded" : true,
+      "position_x" : 2130,
+      "position_y" : 96,
+      "external-window" : {
+        "active" : false
+      }
     },
     {
       "model" : {
@@ -39,56 +42,56 @@
         "x" : 0.69999999999999996
       },
       "builder_id" : "gegl:scale-ratio",
-      "width" : 294,
-      "height" : 303,
-      "expanded" : true,
-      "position_x" : 668,
-      "position_y" : 628
+      "width" : 146,
+      "height" : 144,
+      "expanded" : false,
+      "position_x" : 602,
+      "position_y" : 588
     },
     {
       "model" : {
         "srgb" : false
       },
       "builder_id" : "svg:src-over",
-      "width" : 203,
-      "height" : 143,
+      "width" : 200,
+      "height" : 173,
       "expanded" : false,
       "position_x" : 1258,
       "position_y" : 74
     },
     {
       "model" : {
-        "y" : 40.0,
+        "y" : 10.0,
         "near-z" : 2.7755575615628914e-17,
         "origin-x" : 0.0,
         "origin-y" : 0.0,
-        "x" : 0.0
+        "x" : 10.0
       },
       "builder_id" : "gegl:translate",
-      "width" : 211,
-      "height" : 265,
+      "width" : 389,
+      "height" : 534,
       "expanded" : true,
-      "position_x" : 921,
-      "position_y" : 267
+      "position_x" : 845,
+      "position_y" : 360
     },
     {
       "model" : {
-        "brightness" : 1.5000000000000004
+        "brightness" : 0.80000000000000004
       },
       "builder_id" : "gegl:brightness-contrast",
-      "width" : 201,
-      "height" : 265,
-      "expanded" : true,
-      "position_x" : 461,
-      "position_y" : 225
+      "width" : 198,
+      "height" : 144,
+      "expanded" : false,
+      "position_x" : 322,
+      "position_y" : 576
     },
     {
       "model" : {
         "limit-exposure" : false
       },
       "builder_id" : "gegl:bloom",
-      "width" : 125,
-      "height" : 114,
+      "width" : 122,
+      "height" : 144,
       "expanded" : false,
       "position_x" : 1816,
       "position_y" : 62
@@ -96,23 +99,37 @@
     {
       "model" : {
         "size-x" : 11,
-        "size-y" : 16
+        "size-y" : 30
       },
       "builder_id" : "gegl:pixelize",
-      "width" : 228,
-      "height" : 265,
-      "expanded" : true,
-      "position_x" : 1535,
-      "position_y" : 294
+      "width" : 129,
+      "height" : 144,
+      "expanded" : false,
+      "position_x" : 1297,
+      "position_y" : 351
     },
     {
       "model" : {      },
       "builder_id" : "image:display",
-      "width" : 153,
-      "height" : 85,
-      "expanded" : false,
-      "position_x" : 1919,
-      "position_y" : 504
+      "width" : 276,
+      "height" : 310,
+      "expanded" : true,
+      "position_x" : 1887,
+      "position_y" : 512,
+      "external-window" : {
+        "active" : false
+      }
+    },
+    {
+      "model" : {
+        "path" : "/tmp/pixelized.png"
+      },
+      "builder_id" : "gegl:save",
+      "width" : 314,
+      "height" : 265,
+      "expanded" : true,
+      "position_x" : 1491,
+      "position_y" : 551
     }
   ],
   "links" : [
@@ -196,6 +213,10 @@
       "sinks" : [
         {
           "node_index" : 9,
+          "sink_name" : "Input"
+        },
+        {
+          "node_index" : 10,
           "sink_name" : "Input"
         }
       ]

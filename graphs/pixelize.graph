@@ -1,0 +1,103 @@
+{
+  "nodes" : [
+    {
+      "model" : {
+        "offset-y" : 0,
+        "size-x" : 16,
+        "size-y" : 16,
+        "ratio-x" : 0.40000000000000013,
+        "ratio-y" : 0.40000000000000013
+      },
+      "builder_id" : "gegl:pixelize",
+      "width" : 131,
+      "height" : 144,
+      "expanded" : false,
+      "position_x" : 694,
+      "position_y" : 77
+    },
+    {
+      "model" : {
+        "width" : 200.0,
+        "height" : 200.0
+      },
+      "builder_id" : "gegl:crop",
+      "width" : 114,
+      "height" : 173,
+      "expanded" : false,
+      "position_x" : 412,
+      "position_y" : 144
+    },
+    {
+      "model" : {      },
+      "builder_id" : "gegl:cell-noise",
+      "width" : 145,
+      "height" : 115,
+      "expanded" : false,
+      "position_x" : 36,
+      "position_y" : 79
+    },
+    {
+      "model" : {      },
+      "builder_id" : "image:display",
+      "width" : 490,
+      "height" : 568,
+      "expanded" : true,
+      "position_x" : 1423,
+      "position_y" : 183,
+      "external-window" : {
+        "active" : false
+      }
+    },
+    {
+      "model" : {      },
+      "builder_id" : "gegl:antialias",
+      "width" : 204,
+      "height" : 144,
+      "expanded" : false,
+      "position_x" : 1106,
+      "position_y" : 212
+    }
+  ],
+  "links" : [
+    {
+      "node_index" : 0,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 4,
+          "sink_name" : "Input"
+        }
+      ]
+    },
+    {
+      "node_index" : 1,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 0,
+          "sink_name" : "Input"
+        }
+      ]
+    },
+    {
+      "node_index" : 2,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 1,
+          "sink_name" : "Input"
+        }
+      ]
+    },
+    {
+      "node_index" : 4,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 3,
+          "sink_name" : "Input"
+        }
+      ]
+    }
+  ]
+}

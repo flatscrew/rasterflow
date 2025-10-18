@@ -47,7 +47,11 @@ namespace Serialize {
             this.json_object = json_object;
         }
 
-        public void set_string(string name, string value) {
+        public void set_string(string name, string? value) {
+            if (value == null) {
+                message("null for %s\n", name);
+                return;
+            }
             json_object.set_string(name, value);
         }
 

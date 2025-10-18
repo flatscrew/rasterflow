@@ -26,11 +26,11 @@ class MiniMap : Gtk.Widget {
         this.box = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
         box.set_parent(this);
 
-        var miniMap = new GtkFlow.Minimap();
-        miniMap.nodeview = this.node_view;
-        miniMap.hexpand = true;
-        miniMap.vexpand = true;
-        box.append(miniMap);
+        var mini_map = new GtkFlow.Minimap();
+        mini_map.nodeview = this.node_view;
+        mini_map.hexpand = true;
+        mini_map.vexpand = true;
+        box.append(mini_map);
     }
 
     private void mouse_entered() {

@@ -1,6 +1,8 @@
 .canvas_view {
-    /* background: linear-gradient(rgba(211, 211, 211, .7) .1em, transparent .1em), linear-gradient(90deg, rgba(211, 211, 211, .7) .1em, transparent .1em); */
-    background-size: 1em 1em;
+    background-image:
+    linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px);
+    background-size: 64px 64px;
 }
 
 .canvas_minimap { 
@@ -8,12 +10,29 @@
     border-left-width: 1px;
     border-right-width: 1px;
     border-bottom-width: 1px;
-    border-style: dashed;
     border-radius: 5px;
     border-color: gray;
-    background: rgba(255, 255, 255, 0.7);
+    border-style: solid;
+    background: rgba(255, 255, 255, 0.1);
  }
 
+ .canvas_scale { 
+    border-top-width: 1px;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-bottom-width: 1px;
+    border-radius: 5px;
+    border-color: gray;
+    background: rgba(255, 255, 255, 0.1);
+    border-style: solid;
+    padding: 10px;
+    margin: 10px;
+ }
+
+ .canvas_node_expander {
+    margin: 6px;
+ }
+ 
 .node_chooser_label_text {
     font-size: smaller;
 }
@@ -42,12 +61,4 @@
 
 .rounded_bottom_right {
     border-bottom-right-radius: 5px;
-}
-
-.pdf_backround {
-    background-color: whitesmoke;
-}
-
-.gst_expected_pad_label {
-    color: #4CAF50;
 }

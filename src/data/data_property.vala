@@ -217,7 +217,8 @@ namespace Data {
 
             combobox.active = 0;
             combobox.changed.connect(() => {
-                property_value_changed(combobox.get_active());
+                EnumValue? v = enumc.get_value(combobox.get_active());
+                property_value_changed(v.value);
             });
 
             combobox.set_parent(this);
@@ -252,54 +253,7 @@ namespace Data {
         }
     }
 
-    class ColorProperty : DataProperty {
-        
-        private Gtk.ColorButton color_button;
-
-        ~ColorProperty() {
-            color_button.unparent();
-        }
-
-        public ColorProperty(ParamSpec color_specs) {
-            base(color_specs);
-
-            this.color_button = new Gtk.ColorButton();
-            color_button.set_use_alpha(true);
-            color_button.color_set.connect(() => {
-                var rgba = color_button.rgba;
-                double r, g, b, a;
-                r = rgba.red;
-                g = rgba.green;
-                b = rgba.blue;
-                a = rgba.alpha;
-
-                var color_str = "rgba(%s,%s,%s,%s)".printf(
-                    color_part(r), color_part(g), color_part(b), color_part(a)
-                );
-                property_value_changed(new Gegl.Color(color_str));
-            });
-
-            color_button.set_parent(this);
-        }
-
-        string color_part(double v) {
-            return "%.6f".printf(v).replace(",", ".");
-        }
-
-        protected override void set_property_value(GLib.Value value) {
-            double r,g,b,a;
-            var color = value.get_object() as Gegl.Color;
-            color.get_rgba(out r, out g, out b, out a);
-
-            var gdkColor = Gdk.RGBA(){
-                red = (float)r,
-                green = (float)g,
-                blue = (float)b,
-                alpha = (float)a
-            };
-            color_button.set_rgba(gdkColor);
-        }
-    }
+    
 
     class BoolProperty : DataProperty {
         

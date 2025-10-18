@@ -1,0 +1,267 @@
+{
+  "nodes" : [
+    {
+      "model" : {
+        "transparency-threshold" : 0.20000000000000004,
+        "opacity-threshold" : 0.30000000000000016,
+        "color" : {
+          "type" : "GeglColor",
+          "color" : "rgb(0.102, 0.373, 0.706)"
+        }
+      },
+      "builder_id" : "gegl:color-to-alpha",
+      "width" : 166,
+      "height" : 156,
+      "expanded" : false,
+      "position_x" : 297,
+      "position_y" : 68
+    },
+    {
+      "model" : {
+        "path" : "/home/activey/Pictures/ja.jpeg"
+      },
+      "builder_id" : "gegl:load",
+      "width" : 208,
+      "height" : 127,
+      "expanded" : false,
+      "position_x" : 77,
+      "position_y" : 96
+    },
+    {
+      "model" : {      },
+      "builder_id" : "image:display",
+      "width" : 152,
+      "height" : 127,
+      "expanded" : false,
+      "position_x" : 2141,
+      "position_y" : 231,
+      "external-window" : {
+        "active" : true,
+        "title" : "Image window",
+        "dimensions" : {
+          "x" : 256,
+          "y" : 310,
+          "width" : 1571,
+          "height" : 987
+        }
+      }
+    },
+    {
+      "model" : {
+        "hue" : 6.5999999999999925,
+        "lightness" : -6.3999999999999932,
+        "chroma" : 16.89999999999997
+      },
+      "builder_id" : "gegl:hue-chroma",
+      "width" : 159,
+      "height" : 156,
+      "expanded" : false,
+      "position_x" : 552,
+      "position_y" : 41
+    },
+    {
+      "model" : {
+        "scale" : 1.8000000000000007
+      },
+      "builder_id" : "gegl:saturation",
+      "width" : 146,
+      "height" : 156,
+      "expanded" : false,
+      "position_x" : 807,
+      "position_y" : 24
+    },
+    {
+      "model" : {
+        "path" : "/home/activey/Pictures/cosmic-space-galaxy-stockcake.jpg"
+      },
+      "builder_id" : "gegl:load",
+      "width" : 208,
+      "height" : 127,
+      "expanded" : false,
+      "position_x" : 109,
+      "position_y" : 786
+    },
+    {
+      "model" : {      },
+      "builder_id" : "svg:dst-over",
+      "width" : 135,
+      "height" : 185,
+      "expanded" : false,
+      "position_x" : 1299,
+      "position_y" : 190
+    },
+    {
+      "model" : {
+        "width" : 800.0,
+        "height" : 800.0
+      },
+      "builder_id" : "gegl:crop",
+      "width" : 114,
+      "height" : 185,
+      "expanded" : false,
+      "position_x" : 1036,
+      "position_y" : 376
+    },
+    {
+      "model" : {
+        "width" : 600.0,
+        "height" : 750.0,
+        "x" : 100.0
+      },
+      "builder_id" : "gegl:crop",
+      "width" : 114,
+      "height" : 185,
+      "expanded" : false,
+      "position_x" : 1534,
+      "position_y" : 192
+    },
+    {
+      "model" : {
+        "size-x" : 4,
+        "size-y" : 4
+      },
+      "builder_id" : "gegl:pixelize",
+      "width" : 131,
+      "height" : 156,
+      "expanded" : false,
+      "position_x" : 1941,
+      "position_y" : 214
+    },
+    {
+      "model" : {
+        "pos-x" : 0.30000000000000004,
+        "pos-y" : 0.20000000000000004
+      },
+      "builder_id" : "gegl:lens-flare",
+      "width" : 147,
+      "height" : 156,
+      "expanded" : false,
+      "position_x" : 1713,
+      "position_y" : 210
+    },
+    {
+      "model" : {
+        "y" : 2.0,
+        "x" : 2.0
+      },
+      "builder_id" : "gegl:scale-ratio",
+      "width" : 148,
+      "height" : 156,
+      "expanded" : false,
+      "position_x" : 545,
+      "position_y" : 322
+    }
+  ],
+  "links" : [
+    {
+      "node_index" : 0,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 3,
+          "sink_name" : "Input"
+        }
+      ]
+    },
+    {
+      "node_index" : 1,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 0,
+          "sink_name" : "Input"
+        }
+      ]
+    },
+    {
+      "node_index" : 3,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 4,
+          "sink_name" : "Input"
+        }
+      ]
+    },
+    {
+      "node_index" : 4,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 6,
+          "sink_name" : "Input"
+        }
+      ]
+    },
+    {
+      "node_index" : 5,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 11,
+          "sink_name" : "Input"
+        }
+      ]
+    },
+    {
+      "node_index" : 6,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 8,
+          "sink_name" : "Input"
+        }
+      ]
+    },
+    {
+      "node_index" : 7,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 6,
+          "sink_name" : "Aux"
+        }
+      ]
+    },
+    {
+      "node_index" : 8,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 10,
+          "sink_name" : "Input"
+        }
+      ]
+    },
+    {
+      "node_index" : 9,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 2,
+          "sink_name" : "Input"
+        }
+      ]
+    },
+    {
+      "node_index" : 10,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 9,
+          "sink_name" : "Input"
+        }
+      ]
+    },
+    {
+      "node_index" : 11,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 7,
+          "sink_name" : "Input"
+        }
+      ]
+    }
+  ]
+}

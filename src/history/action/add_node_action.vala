@@ -8,7 +8,6 @@ namespace History {
             this.parent_view = parent_view;
             this.node = node;
         }
-
         public void undo() {
             if (parent_view == null || node == null)
                 return;
@@ -21,7 +20,7 @@ namespace History {
                 return;
 
             parent_view.add(node);
+            parent_view.queue_allocate();
         }
     }
-
 }

@@ -4,8 +4,11 @@ public class CanvasView : Gtk.Widget {
 
     private History.HistoryOfChangesRecorder changes_recorder;
 
+    private Gtk.Box node_view_box;
     private Gtk.Paned main_pane;
     private Gtk.ScrolledWindow scrolled_window;
+    private ScrollPanner scroll_panner;
+    private ZoomableArea zoomable_area;
     private GtkFlow.NodeView node_view;
 
     private Data.FileOriginNodeFactory file_origin_node_factory;
@@ -56,11 +59,9 @@ public class CanvasView : Gtk.Widget {
         this.canvas_nodes = new CanvasNodes(node_factory);
         canvas_nodes.node_added.connect_after(this.node_added);
         
-        var node_view_box = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
+        this.node_view_box = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
         create_node_view();
-        node_view_box.append(scrolled_window);
-        node_view_box.append(create_minimap_overlay());
-        
+        create_minimap_overlay();
         create_logs_area();
 
         this.main_pane = new Gtk.Paned(Gtk.Orientation.VERTICAL);
@@ -75,22 +76,49 @@ public class CanvasView : Gtk.Widget {
 
     private void create_node_view() {
         this.node_view = new GtkFlow.NodeView();
-        node_view.add_css_class("canvas_view");
-
         this.scrolled_window = new Gtk.ScrolledWindow();
-        scrolled_window.child = node_view;
-        scrolled_window.vexpand = true;
+        scrolled_window.set_kinetic_scrolling(false);
+        scrolled_window.set_policy(Gtk.PolicyType.EXTERNAL, Gtk.PolicyType.EXTERNAL);
+        scrolled_window.add_css_class("canvas_view");
+        scrolled_window.vexpand = scrolled_window.hexpand = true;
+        this.node_view_box.append(scrolled_window);
+        
+        this.scroll_panner = new ScrollPanner();
+        scroll_panner.enable_panning(scrolled_window);
+
+        create_zoom_control_overlay();
     }
 
-    private Gtk.Overlay create_minimap_overlay() {
-        var overlay = new Gtk.Overlay();
-        var miniMap = new MiniMap(node_view);
-        miniMap.set_valign(Gtk.Align.END);
-        miniMap.set_halign(Gtk.Align.END);
-        miniMap.set_can_focus(false);
+    private void create_zoom_control_overlay() {
+        this.zoomable_area = new ZoomableArea(scrolled_window, node_view);
 
-        overlay.add_overlay(miniMap);
-        return overlay;
+        var overlay = new Gtk.Overlay();
+        var scale_widget = zoomable_area.create_scale_widget();
+        scale_widget.set_can_focus(false);
+
+        var reset_scale = zoomable_area.create_reset_scale_button();
+
+        var control_box = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 5);
+        control_box.append(scale_widget);
+        control_box.append(reset_scale);
+        control_box.set_valign(Gtk.Align.END);
+        control_box.set_halign(Gtk.Align.START);
+        control_box.add_css_class("canvas_scale");
+
+        overlay.add_overlay(control_box);
+        node_view_box.append(overlay);
+    }
+
+    private void create_minimap_overlay() {
+        var overlay = new Gtk.Overlay();
+        var mini_map = new MiniMap(node_view);
+        mini_map.set_valign(Gtk.Align.END);
+        mini_map.set_halign(Gtk.Align.END);
+        mini_map.set_can_focus(false);
+
+        overlay.add_overlay(mini_map);
+
+        node_view_box.append(overlay);
     }
 
     private void create_logs_area() {
@@ -176,7 +204,7 @@ public class CanvasView : Gtk.Widget {
         warning(error_markup);
     }
 
-    private Gtk.FileFilter file_chosse_filter() {
+    private Gtk.FileFilter file_chooser_filter() {
         var filter = new Gtk.FileFilter();
         filter.set_filter_name("Graph file");
         filter.add_mime_type("text/json");
@@ -199,13 +227,10 @@ public class CanvasView : Gtk.Widget {
 
     private void save_graph_as() {
         var file_dialog = new Gtk.FileDialog();
-
-        var filter = new Gtk.FileFilter();
-        filter.name = "Graph files";
-        filter.add_pattern("*.graph");
-
+        var filter = file_chooser_filter();
         var filters = new GLib.ListStore(typeof(Gtk.FileFilter));
         filters.append(filter);
+        
         file_dialog.set_filters(filters);
         file_dialog.set_initial_name("untitled.graph");
         file_dialog.save.begin(base.get_ancestor(typeof(Gtk.Window)) as Gtk.Window, null, (obj, res) => {
@@ -231,11 +256,7 @@ public class CanvasView : Gtk.Widget {
 
     private void load_graph() {
         var file_dialog = new Gtk.FileDialog();
-
-        var filter = new Gtk.FileFilter();
-        filter.name = "Graph files";
-        filter.add_pattern("*.graph");
-
+        var filter = file_chooser_filter();
         var filters = new GLib.ListStore(typeof(Gtk.FileFilter));
         filters.append(filter);
         file_dialog.set_filters(filters);
@@ -246,7 +267,7 @@ public class CanvasView : Gtk.Widget {
                 if (file != null) {
                     current_graph_file = file.get_path();
                     save_button.set_sensitive(true);
-                    load_graph_async.begin(file);
+                    load_graph_sync(file);
                 }
             } catch (Error e) {
                 warning("File dialog cancelled or failed: %s", e.message);
@@ -254,24 +275,18 @@ public class CanvasView : Gtk.Widget {
         });
     }
 
-    async void load_graph_async (GLib.File selected_file) {
+    void load_graph_sync (GLib.File selected_file) {
         canvas_signals.before_file_load();
 
-        new Thread<void*> (null, () => {
-            canvas_nodes.remove_all();
-
-            MainContext.default().invoke(() => {
-                canvas_nodes.deserialize_graph(selected_file, deserializers);
-                node_view.queue_allocate();
-                node_view.queue_draw();
-                return false;
-            });
-
-            Idle.add(load_graph_async.callback);
-            return null;
+        canvas_nodes.remove_all();
+        canvas_nodes.deserialize_graph(selected_file, deserializers);
+        
+        Idle.add(() => {
+            node_view.queue_resize();
+            node_view.queue_allocate();
+            return false;
         });
-        yield;
- 
+
         canvas_signals.after_file_load();
     }
 

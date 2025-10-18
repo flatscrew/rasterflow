@@ -186,8 +186,6 @@ namespace Image {
         }
 
         internal void process_gegl() {
-            if (!realtime_processing) return;
-
             var has_connected_sinks = false;
             foreach (var source in get_sources()) {
                 if (source.sinks.length() > 0) {
@@ -205,6 +203,8 @@ namespace Image {
             }
 
             // sending notification to all other connected nodes
+            if (!realtime_processing) return;
+
             foreach (var source in get_sources()) {
                 if (!(source is PadSource)) {
                     continue;
@@ -262,125 +262,5 @@ namespace Image {
         public Gtk.Widget? build_title_widget(CanvasNode _) {
             return title_widget;
         }   
-    }
-
-    class GeglOperationDisplayNode : CanvasDisplayNode {
-        private GeglOperationNode gegl_operation_node;
-        private GeglOperationOverridesCallback? operation_overrides_callback;
-        private Data.DataDisplayView data_display_view;
-
-        public GeglOperationDisplayNode(string builder_id, GeglOperationNode node) {
-            base(builder_id, node);
-
-            this.data_display_view = new Data.DataDisplayView();
-            if (node.is_output_node()) {
-                create_process_gegl_button();
-            } else {
-                create_gegl_export_button();
-            }
-
-            this.gegl_operation_node = node;
-            this.operation_overrides_callback = GeglOperationOverrides.find_operation_overrides(builder_id);
-
-            if (operation_overrides_callback != null) {
-                var title_widget = operation_overrides_callback.build_title(gegl_operation_node.get_gegl_operation());
-                build_title(new OverridenTitleWidgetBuilder(title_widget));
-
-                var overriden_widget = operation_overrides_callback.build_operation(gegl_operation_node.get_gegl_operation());
-                if (overriden_widget != null) {
-                    add_child(overriden_widget);
-                } else {
-                    add_default_content(gegl_operation_node.get_gegl_operation());
-                }
-            } else {
-                build_default_title();
-                add_default_content(gegl_operation_node.get_gegl_operation());
-            }
-        }
-
-        private void create_process_gegl_button() {
-            var render_button = new Gtk.Button.from_icon_name("media-playback-start");
-            render_button.clicked.connect(gegl_operation_node.process_gegl);
-            render_button.set_tooltip_text("Process");
-            data_display_view.add_action_bar_child_start(render_button);
-        }
-
-        private void create_gegl_export_button() {
-            var export_button = new Gtk.Button.from_icon_name("document-export-symbolic");
-            export_button.clicked.connect(export_graph_as_xml);
-            export_button.set_tooltip_text("Export to XML");
-            data_display_view.add_action_bar_child_end(export_button);
-        }
-
-        public void add_default_content(Gegl.Operation operation) {
-            var scrolled_window = new Gtk.ScrolledWindow();
-            scrolled_window.vexpand = scrolled_window.hexpand = true;
-            scrolled_window.set_propagate_natural_height(true);
-            scrolled_window.set_min_content_height(150);
-            scrolled_window.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC); 
-            scrolled_window.set_placement(Gtk.CornerType.TOP_RIGHT);
-
-            var properties_editor = new Data.DataPropertiesEditor(operation);
-            properties_editor.vexpand = true;
-            properties_editor.data_property_changed.connect(this.property_changed);
-            properties_editor.populate_properties(
-                () => true,
-                compose_overrides
-            );
-
-            data_display_view.add_child(properties_editor);
-
-            if (properties_editor.has_properties) {
-                scrolled_window.set_child(data_display_view);
-                add_child(scrolled_window);
-            } else {
-                n.resizable = false;
-            }
-        }
-
-        private void compose_overrides(Data.PropertyOverridesComposer composer) {
-            if (operation_overrides_callback == null) {
-                return;
-            }
-            operation_overrides_callback.copy_property_overrides(composer);
-        }
-
-        internal void set_gegl_property(string name, GLib.Value value) {
-            gegl_operation_node.get_gegl_operation().set_property(name, value);
-        }
-
-        private void property_changed(string property_name, GLib.Value property_value) {
-            unowned var node = n as GeglOperationNode;
-            node.process_gegl();
-        }
-
-        private void export_graph_as_xml () {
-            var file_dialog = new Gtk.FileDialog ();
-            var filter = new Gtk.FileFilter ();
-            filter.name = "GEGL XML graph";
-            filter.add_pattern ("*.xml");
-
-            var filters = new GLib.ListStore (typeof (Gtk.FileFilter));
-            filters.append (filter);
-
-            file_dialog.set_filters (filters);
-            file_dialog.set_initial_name ("untitled.xml");
-
-            file_dialog.save.begin (base.get_ancestor (typeof (Gtk.Window)) as Gtk.Window, null, (obj, res) => {
-                try {
-                    var file = file_dialog.save.end (res);
-                    if (file != null) {
-                        string path = file.get_path ();
-
-                        var exporter = new Image.GXml.Exporter ();
-                        exporter.export_to (gegl_operation_node.gegl_node, path);
-
-                        message ("Exported graph to: %s", path);
-                    }
-                } catch (Error e) {
-                    warning ("Export cancelled or failed: %s", e.message);
-                }
-            });
-        }
     }
 }

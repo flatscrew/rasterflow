@@ -25,6 +25,8 @@ dependencies = [
     dependency('gio-2.0'),
     dependency('json-glib-1.0'),
     dependency('gegl-0.4'),
+    dependency('libportal'),
+    dependency('libportal-gtk4')
 ]
 
 if host_machine.system() == 'linux'
@@ -73,6 +75,7 @@ endif
 # vala sources
 vala_sources = [
     'src/main.vala',
+    'src/minimap.vala',
     'src/window_shortcuts.vala',
     'src/theme_variant_switch.vala',
     'src/data_drop_handler.vala',
@@ -81,13 +84,19 @@ vala_sources = [
     'src/canvas_nodes.vala',
     'src/canvas_logs.vala',
     'src/canvas_headerbar.vala',
-    'src/minimap.vala',
     'src/colors.vala',
+    'src/panning_scrolled_window.vala',
+    'src/zoomable_area.vala',
 
+    # serialization
     'src/serialize/canvas_serializer.vala',
     'src/serialize/canvas_deserializer.vala',
     'src/serialize/json_serializer.vala',
     'src/serialize/json_deserializer.vala',
+
+    # property node
+    'src/property/canvas_property_bridge.vala',
+    'src/property/canvas_property_node.vala',
 
     # generic data
     'src/data/data_property.vala',
@@ -97,7 +106,6 @@ vala_sources = [
     'src/data/data_details_panel.vala',
     'src/data/data_display_view.vala',
     'src/data/data_properties_editor.vala',
-    'src/data/data_properties_toggle.vala',
     'src/data/data_property_file_location.vala',
     'src/data/file_origin_node_factory.vala',
     'src/data/file_origin_node_chooser.vala',
@@ -109,12 +117,17 @@ vala_sources = [
     'src/image/image_processing_realtime_mode_switch.vala',
     'src/image/image_external_window.vala',
     'src/image/gegl_operation_node.vala',
+    'src/image/gegl_operation_display_node.vala',
     'src/image/gegl_operation_overrides.vala',
+    'src/image/gegl_operation_property_sink.vala',
     'src/image/gegl_file_load_title.vala',
     'src/image/gegl_node_operation_view.vala',
     'src/image/gegl_xml_file_node.vala',
     'src/image/gxml/gxml_export.vala',
     'src/image/window_geometry.vala',
+    'src/image/color_prober.vala',
+    'src/image/color_property.vala',
+    'src/image/history/gegl_node_property_control_taken_action.vala',
     'src/image/plugin.vala',
     
     # plain text processing
