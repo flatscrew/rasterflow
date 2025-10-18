@@ -111,9 +111,9 @@ namespace Serialize {
 
     public class SerializationContext : Object {
 
-        private CanvasNodes canvas_nodes;
+        private CanvasGraph canvas_nodes;
 
-        public SerializationContext(CanvasNodes canvas_nodes) {
+        public SerializationContext(CanvasGraph canvas_nodes) {
             this.canvas_nodes = canvas_nodes;
         }
 

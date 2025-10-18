@@ -1,8 +1,6 @@
 using Gtk;
 
-
 public class CanvasSignals : Object {
-
   public signal void before_file_load();
   public signal void after_file_load();
 }

@@ -4,8 +4,10 @@ public class CanvasView : Gtk.Widget {
 
     private History.HistoryOfChangesRecorder changes_recorder;
 
+    private Gtk.Overlay node_view_overlay;
     private Gtk.Box node_view_box;
     private Gtk.Paned main_pane;
+    private Gtk.Paned side_pane;
     private Gtk.ScrolledWindow scrolled_window;
     private ScrollPanner scroll_panner;
     private ZoomableArea zoomable_area;
@@ -15,7 +17,8 @@ public class CanvasView : Gtk.Widget {
     private Gtk.Popover file_origin_popover;
 
     private CanvasNodeFactory node_factory;
-    private CanvasNodes canvas_nodes;
+    private CanvasGraph canvas_graph;
+    private CanvasGraphPropertiesEditor properties_editor;
     private CanvasSignals canvas_signals;
     private CanvasLogsArea logs_area;
     private Gtk.Button save_button;
@@ -54,21 +57,33 @@ public class CanvasView : Gtk.Widget {
         this.data_drop_handler = new DataDropHandler();
         data_drop_handler.file_dropped.connect(this.add_file_data_node);
         data_drop_handler.text_dropped.connect(this.add_text_data_node);
-        add_controller (data_drop_handler.data_drop_target);
+        add_controller(data_drop_handler.data_drop_target);
 
-        this.canvas_nodes = new CanvasNodes(node_factory);
-        canvas_nodes.node_added.connect_after(this.node_added);
+        this.canvas_graph = new CanvasGraph(node_factory);
+        canvas_graph.node_added.connect_after(this.node_added);
+        
+        this.properties_editor = new CanvasGraphPropertiesEditor();
         
         this.node_view_box = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
+        
+        this.side_pane = new Gtk.Paned(Gtk.Orientation.HORIZONTAL);
+        side_pane.set_wide_handle(true);
+        side_pane.set_start_child(properties_editor);
+        side_pane.set_end_child(node_view_box);
+        side_pane.set_shrink_start_child(false);
+        side_pane.set_shrink_end_child(true);
+        side_pane.set_position(0);
+        
         create_node_view();
         create_minimap_overlay();
         create_logs_area();
+        create_properties_toggle();
 
         this.main_pane = new Gtk.Paned(Gtk.Orientation.VERTICAL);
         main_pane.set_shrink_end_child(false);
         main_pane.set_resize_end_child(false);
         main_pane.set_wide_handle(true);
-        main_pane.set_start_child(node_view_box);
+        main_pane.set_start_child(side_pane);
         main_pane.set_end_child(logs_area);
         main_pane.set_parent(this);
         main_pane.set_position(main_pane.max_position);
@@ -81,7 +96,12 @@ public class CanvasView : Gtk.Widget {
         scrolled_window.set_policy(Gtk.PolicyType.EXTERNAL, Gtk.PolicyType.EXTERNAL);
         scrolled_window.add_css_class("canvas_view");
         scrolled_window.vexpand = scrolled_window.hexpand = true;
-        this.node_view_box.append(scrolled_window);
+        
+        this.node_view_overlay = new Gtk.Overlay();
+        node_view_overlay.set_hexpand(true);
+        node_view_overlay.set_vexpand(true);
+        node_view_overlay.set_child(scrolled_window);
+        this.node_view_box.append(node_view_overlay);
         
         this.scroll_panner = new ScrollPanner();
         scroll_panner.enable_panning(scrolled_window);
@@ -92,12 +112,10 @@ public class CanvasView : Gtk.Widget {
     private void create_zoom_control_overlay() {
         this.zoomable_area = new ZoomableArea(scrolled_window, node_view);
 
-        var overlay = new Gtk.Overlay();
         var scale_widget = zoomable_area.create_scale_widget();
         scale_widget.set_can_focus(false);
 
         var reset_scale = zoomable_area.create_reset_scale_button();
-
         var control_box = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 5);
         control_box.append(scale_widget);
         control_box.append(reset_scale);
@@ -105,20 +123,16 @@ public class CanvasView : Gtk.Widget {
         control_box.set_halign(Gtk.Align.START);
         control_box.add_css_class("canvas_scale");
 
-        overlay.add_overlay(control_box);
-        node_view_box.append(overlay);
+        node_view_overlay.add_overlay(control_box);
     }
 
     private void create_minimap_overlay() {
-        var overlay = new Gtk.Overlay();
         var mini_map = new MiniMap(node_view);
         mini_map.set_valign(Gtk.Align.END);
         mini_map.set_halign(Gtk.Align.END);
         mini_map.set_can_focus(false);
 
-        overlay.add_overlay(mini_map);
-
-        node_view_box.append(overlay);
+        node_view_overlay.add_overlay(mini_map);
     }
 
     private void create_logs_area() {
@@ -130,6 +144,14 @@ public class CanvasView : Gtk.Widget {
             }
             print("node=> %s\n", node.name);
         });
+    }
+    
+    private void create_properties_toggle() {
+        var toggle_button = properties_editor.create_toggle_button(this.side_pane);
+        toggle_button.set_valign(Gtk.Align.START);
+        toggle_button.set_halign(Gtk.Align.START);
+    
+        node_view_overlay.add_overlay(toggle_button);
     }
 
     private void logs_collapsed(int height) {
@@ -163,7 +185,7 @@ public class CanvasView : Gtk.Widget {
                 var node_builder = builder.find_builder(node_factory);
                 try {
                     var new_node = node_builder.create();
-                    canvas_nodes.add(new_node);
+                    canvas_graph.add_node(new_node);
 
                     builder.apply_file_data(new_node, file, file_info);
                     new_node.set_position((int) x, (int) y);
@@ -218,7 +240,7 @@ public class CanvasView : Gtk.Widget {
         }
 
         try {
-            var serialized_graph = canvas_nodes.serialize_graph(serializers);
+            var serialized_graph = canvas_graph.serialize_graph(serializers);
             FileUtils.set_contents_full(current_graph_file, serialized_graph, serialized_graph.length, GLib.FileSetContentsFlags.CONSISTENT);
         } catch (FileError e) {
             warning(e.message);                        
@@ -240,7 +262,7 @@ public class CanvasView : Gtk.Widget {
                     current_graph_file = file.get_path();
                     save_button.set_sensitive(true);
 
-                    var serialized_graph = canvas_nodes.serialize_graph(serializers);
+                    var serialized_graph = canvas_graph.serialize_graph(serializers);
                     FileUtils.set_contents_full(
                         current_graph_file,
                         serialized_graph,
@@ -278,8 +300,8 @@ public class CanvasView : Gtk.Widget {
     void load_graph_sync (GLib.File selected_file) {
         canvas_signals.before_file_load();
 
-        canvas_nodes.remove_all();
-        canvas_nodes.deserialize_graph(selected_file, deserializers);
+        canvas_graph.remove_all_nodes();
+        canvas_graph.deserialize_graph(selected_file, deserializers);
         
         Idle.add(() => {
             node_view.queue_resize();
@@ -328,7 +350,7 @@ public class CanvasView : Gtk.Widget {
     public Data.DataNodeChooser create_node_chooser() {
         var node_chooser = new Data.DataNodeChooser.everything(node_factory);
         node_chooser.set_tooltip_text("Add new node");
-        node_chooser.node_created.connect(canvas_nodes.add);
+        node_chooser.node_created.connect(canvas_graph.add_node);
         return node_chooser;
     }
 

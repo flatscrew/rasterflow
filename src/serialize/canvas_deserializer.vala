@@ -124,9 +124,9 @@ namespace Serialize {
 
     public class DeserializationContext : Object {
 
-        private CanvasNodes canvas_nodes;
+        private CanvasGraph canvas_nodes;
 
-        public DeserializationContext(CanvasNodes canvas_nodes) {
+        public DeserializationContext(CanvasGraph canvas_nodes) {
             this.canvas_nodes = canvas_nodes;
         }
 

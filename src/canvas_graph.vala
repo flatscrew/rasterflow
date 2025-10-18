@@ -1,22 +1,22 @@
-public class CanvasNodes : Object {
+public class CanvasGraph : Object {
 
     public signal void node_added(CanvasDisplayNode node);
 
     private CanvasNodeFactory node_factory;
     private List<CanvasDisplayNode> all_nodes = new List<CanvasDisplayNode>();
 
-    public CanvasNodes(CanvasNodeFactory node_factory) {
+    public CanvasGraph(CanvasNodeFactory node_factory) {
         this.node_factory = node_factory;
     }
 
-    public void add(CanvasDisplayNode node) {
+    public void add_node(CanvasDisplayNode node) {
         all_nodes.append(node);
         node.removed.connect(this.node_removed);
 
         node_added(node);
     }
 
-    public void remove_all() {
+    public void remove_all_nodes() {
         foreach (var node in all_nodes) {
             node.remove();
         }
@@ -46,7 +46,7 @@ public class CanvasNodes : Object {
             }
             try {
                 var built_node = builder.create();
-                add(built_node);
+                add_node(built_node);
                 built_node.deserialize(node_object);
             } catch (Error e) {
                 warning(e.message);
