@@ -101,6 +101,7 @@ vala_sources = [
 
     # generic data
     'src/data/data_property.vala',
+    'src/data/data_property_factory.vala',
     'src/data/title_bar.vala',
     'src/data/node_data.vala',
     'src/data/data_node_chooser.vala',

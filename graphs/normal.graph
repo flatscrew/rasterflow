@@ -5,8 +5,8 @@
         "path" : "/home/activey/Pictures/test/vintage-tile1_albedo.png"
       },
       "builder_id" : "gegl:load",
-      "width" : 398,
-      "height" : 298,
+      "width" : 281,
+      "height" : 283,
       "expanded" : true,
       "position_x" : 46,
       "position_y" : 83
@@ -15,7 +15,7 @@
       "model" : {      },
       "builder_id" : "gegl:gray",
       "width" : 148,
-      "height" : 144,
+      "height" : 156,
       "expanded" : false,
       "color" : "rgb(38,162,105)",
       "position_x" : 545,
@@ -24,8 +24,8 @@
     {
       "model" : {      },
       "builder_id" : "image:display",
-      "width" : 426,
-      "height" : 448,
+      "width" : 424,
+      "height" : 446,
       "expanded" : true,
       "position_x" : 1318,
       "position_y" : 24,
@@ -41,8 +41,8 @@
         "flip-y" : true
       },
       "builder_id" : "gegl:normal-map",
-      "width" : 398,
-      "height" : 298,
+      "width" : 396,
+      "height" : 296,
       "expanded" : true,
       "position_x" : 813,
       "position_y" : 80

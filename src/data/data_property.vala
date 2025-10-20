@@ -1,34 +1,5 @@
 namespace Data {
 
-    public class DataPropertyFactory : Object {
-
-        private static DataPropertyFactory? _instance;
-        public static DataPropertyFactory instance {
-            get {
-                if (_instance == null)
-                    _instance = new DataPropertyFactory();
-                return _instance;
-            }
-        }
-
-        
-        private Gee.Map<GLib.Type, DataPropertyBuilder> typed_builders = new Gee.HashMap<GLib.Type, DataPropertyBuilder>();
-
-        public DataPropertyFactory register(GLib.Type type, DataPropertyBuilderFunc property_func) {
-            typed_builders.set(type, new DataPropertyBuilder(property_func));
-            return this;
-        }
-
-        public Data.AbstractDataProperty? build(ParamSpec param_spec, GLib.Object data_object) {
-            var property_type = param_spec.value_type;
-            var builder = typed_builders.get(property_type);
-            if (builder == null) {
-                return null;
-            }
-            return builder.build_property(param_spec, data_object);
-        }
-    }
-
     public abstract class AbstractDataProperty : Gtk.Widget {
         construct {
             set_layout_manager(new Gtk.BinLayout());

@@ -15,8 +15,8 @@
         "height" : 1000.0
       },
       "builder_id" : "gegl:crop",
-      "width" : 418,
-      "height" : 391,
+      "width" : 416,
+      "height" : 389,
       "expanded" : true,
       "position_x" : 374,
       "position_y" : 31
@@ -24,20 +24,20 @@
     {
       "model" : {      },
       "builder_id" : "gegl:maze",
-      "width" : 119,
-      "height" : 156,
-      "expanded" : false,
+      "width" : 354,
+      "height" : 396,
+      "expanded" : true,
       "position_x" : 821,
       "position_y" : 51
     },
     {
       "model" : {      },
       "builder_id" : "image:display",
-      "width" : 401,
-      "height" : 498,
+      "width" : 399,
+      "height" : 496,
       "expanded" : true,
-      "position_x" : 958,
-      "position_y" : 14,
+      "position_x" : 1267,
+      "position_y" : 37,
       "external-window" : {
         "active" : false
       }

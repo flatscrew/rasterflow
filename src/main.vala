@@ -30,7 +30,7 @@ class CanvasApplication : Gtk.Application {
       this.window = new Gtk.ApplicationWindow(this);
       
       load_css();
-
+      
       var plugin_contribution = new Plugin.PluginContribution(
         canvas_signals,
         data_node_factory,
@@ -41,6 +41,7 @@ class CanvasApplication : Gtk.Application {
         deserializers
       );
 
+      Data.register_standard_types();
       initialize_image_plugin(plugin_contribution, args);
 
       this.canvas_view = new CanvasView(
