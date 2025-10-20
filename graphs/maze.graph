@@ -1,0 +1,78 @@
+{
+  "nodes" : [
+    {
+      "model" : {      },
+      "builder_id" : "gegl:buffer-source",
+      "width" : 166,
+      "height" : 127,
+      "expanded" : false,
+      "position_x" : 75,
+      "position_y" : 53
+    },
+    {
+      "model" : {
+        "width" : 1000.0,
+        "height" : 1000.0
+      },
+      "builder_id" : "gegl:crop",
+      "width" : 418,
+      "height" : 391,
+      "expanded" : true,
+      "position_x" : 374,
+      "position_y" : 31
+    },
+    {
+      "model" : {      },
+      "builder_id" : "gegl:maze",
+      "width" : 119,
+      "height" : 156,
+      "expanded" : false,
+      "position_x" : 821,
+      "position_y" : 51
+    },
+    {
+      "model" : {      },
+      "builder_id" : "image:display",
+      "width" : 401,
+      "height" : 498,
+      "expanded" : true,
+      "position_x" : 958,
+      "position_y" : 14,
+      "external-window" : {
+        "active" : false
+      }
+    }
+  ],
+  "links" : [
+    {
+      "node_index" : 0,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 1,
+          "sink_name" : "Input"
+        }
+      ]
+    },
+    {
+      "node_index" : 1,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 2,
+          "sink_name" : "Input"
+        }
+      ]
+    },
+    {
+      "node_index" : 2,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 3,
+          "sink_name" : "Input"
+        }
+      ]
+    }
+  ]
+}

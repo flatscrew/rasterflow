@@ -42,8 +42,8 @@ namespace Serialize {
         private CustomSerializers serializers;
         private JsonObjectSerializer json_object;
 
-        public SerializedObject(JsonObjectSerializer json_object, CustomSerializers factory) {
-            this.serializers = factory;
+        public SerializedObject(JsonObjectSerializer json_object, CustomSerializers custom_serializers) {
+            this.serializers = custom_serializers;
             this.json_object = json_object;
         }
 
@@ -124,20 +124,20 @@ namespace Serialize {
 
     public class SerializedGraph : Object {
 
-        private CustomSerializers factory;
+        private CustomSerializers custom_serializers;
         private JsonObjectSerializer json_root;
         private JsonArraySerializer nodes_array;
         private JsonArraySerializer links_array;
 
         public SerializedGraph(CustomSerializers factory) {
-            this.factory = factory;
+            this.custom_serializers = factory;
             this.json_root = new JsonObjectSerializer.new_root();
             this.nodes_array = json_root.new_array("nodes");
             this.links_array = json_root.new_array("links");
         }
         
         public void serialize_node(CanvasDisplayNode node, SerializationContext context) {
-            node.serialize(new SerializedObject(nodes_array.new_object(), factory));
+            node.serialize(new SerializedObject(nodes_array.new_object(), custom_serializers));
 
             unowned var sources = node.n.get_sources();
             foreach (var source in sources) {

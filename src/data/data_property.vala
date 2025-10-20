@@ -1,24 +1,25 @@
 namespace Data {
 
-    public class CustomPropertyFactory : Object {
+    public class DataPropertyFactory : Object {
 
-        private static CustomPropertyFactory? instance = null;
-
-        public static CustomPropertyFactory get_instance() {
-            if (CustomPropertyFactory.instance == null) {
-                CustomPropertyFactory.instance = new CustomPropertyFactory();
+        private static DataPropertyFactory? _instance;
+        public static DataPropertyFactory instance {
+            get {
+                if (_instance == null)
+                    _instance = new DataPropertyFactory();
+                return _instance;
             }
-            return CustomPropertyFactory.instance;
         }
 
-        private Gee.Map<GLib.Type, DataPropertyOverrideBuilder> typed_builders = new Gee.HashMap<GLib.Type, DataPropertyOverrideBuilder>();
+        
+        private Gee.Map<GLib.Type, DataPropertyBuilder> typed_builders = new Gee.HashMap<GLib.Type, DataPropertyBuilder>();
 
-        public CustomPropertyFactory register(GLib.Type type, DataPropertyBuilderFunc property_func) {
-            typed_builders.set(type, new DataPropertyOverrideBuilder(property_func));
+        public DataPropertyFactory register(GLib.Type type, DataPropertyBuilderFunc property_func) {
+            typed_builders.set(type, new DataPropertyBuilder(property_func));
             return this;
         }
 
-        public Data.DataProperty? build(ParamSpec param_spec, GLib.Object data_object) {
+        public Data.AbstractDataProperty? build(ParamSpec param_spec, GLib.Object data_object) {
             var property_type = param_spec.value_type;
             var builder = typed_builders.get(property_type);
             if (builder == null) {
@@ -28,7 +29,7 @@ namespace Data {
         }
     }
 
-    public abstract class DataProperty : Gtk.Widget {
+    public abstract class AbstractDataProperty : Gtk.Widget {
         construct {
             set_layout_manager(new Gtk.BinLayout());
         }
@@ -49,7 +50,7 @@ namespace Data {
             }
         }
 
-        protected DataProperty(GLib.ParamSpec param_spec, bool multiline = false) {
+        protected AbstractDataProperty(GLib.ParamSpec param_spec, bool multiline = false) {
             this.param_spec = param_spec;
             this.multiline = multiline;
 
@@ -82,7 +83,7 @@ namespace Data {
         }
     }
 
-    class DoubleProperty : DataProperty {
+    class DoubleProperty : AbstractDataProperty {
         
         private Gtk.SpinButton spin_button;
 
@@ -107,7 +108,7 @@ namespace Data {
         }
     }
 
-    class IntProperty : DataProperty {
+    class IntProperty : AbstractDataProperty {
         
         private Gtk.SpinButton spin_button;
         private bool publish = true;
@@ -144,7 +145,7 @@ namespace Data {
         }
     }
 
-    class UIntProperty : DataProperty {
+    class UIntProperty : AbstractDataProperty {
         
         private Gtk.SpinButton spin_button;
 
@@ -169,7 +170,7 @@ namespace Data {
         }
     }
 
-    class UInt64Property : DataProperty {
+    class UInt64Property : AbstractDataProperty {
         
         private Gtk.SpinButton spin_button;
 
@@ -194,7 +195,7 @@ namespace Data {
         }
     }
 
-    class EnumProperty : DataProperty {
+    class EnumProperty : AbstractDataProperty {
         
         private Gtk.ComboBoxText combobox;
 
@@ -225,7 +226,7 @@ namespace Data {
         }
     }
 
-    class StringProperty : DataProperty {
+    class StringProperty : AbstractDataProperty {
         
         private Gtk.Entry text_entry;
 
@@ -253,9 +254,7 @@ namespace Data {
         }
     }
 
-    
-
-    class BoolProperty : DataProperty {
+    class BoolProperty : AbstractDataProperty {
         
         private Gtk.Switch switch_button;
 

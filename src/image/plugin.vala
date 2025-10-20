@@ -113,11 +113,11 @@ public string initialize_image_plugin(Plugin.PluginContribution plugin_contribut
             });
     });
 
+    // TODO make it in plugin contribution instead?
     // custom data types for property editor
-    Data.CustomPropertyFactory.get_instance()
-        .register(typeof(Gegl.Color), param_spec => {
-            return new Image.ColorProperty(param_spec);
-        });
+    Data.DataPropertyFactory.instance.register(typeof(Gegl.Color), param_spec => {
+        return new Image.ColorProperty(param_spec);
+    });
 
 	return "image";
 }

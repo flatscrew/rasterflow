@@ -213,8 +213,6 @@ public class CanvasView : Gtk.Widget {
                 x: (int)x,
                 y: (int)y
             });
-
-
             file_origin_popover.popup();
 
         } catch (Error e) {

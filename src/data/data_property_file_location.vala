@@ -1,5 +1,5 @@
 namespace Data {
-    class FileLocationProperty : Data.DataProperty {
+    class FileLocationProperty : Data.AbstractDataProperty {
 
         private Gtk.Box box;
         private Gtk.Button file_chooser_button;

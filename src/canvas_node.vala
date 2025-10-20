@@ -230,13 +230,14 @@ public class CanvasDisplayNode : GtkFlow.Node {
     private void remove_node() {
         stop_sinks_history_recording();
         {
-            this.remove();
-            removed(this);
             
             int x, y;
             get_position(out x, out y);
             var parent = this.parent as GtkFlow.NodeView;
             changes_recorder.record(new History.RemoveNodeAction(parent, this, x, y), true);
+            
+            this.remove();
+            removed(this);
         }
     }
 
@@ -285,10 +286,7 @@ public class CanvasDisplayNode : GtkFlow.Node {
         
         var expanded = deserializer.get_bool("expanded", false);
         if (expanded) {
-            Idle.add(() => {
-                node_expander.expanded = true;
-                return false;
-            });
+            node_expander.expanded = true;
         }
         set_size_request(deserializer.get_int("width"), deserializer.get_int("height"));
         set_position(deserializer.get_int("position_x"), deserializer.get_int("position_y"));

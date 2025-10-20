@@ -9,23 +9,21 @@ class CanvasApplication : Gtk.Application {
 
   private History.HistoryOfChangesRecorder changes_recorder;
   private CanvasView canvas_view;
-  private CanvasHeaderbarWidgets header_widgets;
   private Gtk.ApplicationWindow? window;
 
   construct {
     base.application_id = "io.canvas.Canvas";
     base.flags = ApplicationFlags.FLAGS_NONE;
+    
+    this.changes_recorder = History.HistoryOfChangesRecorder.instance;
   }
 
   public CanvasApplication(string[] args) {
-    this.changes_recorder = History.HistoryOfChangesRecorder.instance;
-    this.header_widgets = new CanvasHeaderbarWidgets();
-    
+    var header_widgets = new CanvasHeaderbarWidgets();
     var data_node_factory = new CanvasNodeFactory();
     var file_origin_node_factory = new Data.FileOriginNodeFactory();
     var serializers = new Serialize.CustomSerializers();
     var deserializers = new Serialize.CustomDeserializers();
-    
     var canvas_signals = new CanvasSignals();
 
     activate.connect (() => {
@@ -56,11 +54,11 @@ class CanvasApplication : Gtk.Application {
       canvas_signals.before_file_load.connect_after(this.before_file_load);
       canvas_signals.after_file_load.connect_after(this.after_file_load);
 
-      build_header_bar();
+      build_header_bar(header_widgets);
       add_shortcuts(window);
       
       window.set_default_size(800, 600);
-      window.set_child (canvas_view);
+      window.set_child(canvas_view);
       window.present();
     });
   }
@@ -88,7 +86,7 @@ class CanvasApplication : Gtk.Application {
     Gtk.StyleContext.add_provider_for_display(Gdk.Display.get_default(), css_provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION);
   }
 
-  private void build_header_bar() {
+  private void build_header_bar(CanvasHeaderbarWidgets header_widgets) {
     var headerbar = new Gtk.HeaderBar ();
 
     headerbar.pack_start (canvas_view.create_node_chooser());
@@ -104,15 +102,11 @@ class CanvasApplication : Gtk.Application {
     headerbar.pack_start(new History.HistoryButtonsWidget());
     headerbar.pack_end(create_theme_variant_switch());
 
-    add_header_widgets(headerbar);
-
-    window.set_titlebar(headerbar);
-  }
-
-  private void add_header_widgets(Gtk.HeaderBar headerbar) {
     foreach (var widget in header_widgets.get_widgets()) {
       headerbar.pack_start(widget);
     }
+    
+    window.set_titlebar(headerbar);
   }
 
   private Gtk.Widget create_theme_variant_switch() {

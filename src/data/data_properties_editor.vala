@@ -13,23 +13,23 @@ namespace Data {
             }
         }
 
-        public Data.DataProperty? build_property(ParamSpec param_spec, GLib.Object data_object) {
+        public Data.AbstractDataProperty? build_property(ParamSpec param_spec, GLib.Object data_object) {
             return composer.build_property(param_spec, data_object);
         }
     }
 
     public class PropertyOverridesComposer {
-        private Gee.Map<string, DataPropertyOverrideBuilder> property_builders = new Gee.HashMap<string, DataPropertyOverrideBuilder>();
+        private Gee.Map<string, DataPropertyBuilder> property_builders = new Gee.HashMap<string, DataPropertyBuilder>();
 
         internal void override_property(string property_name, DataPropertyBuilderFunc property_func) {
-            add_property_override_builder(property_name, new DataPropertyOverrideBuilder(property_func));
+            add_property_override_builder(property_name, new DataPropertyBuilder(property_func));
         }
 
-        protected void add_property_override_builder(string property_name, DataPropertyOverrideBuilder builder) {
+        protected void add_property_override_builder(string property_name, DataPropertyBuilder builder) {
             property_builders.set(property_name, builder);
         }
 
-        internal Data.DataProperty? build_property(ParamSpec param_spec, GLib.Object data_object) {
+        internal Data.AbstractDataProperty? build_property(ParamSpec param_spec, GLib.Object data_object) {
             var builder = property_builders.get(param_spec.name);
             if (builder == null) {
                 return null;
@@ -44,21 +44,21 @@ namespace Data {
         }
     }
 
-    protected class DataPropertyOverrideBuilder {
+    protected class DataPropertyBuilder {
         private DataPropertyBuilderFunc property_func;
 
-        internal DataPropertyOverrideBuilder(DataPropertyBuilderFunc property_func) {
+        internal DataPropertyBuilder(DataPropertyBuilderFunc property_func) {
             this.property_func = (param_spec, data_object) => {
                 return property_func(param_spec, data_object);
             };
         }
 
-        public Data.DataProperty build_property(GLib.ParamSpec param_spec, GLib.Object data_object) {
+        public Data.AbstractDataProperty build_property(GLib.ParamSpec param_spec, GLib.Object data_object) {
             return this.property_func(param_spec, data_object);
         }
     } 
 
-    public delegate Data.DataProperty DataPropertyBuilderFunc (GLib.ParamSpec param_spec, GLib.Object data_object);
+    public delegate Data.AbstractDataProperty DataPropertyBuilderFunc (GLib.ParamSpec param_spec, GLib.Object data_object);
 
     class DataPropertyWrapper : Gtk.Widget {
 
@@ -85,10 +85,17 @@ namespace Data {
             property_widget.unparent();
         }
 
-        public DataPropertyWrapper(GLib.ParamSpec param_spec, GLib.Object data_object, DataPropertiesOverrideCallback? overrides_callback = null) {
+        public DataPropertyWrapper(
+            GLib.ParamSpec param_spec, 
+            GLib.Object data_object, 
+            DataPropertiesOverrideCallback? overrides_callback = null
+        )
+        {
             var not_supported_label = new Gtk.Label("");
             not_supported_label.set_markup("<b><span foreground='red'>Not supported type</span></b>: %s".printf(param_spec.value_type.name()));
             not_supported_label.halign = Gtk.Align.START;
+            not_supported_label.wrap = true;
+            not_supported_label.wrap_mode = Pango.WrapMode.WORD_CHAR;
             this.property_widget = not_supported_label;
 
             if ((param_spec.flags & ParamFlags.WRITABLE) == ParamFlags.WRITABLE) {
@@ -96,9 +103,7 @@ namespace Data {
             }
 
             var property = override_property(param_spec, data_object, overrides_callback);
-            if (property != null) {
-                property_widget = property;
-            } else {
+            if (property == null) {
                 if (param_spec is ParamSpecDouble) {
                     property = create_double_property_widget(param_spec as ParamSpecDouble);
                 } else if (param_spec is ParamSpecString) {
@@ -114,7 +119,9 @@ namespace Data {
                 } else if (param_spec is ParamSpecEnum) {
                     property = create_enum_property_widget(param_spec as ParamSpecEnum);
                 } else {
-                    var custom_property_widget = CustomPropertyFactory.get_instance().build(param_spec, data_object);
+                    // TODO make all the other types be registered in factory
+                    // and just use factory instead of everything above
+                    var custom_property_widget = DataPropertyFactory.instance.build(param_spec, data_object);
                     if (custom_property_widget == null) {
                         warning("unhandled property type: %s = %s\n", param_spec.name, param_spec.value_type.name());
                     } else {
@@ -139,12 +146,13 @@ namespace Data {
             }
         }
 
-        private Data.DataProperty? override_property(ParamSpec param_spec, GLib.Object data_object, DataPropertiesOverrideCallback? overrides_callback) {
+        private Data.AbstractDataProperty? override_property(ParamSpec param_spec, GLib.Object data_object, DataPropertiesOverrideCallback? overrides_callback) {
             if (overrides_callback == null) {
                 return null;
             }
             var property = overrides_callback.build_property(param_spec, data_object);
             if (property != null) {
+                // TODO is it necessary?
                 var default_value = property.default_value();
                 if (default_value != null) {
                     property_changed(param_spec.name, default_value);
@@ -154,39 +162,39 @@ namespace Data {
             return null;
         }
 
-        private Data.DataProperty create_double_property_widget(ParamSpecDouble double_specs) {
+        private Data.AbstractDataProperty create_double_property_widget(ParamSpecDouble double_specs) {
             var property = new Data.DoubleProperty(double_specs);
             property.halign = Gtk.Align.START;
             return property;
         }
 
-        private Data.DataProperty create_int_property_widget(ParamSpecInt int_spec) {
+        private Data.AbstractDataProperty create_int_property_widget(ParamSpecInt int_spec) {
             var property = new Data.IntProperty(int_spec);
             return property;
         }
 
-        private Data.DataProperty create_uint_property_widget(ParamSpecUInt uint_spec) {
+        private Data.AbstractDataProperty create_uint_property_widget(ParamSpecUInt uint_spec) {
             var property = new Data.UIntProperty(uint_spec);
             return property;
         }
 
-        private Data.DataProperty create_uint64_property_widget(ParamSpecUInt64 uint64_spec) {
+        private Data.AbstractDataProperty create_uint64_property_widget(ParamSpecUInt64 uint64_spec) {
             var property = new Data.UInt64Property(uint64_spec);
             return property;
         }
 
-        private Data.DataProperty create_enum_property_widget(ParamSpecEnum enum_spec) {
+        private Data.AbstractDataProperty create_enum_property_widget(ParamSpecEnum enum_spec) {
             var property = new Data.EnumProperty(enum_spec);
             property.halign = Gtk.Align.START;
             return property;
         }
 
-        private Data.DataProperty create_string_property_widget(ParamSpecString string_spec) {
+        private Data.AbstractDataProperty create_string_property_widget(ParamSpecString string_spec) {
             var property = new Data.StringProperty(string_spec);
             return property;
         }
 
-        private Data.DataProperty create_bool_property_widget(ParamSpecBoolean bool_spec) {
+        private Data.AbstractDataProperty create_bool_property_widget(ParamSpecBoolean bool_spec) {
             var property = new Data.BoolProperty(bool_spec);
             property.halign = Gtk.Align.START;
             return property;
@@ -212,7 +220,6 @@ namespace Data {
     
         public void attach_to_grid(Gtk.Grid grid, ref int current_row) {
             if (override_button != null) {
-                message("adding button\n");
                 grid.attach(override_button, 0, current_row, 1, 1);
             }
     
@@ -297,9 +304,10 @@ namespace Data {
             foreach (var param_spec in data_object.get_class().list_properties()) {
                 if (!filter(param_spec))
                     continue;
-
+                    
                 this.has_properties = true;
 
+                // TODO check if property is supported here and if its not then dont add it at all
                 var entry = create_property_entry(param_spec, overrides_func, property_decorator);
                 entry.attach_to_grid(properties_grid, ref row);
             }

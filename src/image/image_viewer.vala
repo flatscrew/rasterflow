@@ -136,6 +136,13 @@ namespace Image {
         }
 
         public ImageDimensions get_dimensions () {
+            if (texture == null) {
+                return {
+                    width: 0,
+                    height: 0
+                };
+            }
+            
             var tex_w = texture.get_width ();
             var tex_h = texture.get_height ();
 

@@ -1,5 +1,5 @@
 namespace Image {
-    public class ColorProperty : Data.DataProperty {
+    public class ColorProperty : Data.AbstractDataProperty {
         private Gtk.Box box;
         private Gtk.ColorButton color_button;
         private Gtk.ToggleButton prober_button;
