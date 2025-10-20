@@ -25,6 +25,13 @@ namespace Serialize {
         }
 
         public void serialize(GLib.Value value, SerializedObject parent_object, string name) {
+            var value_type = value.type();
+            if (value_type.is_a(GLib.Type.ENUM)) {
+                int enum_value = value.get_enum();
+                parent_object.set_int(name, enum_value);
+                return;
+            }
+            
             var callback = serializers.get(value.type());
             if (callback == null) {
                 warning("Unable to serialize type: %s\n", value.type_name());
@@ -35,7 +42,6 @@ namespace Serialize {
             serialized_object.set_string("type", value.type_name());
             callback.serialize_value(value, serialized_object);
         }
-
     }
 
     public class SerializedObject : Object {

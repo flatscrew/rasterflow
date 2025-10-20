@@ -239,7 +239,7 @@ namespace Image {
         protected override void deserialize(Serialize.DeserializedObject deserializer) {
             deserializer.for_each_property((name, value) => {
                 gegl_node.set_property(name, value);
-            });
+            }, gegl_node.gegl_operation);
         }
 
         internal Gegl.Operation get_gegl_operation() {

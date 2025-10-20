@@ -69,9 +69,18 @@ namespace Serialize {
             return deserializer.get_boolean(name, default_value);
         }
 
-        public void for_each_property(DeserializedPropertyDelegate property_delegate, GLib.Object? context_object = null) {
+        public void for_each_property(DeserializedPropertyDelegate property_delegate, GLib.Object context_object) {
             deserializer.for_each((node, index, name) => {
                 if (node.is_value()) {
+                    var param_spec = context_object.get_class().find_property(name);
+                    var value_type = param_spec.value_type;
+                    if (value_type.is_a(GLib.Type.ENUM)) {
+                        GLib.Value val = GLib.Value(value_type);
+                        val.set_enum((int) node.get_value().get_int64());
+                        property_delegate(name, val);
+                        return;
+                    }
+                    
                     property_delegate(name, node.get_value());
                 } else if (node.is_object()) {
                     var deserializer = node.object_deserializer();

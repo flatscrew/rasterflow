@@ -195,6 +195,10 @@ namespace Data {
 
             combobox.set_parent(this);
         }
+        
+        protected override void set_property_value(GLib.Value value) {
+            combobox.active = value.get_enum();
+        }
     }
 
     class StringProperty : AbstractDataProperty {
