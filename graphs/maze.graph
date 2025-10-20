@@ -6,8 +6,8 @@
       "width" : 166,
       "height" : 127,
       "expanded" : false,
-      "position_x" : 75,
-      "position_y" : 53
+      "position_x" : 80,
+      "position_y" : 61
     },
     {
       "model" : {
@@ -15,19 +15,19 @@
         "height" : 1000.0
       },
       "builder_id" : "gegl:crop",
-      "width" : 414,
-      "height" : 387,
+      "width" : 412,
+      "height" : 385,
       "expanded" : true,
       "position_x" : 374,
       "position_y" : 31
     },
     {
       "model" : {
-        "algorithm-type" : 1
+        "algorithm-type" : 0
       },
       "builder_id" : "gegl:maze",
-      "width" : 352,
-      "height" : 394,
+      "width" : 348,
+      "height" : 390,
       "expanded" : true,
       "position_x" : 821,
       "position_y" : 51
@@ -35,8 +35,8 @@
     {
       "model" : {      },
       "builder_id" : "image:display",
-      "width" : 397,
-      "height" : 494,
+      "width" : 395,
+      "height" : 492,
       "expanded" : true,
       "position_x" : 1267,
       "position_y" : 37,

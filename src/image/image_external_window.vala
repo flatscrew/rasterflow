@@ -61,7 +61,7 @@ namespace Image {
             var scale = image_viewer.create_scale_widget();
             this.zoom_control = add_action_bar_child_end(scale);
 
-            this.reset_zoom_button = new Gtk.Button.from_icon_name("zoom-original");
+            this.reset_zoom_button = new Gtk.Button.from_icon_name("zoom-original-symbolic");
             reset_zoom_button.tooltip_text = "Reset to original size";
             reset_zoom_button.clicked.connect(image_viewer.reset_zoom);
             this.reset_zoom_control = add_action_bar_child_end(reset_zoom_button);

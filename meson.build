@@ -85,6 +85,7 @@ vala_sources = [
     'src/canvas_logs.vala',
     'src/canvas_headerbar.vala',
     'src/canvas_graph_properties_editor.vala',
+    'src/add_graph_property_popover.vala',
     'src/colors.vala',
     'src/panning_scrolled_window.vala',
     'src/zoomable_area.vala',

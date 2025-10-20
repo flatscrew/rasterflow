@@ -3,7 +3,7 @@ public class CanvasNodePropertySink : CanvasNodeSink {
     public signal void contract_released();
     public signal void contract_renewed();
     
-    private Data.PropertyControlContract control_contract;
+    public Data.PropertyControlContract control_contract { private set; public get; }
 
     public CanvasNodePropertySink(Data.PropertyControlContract control_contract) {
         base.with_type(typeof(CanvasNodePropertyBridge));

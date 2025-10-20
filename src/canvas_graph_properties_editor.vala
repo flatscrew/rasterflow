@@ -34,7 +34,7 @@ public class CanvasGraphPropertiesEditor : Gtk.Widget {
         content_box.halign = Gtk.Align.CENTER;
         content_box.valign = Gtk.Align.CENTER;
         content_box.vexpand = true;
-        content_box.append(new Gtk.Label("aaaaaaaaaaa"));
+        content_box.append(new Gtk.Label("List of properties will be here"));
         return content_box;
     }
 
@@ -56,26 +56,7 @@ public class CanvasGraphPropertiesEditor : Gtk.Widget {
     }
 
     private Gtk.Popover create_add_property_popover() {
-        var popover = new Gtk.Popover();
-        popover.set_has_arrow(true);
-
-        var box = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 6);
-        box.set_margin_top(8);
-        box.set_margin_bottom(8);
-        box.set_margin_start(8);
-        box.set_margin_end(8);
-
-        var label = new Gtk.Label("Property name:");
-        label.halign = Gtk.Align.START;
-
-        var entry = new Gtk.Entry();
-        entry.set_placeholder_text("Enter name...");
-
-        box.append(label);
-        box.append(entry);
-
-        popover.set_child(box);
-        return popover;
+        return new AddPropertyPopover();
     }
 
     public Gtk.ToggleButton create_toggle_button(Gtk.Paned editor_paned) {

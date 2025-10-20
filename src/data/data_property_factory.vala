@@ -35,6 +35,13 @@ namespace Data {
         
             return builder.build_property(param_spec);
         }
+        
+        public List<GLib.Type> available_types() {
+            var list = new List<GLib.Type>();
+            foreach (var type in typed_builders.keys)
+                list.append(type);
+            return list;
+        }
     }
     
     public void register_standard_types() {

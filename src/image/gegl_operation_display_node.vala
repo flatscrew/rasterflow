@@ -79,6 +79,7 @@ namespace Image {
                 add_child(scrolled_window);
             } else {
                 n.resizable = false;
+                base.can_expand = false;
             }
         }
 

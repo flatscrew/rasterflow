@@ -3,15 +3,15 @@
     {
       "model" : {
         "transparency-threshold" : 0.20000000000000004,
+        "opacity-threshold" : 0.30000000000000016,
         "color" : {
           "type" : "GeglColor",
           "color" : "rgb(0.102, 0.373, 0.706)"
-        },
-        "opacity-threshold" : 0.30000000000000016
+        }
       },
       "builder_id" : "gegl:color-to-alpha",
-      "width" : 166,
-      "height" : 156,
+      "width" : 174,
+      "height" : 179,
       "expanded" : false,
       "position_x" : 297,
       "position_y" : 68
@@ -21,8 +21,8 @@
         "path" : "/home/activey/Pictures/ja.jpeg"
       },
       "builder_id" : "gegl:load",
-      "width" : 208,
-      "height" : 127,
+      "width" : 216,
+      "height" : 150,
       "expanded" : false,
       "position_x" : 77,
       "position_y" : 96
@@ -30,24 +30,31 @@
     {
       "model" : {      },
       "builder_id" : "image:display",
-      "width" : 256,
-      "height" : 127,
-      "expanded" : false,
+      "width" : 249,
+      "height" : 239,
+      "expanded" : true,
       "position_x" : 2141,
       "position_y" : 231,
       "external-window" : {
-        "active" : false
+        "active" : true,
+        "title" : "Image window",
+        "dimensions" : {
+          "x" : 280,
+          "y" : 214,
+          "width" : 1085,
+          "height" : 820
+        }
       }
     },
     {
       "model" : {
         "hue" : 6.5999999999999925,
-        "chroma" : 16.89999999999997,
-        "lightness" : -6.3999999999999932
+        "lightness" : -6.3999999999999932,
+        "chroma" : 16.89999999999997
       },
       "builder_id" : "gegl:hue-chroma",
-      "width" : 159,
-      "height" : 156,
+      "width" : 167,
+      "height" : 179,
       "expanded" : false,
       "position_x" : 552,
       "position_y" : 41
@@ -57,8 +64,8 @@
         "scale" : 1.8000000000000007
       },
       "builder_id" : "gegl:saturation",
-      "width" : 146,
-      "height" : 156,
+      "width" : 154,
+      "height" : 179,
       "expanded" : false,
       "position_x" : 807,
       "position_y" : 24
@@ -68,8 +75,8 @@
         "path" : "/home/activey/Pictures/cosmic-space-galaxy-stockcake.jpg"
       },
       "builder_id" : "gegl:load",
-      "width" : 208,
-      "height" : 127,
+      "width" : 216,
+      "height" : 150,
       "expanded" : false,
       "position_x" : 109,
       "position_y" : 786
@@ -77,8 +84,8 @@
     {
       "model" : {      },
       "builder_id" : "svg:dst-over",
-      "width" : 135,
-      "height" : 185,
+      "width" : 143,
+      "height" : 208,
       "expanded" : false,
       "position_x" : 1299,
       "position_y" : 190
@@ -89,8 +96,8 @@
         "height" : 800.0
       },
       "builder_id" : "gegl:crop",
-      "width" : 114,
-      "height" : 185,
+      "width" : 122,
+      "height" : 208,
       "expanded" : false,
       "position_x" : 1036,
       "position_y" : 376
@@ -102,8 +109,8 @@
         "x" : 100.0
       },
       "builder_id" : "gegl:crop",
-      "width" : 114,
-      "height" : 185,
+      "width" : 122,
+      "height" : 208,
       "expanded" : false,
       "position_x" : 1534,
       "position_y" : 192
@@ -114,8 +121,8 @@
         "size-y" : 4
       },
       "builder_id" : "gegl:pixelize",
-      "width" : 131,
-      "height" : 156,
+      "width" : 139,
+      "height" : 179,
       "expanded" : false,
       "position_x" : 1941,
       "position_y" : 214
@@ -126,8 +133,8 @@
         "pos-y" : 0.20000000000000004
       },
       "builder_id" : "gegl:lens-flare",
-      "width" : 147,
-      "height" : 156,
+      "width" : 155,
+      "height" : 179,
       "expanded" : false,
       "position_x" : 1713,
       "position_y" : 210
@@ -138,8 +145,8 @@
         "x" : 2.0
       },
       "builder_id" : "gegl:scale-ratio",
-      "width" : 148,
-      "height" : 156,
+      "width" : 156,
+      "height" : 179,
       "expanded" : false,
       "position_x" : 545,
       "position_y" : 322

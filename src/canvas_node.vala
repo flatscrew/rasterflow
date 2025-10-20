@@ -73,6 +73,12 @@ public class CanvasDisplayNode : GtkFlow.Node {
         }
     }
 
+    public bool can_expand {
+        set {
+            node_expander.sensitive = value;
+        }
+    }
+    
     public bool action_bar_visible {
         set {
             action_bar.visible = value;
