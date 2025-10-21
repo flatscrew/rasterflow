@@ -11,14 +11,19 @@ public class CanvasGraphPropertyRow : Gtk.Box {
         hexpand = true;
         margin_start = margin_end = margin_top = margin_bottom = 8;
 
-        this.name_label = new Gtk.Label ("");
+        this.name_label = new Gtk.Label("");
         name_label.hexpand = true;
         name_label.halign = Gtk.Align.END;
         name_label.set_xalign(0);
         append(name_label);
         
+        create_drag_controller();
+    }
+    
+    private void create_drag_controller() {
         var drag_source = new Gtk.DragSource ();
-        drag_source.set_actions (Gdk.DragAction.COPY); // lub MOVE
+        drag_source.set_propagation_phase (Gtk.PropagationPhase.CAPTURE);
+        drag_source.set_actions (Gdk.DragAction.COPY);
         drag_source.prepare.connect (() => {
             var val = GLib.Value (typeof (CanvasGraphProperty));
             val.set_object (property);
@@ -26,16 +31,19 @@ public class CanvasGraphPropertyRow : Gtk.Box {
         });
         drag_source.drag_begin.connect (drag => {
             var snapshot = new Gtk.Snapshot ();
-            this.snapshot (snapshot);
+            name_label.add_css_class ("dragging");
+            name_label.snapshot (snapshot);
         
-            Graphene.Size size = { (float)this.get_allocated_width (), (float)this.get_allocated_height () };
+            var width = name_label.get_width ();
+            var height = name_label.get_height ();
+            
+            Graphene.Size size = { (float) width, (float) height };
             var paintable = snapshot.to_paintable (size);
         
-            drag_source.set_icon (paintable, 0, 0);
-            this.add_css_class ("dragging");
+            drag_source.set_icon (paintable, width / 2, 20);
         });
         drag_source.drag_end.connect (() => {
-            this.remove_css_class ("dragging");
+            name_label.remove_css_class ("dragging");
         });
         this.add_controller (drag_source);
     }
@@ -47,7 +55,8 @@ public class CanvasGraphPropertyRow : Gtk.Box {
         
         this.property = prop;
 
-        name_label.set_label ("%s:".printf (prop.name));
+        var name_label = (Gtk.Label) get_first_child ();
+        name_label.set_label (prop.name);
         
         var data_property = data_property_factory.build(property.param_spec);
         data_property.changed.connect(this.property_changed);

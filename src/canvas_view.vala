@@ -27,6 +27,7 @@ public class CanvasView : Gtk.Widget {
     private Serialize.CustomDeserializers deserializers;
 
     private DataDropHandler data_drop_handler;
+    private PropertyDropHandler property_drop_handler;
     private string current_graph_file;
 
     construct {
@@ -58,6 +59,10 @@ public class CanvasView : Gtk.Widget {
         data_drop_handler.file_dropped.connect(this.add_file_data_node);
         data_drop_handler.text_dropped.connect(this.add_text_data_node);
         add_controller(data_drop_handler.data_drop_target);
+        
+        this.property_drop_handler = new PropertyDropHandler();
+        property_drop_handler.property_dropped.connect(this.property_dropped);
+        add_controller(property_drop_handler.data_drop_target);
 
         this.canvas_graph = new CanvasGraph(node_factory);
         canvas_graph.node_added.connect_after(this.node_added);
@@ -172,6 +177,10 @@ public class CanvasView : Gtk.Widget {
 
     private void add_text_data_node(string text) {
         debug("Text: %s\n", text);
+    }
+    
+    private void property_dropped(CanvasGraphProperty property) {
+        message("property dropped: %s\n", property.name);
     }
 
     private void add_file_data_node(GLib.File file, double x, double y) {
