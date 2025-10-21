@@ -46,7 +46,7 @@ public class CanvasGraphProperty : Object {
     
         param_spec_factories.insert (typeof (double),
             new ParamSpecFactory ((n, nick, blurb) =>
-                new ParamSpecDouble (n, nick, blurb, double.MIN, double.MAX, 0.0, ParamFlags.READWRITE)));
+                new ParamSpecDouble (n, nick, blurb, -10d, 10d, 0d, ParamFlags.READWRITE)));
     
         param_spec_factories.insert (typeof (bool),
             new ParamSpecFactory ((n, nick, blurb) =>
