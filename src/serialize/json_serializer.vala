@@ -91,6 +91,10 @@ namespace Serialize {
             }
             object_element.set_boolean_member(key, value);
         }
+        
+        public void remove(string key) {
+            object_element.remove_member(key);
+        }
     }
 
     public class JsonArraySerializer : Object {

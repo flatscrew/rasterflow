@@ -52,6 +52,10 @@ namespace Serialize {
             this.deserializer = deserializer;
             this.deserializers = deserializers;
         }
+        
+        public GLib.Value? get_value(string name, string type_name) {
+            return deserializer.get_value(name, type_name);
+        }
 
         public string? get_string(string name) {
             return deserializer.get_string(name);
@@ -146,6 +150,7 @@ namespace Serialize {
 
     public class DeserializedGraph {
 
+        private DeserializedArray properties;
         private DeserializedArray nodes;
         private DeserializedArray links;
 
@@ -156,10 +161,13 @@ namespace Serialize {
                     var root_node = parser.get_root();
 
                     var root_object = root_node.get_object();
-                    if (root_object == null || !root_object.has_member("nodes")) {
+                    // TODO write better validation
+                    if (root_object == null || !root_object.has_member("nodes") || !root_object.has_member("properties")) {
                         warning("Malformed graph file!\n");
                         return;
                     }
+                    
+                    this.properties = new DeserializedArray(new JsonArrayDeserializer(root_object.get_member("properties")), deserializers);
                     this.nodes = new DeserializedArray(new JsonArrayDeserializer(root_object.get_member("nodes")), deserializers);
                     this.links = new DeserializedArray(new JsonArrayDeserializer(root_object.get_member("links")), deserializers);
                 }
@@ -168,6 +176,10 @@ namespace Serialize {
             }
         }
 
+        public void foreach_property(DeserializedObjectDelegate object_delegate) {
+            properties.for_each(object_delegate);
+        }
+        
         public void foreach_node(DeserializedObjectDelegate object_delegate) {
             nodes.for_each(object_delegate);
         }

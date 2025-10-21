@@ -6,8 +6,8 @@ public class CanvasView : Gtk.Widget {
 
     private Gtk.Overlay node_view_overlay;
     private Gtk.Box node_view_box;
+    private Gtk.Paned root_pane;
     private Gtk.Paned main_pane;
-    private Gtk.Paned side_pane;
     private Gtk.ScrolledWindow scrolled_window;
     private ScrollPanner scroll_panner;
     private ZoomableArea zoomable_area;
@@ -34,7 +34,7 @@ public class CanvasView : Gtk.Widget {
     }
 
     ~CanvasView() {
-        main_pane.unparent();
+        root_pane.unparent();
     }
 
     public CanvasView(
@@ -62,31 +62,36 @@ public class CanvasView : Gtk.Widget {
         this.canvas_graph = new CanvasGraph(node_factory);
         canvas_graph.node_added.connect_after(this.node_added);
         
-        this.properties_editor = new CanvasGraphPropertiesEditor();
-        
+        this.properties_editor = new CanvasGraphPropertiesEditor(canvas_graph);
         this.node_view_box = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
         
-        this.side_pane = new Gtk.Paned(Gtk.Orientation.HORIZONTAL);
-        side_pane.set_wide_handle(true);
-        side_pane.set_start_child(properties_editor);
-        side_pane.set_end_child(node_view_box);
-        side_pane.set_shrink_start_child(false);
-        side_pane.set_shrink_end_child(true);
-        side_pane.set_position(0);
-        
+        create_main_pane();
         create_node_view();
-        create_minimap_overlay();
         create_logs_area();
+        create_minimap_overlay();
         create_properties_toggle();
-
-        this.main_pane = new Gtk.Paned(Gtk.Orientation.VERTICAL);
-        main_pane.set_shrink_end_child(false);
-        main_pane.set_resize_end_child(false);
+        create_root_pane();
+    }
+    
+    private void create_root_pane() {
+        this.root_pane = new Gtk.Paned(Gtk.Orientation.VERTICAL);
+        root_pane.set_shrink_end_child(false);
+        root_pane.set_resize_end_child(false);
+        root_pane.set_wide_handle(true);
+        root_pane.set_start_child(main_pane);
+        root_pane.set_end_child(logs_area);
+        root_pane.set_parent(this);
+        root_pane.set_position(root_pane.max_position);
+    }
+    
+    private void create_main_pane() {
+        this.main_pane = new Gtk.Paned(Gtk.Orientation.HORIZONTAL);
         main_pane.set_wide_handle(true);
-        main_pane.set_start_child(side_pane);
-        main_pane.set_end_child(logs_area);
-        main_pane.set_parent(this);
-        main_pane.set_position(main_pane.max_position);
+        main_pane.set_start_child(properties_editor);
+        main_pane.set_end_child(node_view_box);
+        main_pane.set_shrink_start_child(false);
+        main_pane.set_shrink_end_child(true);
+        main_pane.set_position(0);
     }
 
     private void create_node_view() {
@@ -147,7 +152,7 @@ public class CanvasView : Gtk.Widget {
     }
     
     private void create_properties_toggle() {
-        var toggle_button = properties_editor.create_toggle_button(this.side_pane);
+        var toggle_button = properties_editor.create_toggle_button(this.main_pane);
         toggle_button.set_valign(Gtk.Align.START);
         toggle_button.set_halign(Gtk.Align.START);
     
@@ -155,7 +160,7 @@ public class CanvasView : Gtk.Widget {
     }
 
     private void logs_collapsed(int height) {
-        this.main_pane.set_position(main_pane.get_height() - height);
+        this.root_pane.set_position(root_pane.get_height() - height);
     }
 
     private void node_added(CanvasDisplayNode node) {

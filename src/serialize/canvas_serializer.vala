@@ -73,7 +73,12 @@ namespace Serialize {
             json_object.set_boolean(name, value);
         }
 
-        public void set_value(string name, GLib.Value value) {
+        public void set_value(string name, GLib.Value? value) {
+            if (value == null) {
+                json_object.remove(name);
+                return;
+            }
+            
             if (value.type() == Type.STRING) {
                 json_object.set_string(name, value.get_string());
             } else if (value.type() == Type.INT) {
@@ -132,12 +137,14 @@ namespace Serialize {
 
         private CustomSerializers custom_serializers;
         private JsonObjectSerializer json_root;
+        private JsonArraySerializer properties_array;
         private JsonArraySerializer nodes_array;
         private JsonArraySerializer links_array;
 
         public SerializedGraph(CustomSerializers factory) {
             this.custom_serializers = factory;
             this.json_root = new JsonObjectSerializer.new_root();
+            this.properties_array = json_root.new_array("properties");
             this.nodes_array = json_root.new_array("nodes");
             this.links_array = json_root.new_array("links");
         }
@@ -175,6 +182,10 @@ namespace Serialize {
                     linked_sink.set_string("sink_name", canvas_sink.name);
                 }
             }
+        }
+        
+        public void serialize_property(CanvasGraphProperty property, SerializationContext context) {
+            property.serialize(new SerializedObject(properties_array.new_object(), custom_serializers));
         }
 
         public string to_json() {

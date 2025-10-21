@@ -1,8 +1,13 @@
 public class CanvasGraphPropertiesEditor : Gtk.Widget {
 
-    private Gtk.Box vbox;
+    private CanvasGraph canvas_graph;
+    private Gtk.Box editor_box;
+    private Gtk.Box add_property_box;
+    private CanvasGraphPropertyListView property_list_view;
     private Gtk.ActionBar action_bar;
     private Gtk.MenuButton add_property_button;
+    private AddPropertyPopover popover;
+    
     private int last_width = 250;
 
     construct {
@@ -10,32 +15,64 @@ public class CanvasGraphPropertiesEditor : Gtk.Widget {
     }
 
     ~CanvasGraphPropertiesEditor() {
-        vbox.unparent();
+        editor_box.unparent();
     }
 
-    public CanvasGraphPropertiesEditor() {
-        this.set_size_request(100, -1);
+    public CanvasGraphPropertiesEditor(CanvasGraph canvas_graph) {
+        this.canvas_graph = canvas_graph;
         this.visible = false;
-        vbox = create_main_layout();
-        vbox.set_parent(this);
+        this.editor_box = create_main_layout();
+        editor_box.set_parent(this);
+        
+        update_visibility();
+        canvas_graph.property_added.connect((prop) => {
+            update_visibility();
+        });
+    }
+    
+    private void add_property(string name, GLib.Type type) {
+        canvas_graph.add_property(new CanvasGraphProperty(name, type));
     }
 
     private Gtk.Box create_main_layout() {
-        var box = new Gtk.Box(Gtk.Orientation.VERTICAL, 5);
-        box.vexpand = true;
-        box.hexpand = true;
-        box.append(create_content_box());
-        box.append(create_action_bar());
-        return box;
+        this.popover = new AddPropertyPopover();
+        popover.property_added.connect(this.add_property);
+        
+        var editor_box_layout = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
+        editor_box_layout.vexpand = true;
+        editor_box_layout.hexpand = true;
+        editor_box_layout.append(create_content_box());
+        editor_box_layout.append(create_action_bar());
+        return editor_box_layout;
     }
-
+    
     private Gtk.Widget create_content_box() {
-        var content_box = new Gtk.Box(Gtk.Orientation.VERTICAL, 5);
-        content_box.halign = Gtk.Align.CENTER;
-        content_box.valign = Gtk.Align.CENTER;
+        var add_property_button = new Gtk.Button.from_icon_name("list-add-symbolic");
+        add_property_button.set_tooltip_text("Add property");
+        add_property_button.clicked.connect(popover.show);
+        
+        this.add_property_box = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 6);
+        add_property_box.vexpand = true;
+        add_property_box.valign = add_property_box.halign = Gtk.Align.CENTER;
+        add_property_box.append(new Gtk.Label("Add new property"));
+        add_property_box.append(add_property_button);
+        
+        this.property_list_view = new CanvasGraphPropertyListView(this.canvas_graph);
+        
+        var content_box = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
+        content_box.halign = Gtk.Align.FILL;
+        content_box.valign = Gtk.Align.FILL;
         content_box.vexpand = true;
-        content_box.append(new Gtk.Label("List of properties will be here"));
+        content_box.append(add_property_box);
+        content_box.append(property_list_view);
         return content_box;
+    }
+    
+    private void update_visibility() {
+        bool has_props = canvas_graph.has_any_property();
+
+        add_property_box.visible = !has_props;
+        property_list_view.visible = has_props;
     }
 
     private Gtk.ActionBar create_action_bar() {
@@ -50,13 +87,8 @@ public class CanvasGraphPropertiesEditor : Gtk.Widget {
         button.direction = Gtk.ArrowType.UP;
         button.set_tooltip_text("Add property");
         button.set_icon_name("list-add-symbolic");
-        var popover = create_add_property_popover();
         button.set_popover(popover);
         return button;
-    }
-
-    private Gtk.Popover create_add_property_popover() {
-        return new AddPropertyPopover();
     }
 
     public Gtk.ToggleButton create_toggle_button(Gtk.Paned editor_paned) {

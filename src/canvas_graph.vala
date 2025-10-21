@@ -1,9 +1,11 @@
 public class CanvasGraph : Object {
 
     public signal void node_added(CanvasDisplayNode node);
-
+    public signal void property_added(CanvasGraphProperty property);
+    
     private CanvasNodeFactory node_factory;
     private List<CanvasDisplayNode> all_nodes = new List<CanvasDisplayNode>();
+    private List<CanvasGraphProperty> all_properties = new List<CanvasGraphProperty>();
 
     public CanvasGraph(CanvasNodeFactory node_factory) {
         this.node_factory = node_factory;
@@ -27,8 +29,24 @@ public class CanvasGraph : Object {
         all_nodes.remove(removed_node);
     }
  
+    public void add_property(CanvasGraphProperty property) {
+        all_properties.append(property);
+        property_added(property);
+    }
+    
+    public bool has_any_property() {
+        return all_properties.length() > 0;
+    }
+    
+    public unowned List<CanvasGraphProperty> get_all_properties() {
+        return all_properties;
+    }
+    
     public string serialize_graph(Serialize.CustomSerializers factory) {
         var serialized_graph = new Serialize.SerializedGraph(factory);
+        foreach (var property in all_properties) {
+            serialized_graph.serialize_property(property, new Serialize.SerializationContext(this));    
+        }
         foreach (var node in all_nodes) {
             serialized_graph.serialize_node(node, new Serialize.SerializationContext(this));
         }
@@ -38,6 +56,13 @@ public class CanvasGraph : Object {
     public void deserialize_graph(GLib.File graph_file, Serialize.CustomDeserializers deserializers) {
         var deserialized_graph = new Serialize.DeserializedGraph.from_file(graph_file, deserializers);
 
+        deserialized_graph.foreach_property(property_object => {
+            var name = property_object.get_string("name");
+            var property_value = property_object.get_value("value", "type");
+            
+            add_property(new CanvasGraphProperty.from_value(name, property_value));
+        });
+        
         deserialized_graph.foreach_node(node_object => {
             var builder_id = node_object.get_string("builder_id");
             var builder = node_factory.find_builder(builder_id);

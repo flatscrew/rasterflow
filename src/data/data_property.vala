@@ -97,7 +97,7 @@ namespace Data {
                 if (!publish) {
                     return;
                 }
-                property_value_changed(spin_button.value);
+                property_value_changed((int)spin_button.value);
             });
 
             spin_button.set_parent(this);
@@ -130,7 +130,7 @@ namespace Data {
             this.spin_button = new Gtk.SpinButton.with_range(uint_specs.minimum, uint_specs.maximum, 1);
             spin_button.value = uint_specs.default_value;
             spin_button.value_changed.connect(() => {
-                property_value_changed(spin_button.value);
+                property_value_changed((uint) spin_button.value);
             });
 
             spin_button.set_parent(this);
@@ -155,7 +155,7 @@ namespace Data {
             this.spin_button = new Gtk.SpinButton.with_range(uint64_specs.minimum, uint64_specs.maximum, 1);
             spin_button.value = uint64_specs.default_value;
             spin_button.value_changed.connect(() => {
-                property_value_changed(spin_button.value);
+                property_value_changed((uint64) spin_button.value);
             });
 
             spin_button.set_parent(this);

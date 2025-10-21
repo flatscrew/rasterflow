@@ -17,9 +17,18 @@ namespace Data {
             return this;
         }
 
-        public Data.AbstractDataProperty? build(ParamSpec param_spec) {
+        public Data.AbstractDataProperty? build(ParamSpec? param_spec) {
+            if (param_spec == null) {
+                warning("Passed null param_spec");
+                return null;
+            }
+            
             var property_type = param_spec.value_type;
-        
+            if (param_spec is ParamSpecGType) {
+                var gtype = param_spec as ParamSpecGType;
+                property_type = gtype.is_a_type;
+            }
+            
             var builder = typed_builders.get(property_type);
             if (builder == null) {
                 if (param_spec is ParamSpecEnum) {
