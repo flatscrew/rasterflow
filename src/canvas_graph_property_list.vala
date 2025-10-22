@@ -1,7 +1,13 @@
 public class CanvasGraphPropertyRow : Gtk.Box {
+
+    public signal void removed(uint row_position);
+
     public CanvasGraphProperty property { get; set; }
 
+    public uint position;
     private Data.DataPropertyFactory data_property_factory;
+    
+    private Gtk.Button remove_button;
     private Gtk.Label name_label;
     private Gtk.Label type_label;
     
@@ -12,10 +18,16 @@ public class CanvasGraphPropertyRow : Gtk.Box {
         hexpand = true;
         margin_start = margin_end = margin_top = margin_bottom = 8;
 
+        this.remove_button = new Gtk.Button.from_icon_name("list-remove-symbolic");
+        remove_button.set_tooltip_text("Remove property");
+        remove_button.clicked.connect(this.remove_row);
+        remove_button.add_css_class("flat");
+        append(remove_button);
+        
         this.type_label = new Gtk.Label("");
         type_label.add_css_class("dim-label");
         type_label.hexpand = true;
-        type_label.halign = Gtk.Align.END;
+        type_label.halign = Gtk.Align.START;
         type_label.set_xalign(0);
         append(type_label);
         
@@ -63,7 +75,10 @@ public class CanvasGraphPropertyRow : Gtk.Box {
         }
         
         this.property = prop;
-
+        this.property.removed.connect(() => {
+            removed(this.position);
+        });
+        
         name_label.set_label(prop.readable_name);
         type_label.set_label(prop.property_type.name());
         
@@ -81,6 +96,10 @@ public class CanvasGraphPropertyRow : Gtk.Box {
     
     private void property_changed(string name, GLib.Value value) {
         property.set_value(value);
+    }
+    
+    private void remove_row() {
+        property.remove();
     }
 }
 
@@ -121,7 +140,11 @@ public class CanvasGraphPropertyListView : Gtk.Box {
         var item = obj as Gtk.ListItem;
         if (item == null) return;
 
-        item.set_child (new CanvasGraphPropertyRow (data_property_factory));
+        var row = new CanvasGraphPropertyRow(data_property_factory);
+        row.removed.connect(row_position => {
+            store.remove(row_position);
+        });
+        item.set_child(row);
     }
 
     private void bind_item (GLib.Object obj) {
@@ -131,6 +154,8 @@ public class CanvasGraphPropertyListView : Gtk.Box {
         var prop = item.get_item() as CanvasGraphProperty;
         var row = item.get_child() as CanvasGraphPropertyRow;
 
+        row.position = item.position;
+        
         if (prop != null && row != null)
             row.update_from_property (prop);
     }

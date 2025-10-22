@@ -81,6 +81,7 @@ vala_sources = [
     'src/data_drop_handler.vala',
     'src/canvas_view.vala',
     'src/canvas_node.vala',
+    'src/canvas_display_node.vala',
     'src/canvas_graph_property.vala',
     'src/canvas_graph_property_list.vala',
     'src/canvas_graph.vala',

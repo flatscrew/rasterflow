@@ -66,12 +66,33 @@ public class CanvasPropertyDisplayNode : GtkFlow.Node {
     
     public CanvasPropertyDisplayNode(CanvasPropertyNode property_node) {
         base.with_margin(property_node, 10, new PropertyNodeSourceLabelFactory(property_node));
+        apply_css_provider();
+        
         try {
             set_title(node_header());
         } catch (Error e) {
             warning(e.message);
         }
         property_node.source_added.connect(this.source_added);
+        property_node.property.removed.connect(this.remove);
+    }
+    
+    private void apply_css_provider() {
+        var custom_backround_css = new Gtk.CssProvider();
+        var css = "
+        .gtkflow_node {
+            background-color: @theme_bg_color;
+            box-shadow: none;
+            border-radius: 10px;
+            border: 1px dashed;
+        }
+
+        .dark {
+            color: white;
+        }
+        ";
+        custom_backround_css.load_from_data(css.data);
+        this.get_style_context().add_provider(custom_backround_css, Gtk.STYLE_PROVIDER_PRIORITY_USER);
     }
     
     private void source_added(GFlow.Source new_source) {
@@ -152,8 +173,8 @@ public class PropertyNodeSourceLabelFactory : GtkFlow.NodeDockLabelWidgetFactory
         type_label.halign = Gtk.Align.START;
         type_label.add_css_class("dim-label");
     
-        label_box.append(name_label);
         label_box.append(type_label);
+        label_box.append(name_label);
     
         return label_box;
     }
