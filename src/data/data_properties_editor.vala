@@ -298,6 +298,10 @@ namespace Data {
 
                 if (on_take_control != null) {
                     var contract = new PropertyControlContract(this, data_object, param_spec, properties_grid_entry);
+                    contract.property_value_changed.connect((name, value) => {
+                        data_property_changed(name, value);
+                    });
+                    
                     on_take_control(contract);
                 }
             });
@@ -305,7 +309,7 @@ namespace Data {
             return take_property_control_button;
         }
 
-        private void data_property_value_changed(string property_name, GLib.Value property_value) {
+        private void data_property_value_changed(string property_name, GLib.Value? property_value) {
             var pspec = data_object.get_class().find_property(property_name);
             if (pspec == null)
                 return;
@@ -373,6 +377,7 @@ namespace Data {
     public class PropertyControlContract : Object {
         public signal void released();
         public signal void renewed();
+        public signal void property_value_changed(string property_name, GLib.Value? property_value);
         
         public ParamSpec param_spec { public get; private set;}
         private GLib.Object data_object;
@@ -398,6 +403,7 @@ namespace Data {
     
         public void set_value(GLib.Value? value) {
             data_object.set_property(param_spec.name, value);
+            property_value_changed(param_spec.name, value);
         }
     
         public void release() {

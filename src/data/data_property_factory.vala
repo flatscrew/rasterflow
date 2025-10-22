@@ -16,6 +16,10 @@ namespace Data {
             typed_builders.set(type, new DataPropertyBuilder(property_func));
             return this;
         }
+        
+        public bool supports(ParamSpec param_spec) {
+            return typed_builders.has_key(param_spec.value_type);
+        }
 
         public Data.AbstractDataProperty? build(ParamSpec? param_spec) {
             if (param_spec == null) {

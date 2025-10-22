@@ -13,11 +13,12 @@ public class CanvasNodePropertySink : CanvasNodeSink {
         control_contract.released.connect(this.on_contract_released);
         control_contract.renewed.connect(this.on_contract_renewed);
         
-        changed.connect(this.sink_value_changed);
+        base.changed.connect(this.sink_value_changed);
     }
     
     private void sink_value_changed(GLib.Value? value = null, string? flow_id = null) {
         message("Value changed\n");
+        message("null? %s", (value == null) ? "yes" : "no");
         if (value == null) {
             return;
         }
@@ -45,6 +46,12 @@ public class CanvasNodePropertySource : CanvasNodeSource {
         base.with_type(property.property_type);
         base.name = property.name;
         this.property = property;
+        
+        try {
+            set_value(property.property_value);
+        } catch (Error e) {
+            warning(e.message);
+        }
     }
 }
 
@@ -64,6 +71,8 @@ public class CanvasPropertyNode : CanvasNode {
 
 public class CanvasPropertyDisplayNode : GtkFlow.Node {
     
+    private CanvasNodePropertySource? node_source;
+    
     public CanvasPropertyDisplayNode(CanvasPropertyNode property_node) {
         base.with_margin(property_node, 10, new PropertyNodeSourceLabelFactory(property_node));
         apply_css_provider();
@@ -75,27 +84,13 @@ public class CanvasPropertyDisplayNode : GtkFlow.Node {
         }
         property_node.source_added.connect(this.source_added);
         property_node.property.removed.connect(this.remove);
-    }
-    
-    private void apply_css_provider() {
-        var custom_backround_css = new Gtk.CssProvider();
-        var css = "
-        .gtkflow_node {
-            background-color: @theme_bg_color;
-            box-shadow: none;
-            border-radius: 10px;
-            border: 1px dashed;
-        }
-
-        .dark {
-            color: white;
-        }
-        ";
-        custom_backround_css.load_from_data(css.data);
-        this.get_style_context().add_provider(custom_backround_css, Gtk.STYLE_PROVIDER_PRIORITY_USER);
+        property_node.property.value_changed.connect(this.property_changed);
     }
     
     private void source_added(GFlow.Source new_source) {
+        this.node_source = new_source as CanvasNodePropertySource;
+        
+        // edge coloring
         var canvas_view = get_parent() as GtkFlow.NodeView;
         if (canvas_view == null) {
             return;
@@ -106,6 +101,35 @@ public class CanvasPropertyDisplayNode : GtkFlow.Node {
             warning("Unable to find dock");
         }
         dock.resolve_color.connect_after(this.edge_color);
+    }
+    
+    private void property_changed(GLib.Value? property_value) {
+        if (node_source == null) return;
+        
+        try {
+            node_source.set_value(property_value);
+        } catch (Error e) {
+            warning(e.message);
+        }
+    }
+    
+    private void apply_css_provider() {
+        var custom_backround_css = new Gtk.CssProvider();
+        var css = "
+        .gtkflow_node {
+            background-color: @theme_bg_color;
+            box-shadow: none;
+            border-radius: 10px;
+            outline: 1px dashed @theme_fg_color;
+            outline-offset: 3px;
+        }
+
+        .dark {
+            color: white;
+        }
+        ";
+        custom_backround_css.load_from_data(css.data);
+        this.get_style_context().add_provider(custom_backround_css, Gtk.STYLE_PROVIDER_PRIORITY_USER);
     }
     
     private Gdk.RGBA edge_color(GtkFlow.Dock dock, Value? value) {

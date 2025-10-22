@@ -84,13 +84,7 @@ namespace Image {
         }
 
         private bool check_supported_pad_data_type(GLib.ParamSpec param_spec) {
-            if (param_spec is ParamSpecString 
-                || param_spec is ParamSpecInt
-                || param_spec is ParamSpecDouble) {
-                return true;
-            }
-            // TODO introduce one place for supported types maybe?
-            return false;
+            return Data.DataPropertyFactory.instance.supports(param_spec);
         }
 
         private void on_property_control_taken(Data.PropertyControlContract control_contract) {
@@ -139,7 +133,7 @@ namespace Image {
             gegl_operation_node.get_gegl_operation().set_property(name, value);
         }
 
-        private void property_changed(string property_name, GLib.Value property_value) {
+        private void property_changed(string property_name, GLib.Value? property_value) {
             unowned var node = n as GeglOperationNode;
             node.process_gegl();
         }

@@ -19,6 +19,7 @@ private delegate ParamSpec ParamSpecDelegate (string name, string nick, string b
 public class CanvasGraphProperty : Object {
     
     public signal void removed();
+    public signal void value_changed(GLib.Value? new_value);
     
     public string name { public get; construct; }
     public string label { public get; construct; }
@@ -90,6 +91,7 @@ public class CanvasGraphProperty : Object {
         }
 
         property_value = new_value;
+        value_changed(new_value);
         return true;
     }
     
