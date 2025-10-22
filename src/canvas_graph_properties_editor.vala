@@ -30,8 +30,8 @@ public class CanvasGraphPropertiesEditor : Gtk.Widget {
         });
     }
     
-    private void add_property(string name, GLib.Type type) {
-        canvas_graph.add_property(new CanvasGraphProperty(name, type));
+    private void add_property(string name, string label, GLib.Type type) {
+        canvas_graph.add_property(new CanvasGraphProperty(name, label, type));
     }
 
     private Gtk.Box create_main_layout() {

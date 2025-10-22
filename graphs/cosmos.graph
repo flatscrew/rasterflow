@@ -1,17 +1,18 @@
 {
+  "properties" : [],
   "nodes" : [
     {
       "model" : {
         "transparency-threshold" : 0.20000000000000004,
-        "opacity-threshold" : 0.30000000000000016,
         "color" : {
           "type" : "GeglColor",
           "color" : "rgb(0.102, 0.373, 0.706)"
-        }
+        },
+        "opacity-threshold" : 0.30000000000000016
       },
       "builder_id" : "gegl:color-to-alpha",
-      "width" : 174,
-      "height" : 179,
+      "width" : 172,
+      "height" : 177,
       "expanded" : false,
       "position_x" : 297,
       "position_y" : 68
@@ -21,17 +22,17 @@
         "path" : "/home/activey/Pictures/ja.jpeg"
       },
       "builder_id" : "gegl:load",
-      "width" : 216,
-      "height" : 150,
+      "width" : 214,
+      "height" : 148,
       "expanded" : false,
-      "position_x" : 77,
-      "position_y" : 96
+      "position_x" : 37,
+      "position_y" : 66
     },
     {
       "model" : {      },
       "builder_id" : "image:display",
-      "width" : 249,
-      "height" : 239,
+      "width" : 253,
+      "height" : 237,
       "expanded" : true,
       "position_x" : 2141,
       "position_y" : 231,
@@ -39,22 +40,22 @@
         "active" : true,
         "title" : "Image window",
         "dimensions" : {
-          "x" : 280,
-          "y" : 214,
-          "width" : 1085,
-          "height" : 820
+          "x" : 510,
+          "y" : 327,
+          "width" : 1200,
+          "height" : 856
         }
       }
     },
     {
       "model" : {
         "hue" : 6.5999999999999925,
-        "lightness" : -6.3999999999999932,
-        "chroma" : 16.89999999999997
+        "chroma" : 16.89999999999997,
+        "lightness" : -6.3999999999999932
       },
       "builder_id" : "gegl:hue-chroma",
-      "width" : 167,
-      "height" : 179,
+      "width" : 165,
+      "height" : 177,
       "expanded" : false,
       "position_x" : 552,
       "position_y" : 41
@@ -64,8 +65,8 @@
         "scale" : 1.8000000000000007
       },
       "builder_id" : "gegl:saturation",
-      "width" : 154,
-      "height" : 179,
+      "width" : 152,
+      "height" : 177,
       "expanded" : false,
       "position_x" : 807,
       "position_y" : 24
@@ -75,8 +76,8 @@
         "path" : "/home/activey/Pictures/cosmic-space-galaxy-stockcake.jpg"
       },
       "builder_id" : "gegl:load",
-      "width" : 216,
-      "height" : 150,
+      "width" : 214,
+      "height" : 148,
       "expanded" : false,
       "position_x" : 109,
       "position_y" : 786
@@ -84,8 +85,8 @@
     {
       "model" : {      },
       "builder_id" : "svg:dst-over",
-      "width" : 143,
-      "height" : 208,
+      "width" : 141,
+      "height" : 206,
       "expanded" : false,
       "position_x" : 1299,
       "position_y" : 190
@@ -96,8 +97,8 @@
         "height" : 800.0
       },
       "builder_id" : "gegl:crop",
-      "width" : 122,
-      "height" : 208,
+      "width" : 120,
+      "height" : 206,
       "expanded" : false,
       "position_x" : 1036,
       "position_y" : 376
@@ -109,8 +110,8 @@
         "x" : 100.0
       },
       "builder_id" : "gegl:crop",
-      "width" : 122,
-      "height" : 208,
+      "width" : 120,
+      "height" : 206,
       "expanded" : false,
       "position_x" : 1534,
       "position_y" : 192
@@ -121,8 +122,8 @@
         "size-y" : 4
       },
       "builder_id" : "gegl:pixelize",
-      "width" : 139,
-      "height" : 179,
+      "width" : 137,
+      "height" : 177,
       "expanded" : false,
       "position_x" : 1941,
       "position_y" : 214
@@ -133,8 +134,8 @@
         "pos-y" : 0.20000000000000004
       },
       "builder_id" : "gegl:lens-flare",
-      "width" : 155,
-      "height" : 179,
+      "width" : 153,
+      "height" : 177,
       "expanded" : false,
       "position_x" : 1713,
       "position_y" : 210
@@ -145,11 +146,23 @@
         "x" : 2.0
       },
       "builder_id" : "gegl:scale-ratio",
-      "width" : 156,
-      "height" : 179,
+      "width" : 154,
+      "height" : 177,
       "expanded" : false,
       "position_x" : 545,
       "position_y" : 322
+    },
+    {
+      "model" : {      },
+      "builder_id" : "image:display",
+      "width" : 256,
+      "height" : 326,
+      "expanded" : true,
+      "position_x" : 184,
+      "position_y" : 343,
+      "external-window" : {
+        "active" : false
+      }
     }
   ],
   "links" : [
@@ -169,6 +182,10 @@
       "sinks" : [
         {
           "node_index" : 0,
+          "sink_name" : "Input"
+        },
+        {
+          "node_index" : 12,
           "sink_name" : "Input"
         }
       ]

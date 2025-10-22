@@ -19,6 +19,13 @@ private delegate ParamSpec ParamSpecDelegate (string name, string nick, string b
 public class CanvasGraphProperty : Object {
     
     public string name { public get; construct; }
+    public string label { public get; construct; }
+    public string readable_name {
+        get {
+            return label == null || label.length == 0 ? name : label;
+        }
+    }
+    
     public GLib.Type property_type { public get; construct; }
     public GLib.Value property_value {public get; private set; }
     public ParamSpec param_spec { get; private set; }
@@ -57,14 +64,14 @@ public class CanvasGraphProperty : Object {
                 new ParamSpecString (n, nick, blurb, "", ParamFlags.READWRITE)));
     }
     
-    public CanvasGraphProperty.from_value(string name, GLib.Value property_value) {
-        Object(name: name, property_type: property_value.type());
+    public CanvasGraphProperty.from_value(string name, string label, GLib.Value property_value) {
+        Object(name: name, label: label, property_type: property_value.type());
         this.param_spec = create_default_param_spec (name, property_value.type());
         this.property_value = property_value;
     }
     
-    public CanvasGraphProperty(string name, GLib.Type property_type) {
-        Object(name: name, property_type: property_type);
+    public CanvasGraphProperty(string name, string label, GLib.Type property_type) {
+        Object(name: name, label: label, property_type: property_type);
         this.param_spec = create_default_param_spec (name, property_type);
     }
     
@@ -83,6 +90,7 @@ public class CanvasGraphProperty : Object {
     
     public virtual void serialize(Serialize.SerializedObject serializer) {
         serializer.set_string("name", name);
+        serializer.set_string("label", label);
         serializer.set_string("type", property_type.name());
         serializer.set_value("value", property_value);
     }

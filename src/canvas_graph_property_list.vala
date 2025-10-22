@@ -56,7 +56,7 @@ public class CanvasGraphPropertyRow : Gtk.Box {
         this.property = prop;
 
         var name_label = (Gtk.Label) get_first_child ();
-        name_label.set_label (prop.name);
+        name_label.set_label (prop.readable_name);
         
         var data_property = data_property_factory.build(property.param_spec);
         data_property.changed.connect(this.property_changed);

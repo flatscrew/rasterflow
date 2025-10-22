@@ -58,9 +58,10 @@ public class CanvasGraph : Object {
 
         deserialized_graph.foreach_property(property_object => {
             var name = property_object.get_string("name");
+            var label = property_object.get_string("label");
             var property_value = property_object.get_value("value", "type");
             
-            add_property(new CanvasGraphProperty.from_value(name, property_value));
+            add_property(new CanvasGraphProperty.from_value(name, label, property_value));
         });
         
         deserialized_graph.foreach_node(node_object => {

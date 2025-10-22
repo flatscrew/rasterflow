@@ -162,7 +162,7 @@ namespace Serialize {
 
                     var root_object = root_node.get_object();
                     // TODO write better validation
-                    if (root_object == null || !root_object.has_member("nodes") || !root_object.has_member("properties")) {
+                    if (root_object == null || !root_object.has_member("nodes")) {
                         warning("Malformed graph file!\n");
                         return;
                     }
@@ -177,6 +177,7 @@ namespace Serialize {
         }
 
         public void foreach_property(DeserializedObjectDelegate object_delegate) {
+            if (properties == null) return;
             properties.for_each(object_delegate);
         }
         

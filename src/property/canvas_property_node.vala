@@ -50,9 +50,15 @@ public class CanvasNodePropertySource : CanvasNodeSource {
 
 public class CanvasPropertyNode : CanvasNode {
     
-    public CanvasPropertyNode() {
-        base("Property node");
+    public CanvasGraphProperty property {
+        public get;
+        private set;
+    }
+    
+    public CanvasPropertyNode(CanvasGraphProperty property) {
+        base(property.readable_name);
         base.resizable = false;
+        this.property = property;
     }
 }
 
@@ -69,8 +75,6 @@ public class CanvasPropertyDisplayNode : GtkFlow.Node {
     }
     
     private void source_added(GFlow.Source new_source) {
-        message("AAAAAAAAa");
-        
         var canvas_view = get_parent() as GtkFlow.NodeView;
         if (canvas_view == null) {
             return;
@@ -94,7 +98,8 @@ public class CanvasPropertyDisplayNode : GtkFlow.Node {
     
     private Gtk.Widget node_header() 
     {
-        var title_bar = new Data.TitleBar(new Gtk.Label("Property node"));
+        var property_node = n as CanvasPropertyNode;
+        var title_bar = new Data.TitleBar(new Gtk.Label(property_node.property.readable_name));
         title_bar.hexpand = true;
         add_delete_button(title_bar);
         return title_bar;

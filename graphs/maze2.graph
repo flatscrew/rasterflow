@@ -48,31 +48,25 @@
   ],
   "links" : [
     {
-      "node_index" : 0,
       "source_name" : "Output",
       "sinks" : [
         {
-          "node_index" : 1,
           "sink_name" : "Input"
         }
       ]
     },
     {
-      "node_index" : 1,
       "source_name" : "Output",
       "sinks" : [
         {
-          "node_index" : 2,
           "sink_name" : "Input"
         }
       ]
     },
     {
-      "node_index" : 2,
       "source_name" : "Output",
       "sinks" : [
         {
-          "node_index" : 3,
           "sink_name" : "Input"
         }
       ]

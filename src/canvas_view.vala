@@ -181,9 +181,7 @@ public class CanvasView : Gtk.Widget {
     }
     
     private void property_dropped(CanvasGraphProperty property, double x, double y) {
-        message("property dropped at: %f,%f\n", x, y);
-        
-        var property_n = new CanvasPropertyNode(); 
+        var property_n = new CanvasPropertyNode(property); 
         var property_node = new CanvasPropertyDisplayNode(property_n);
         node_view.add(property_node);
         
