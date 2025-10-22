@@ -237,7 +237,7 @@ namespace Image {
         }
 
         protected override void deserialize(Serialize.DeserializedObject deserializer) {
-            deserializer.for_each_property((name, value) => {
+            deserializer.for_each_property_with_context_object((name, value) => {
                 gegl_node.set_property(name, value);
             }, gegl_node.gegl_operation);
         }

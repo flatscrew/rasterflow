@@ -96,6 +96,7 @@ public class CanvasView : Gtk.Widget {
         main_pane.set_start_child(properties_editor);
         main_pane.set_end_child(node_view_box);
         main_pane.set_shrink_start_child(false);
+        main_pane.set_resize_start_child(false);
         main_pane.set_shrink_end_child(true);
         main_pane.set_position(0);
     }
@@ -319,6 +320,7 @@ public class CanvasView : Gtk.Widget {
     void load_graph_sync (GLib.File selected_file) {
         canvas_signals.before_file_load();
 
+        canvas_graph.remove_all_properties();
         canvas_graph.remove_all_nodes();
         canvas_graph.deserialize_graph(selected_file, deserializers);
         

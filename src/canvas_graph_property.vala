@@ -18,6 +18,8 @@ private delegate ParamSpec ParamSpecDelegate (string name, string nick, string b
 
 public class CanvasGraphProperty : Object {
     
+    public signal void removed();
+    
     public string name { public get; construct; }
     public string label { public get; construct; }
     public string readable_name {
@@ -27,7 +29,7 @@ public class CanvasGraphProperty : Object {
     }
     
     public GLib.Type property_type { public get; construct; }
-    public GLib.Value property_value {public get; private set; }
+    public GLib.Value? property_value {public get; private set; }
     public ParamSpec param_spec { get; private set; }
     
     private static GLib.HashTable<GLib.Type, ParamSpecFactory> param_spec_factories;    
@@ -64,9 +66,12 @@ public class CanvasGraphProperty : Object {
                 new ParamSpecString (n, nick, blurb, "", ParamFlags.READWRITE)));
     }
     
-    public CanvasGraphProperty.from_value(string name, string label, GLib.Value property_value) {
-        Object(name: name, label: label, property_type: property_value.type());
-        this.param_spec = create_default_param_spec (name, property_value.type());
+    public CanvasGraphProperty.from_value(string name, string label, GLib.Type property_type, GLib.Value property_value) {
+        Object(name: name, label: label, property_type: property_type);
+        this.param_spec = create_default_param_spec (name, property_type);
+        
+        
+        message("value type: %s", property_value.type_name ());
         this.property_value = property_value;
     }
     
@@ -92,7 +97,9 @@ public class CanvasGraphProperty : Object {
         serializer.set_string("name", name);
         serializer.set_string("label", label);
         serializer.set_string("type", property_type.name());
-        serializer.set_value("value", property_value);
+        
+        if (property_value != null)
+            serializer.set_value("value", property_value);
     }
     
     private ParamSpec create_default_param_spec (string name, GLib.Type type) {
@@ -102,4 +109,8 @@ public class CanvasGraphProperty : Object {
         message ("Could not recognize type: %s, fallback to ParamSpecGType...", type.name ());
         return new ParamSpecGType (name, name, "", type, ParamFlags.READWRITE);
     }
+    
+    public void remove() {
+        this.removed();
+    } 
 }

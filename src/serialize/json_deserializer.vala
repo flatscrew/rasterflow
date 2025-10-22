@@ -20,7 +20,7 @@ namespace Serialize {
             return node.get_node_type() == Json.NodeType.VALUE;
         }
 
-        public GLib.Value get_value() {
+        public GLib.Value? get_value() {
             return node.get_value();
         }
 
@@ -80,23 +80,6 @@ namespace Serialize {
             object_node.get_object().foreach_member((object, member_name, member_node) => {
                 node_delegate(new JsonNode(member_node), -1, member_name);
             });
-        }
-
-        public GLib.Value? get_value(string key, string type_key) {
-            var obj = object_node.get_object();
-            if (!obj.has_member(key) || !obj.has_member(type_key)) {
-                return null;
-            }
-            
-            var type_name = obj.get_string_member(type_key);
-            var member_type = GLib.Type.from_name(type_name);
-            var member_value = obj.get_member(key).get_value();
-            
-            var converted = GLib.Value(member_type);
-            
-            member_value.transform(ref converted);
-            
-            return converted;
         }
         
         public int get_int(string key, int default_value = 0) {

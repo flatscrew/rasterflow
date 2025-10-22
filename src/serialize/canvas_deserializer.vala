@@ -1,6 +1,8 @@
 namespace Serialize {
 
-    public delegate GLib.Value? DeserializerDelegate(DeserializedObject object, GLib.Object? context_object);
+    public delegate GLib.Type? PropertyTypeResolver(string property_name);
+    
+    public delegate GLib.Value? DeserializerDelegate(DeserializedObject object);
 
     public class CustomDeserializers : Object {
 
@@ -8,13 +10,13 @@ namespace Serialize {
             private DeserializerDelegate deserializer_delegate;
 
             public DeserializerCallback(DeserializerDelegate deserializer_delegate) {
-                this.deserializer_delegate = (object, context_object) => {
-                    return deserializer_delegate(object, context_object);
+                this.deserializer_delegate = (object) => {
+                    return deserializer_delegate(object);
                 };
             }
 
-            public GLib.Value? deserialize_value(DeserializedObject object, GLib.Object? context_object = null) {
-                return deserializer_delegate(object, context_object);
+            public GLib.Value? deserialize_value(DeserializedObject object) {
+                return deserializer_delegate(object);
             }
         }
 
@@ -24,7 +26,7 @@ namespace Serialize {
             deserializers.set(type.name(), new DeserializerCallback(deleg));
         }
 
-        public GLib.Value? deserialize(DeserializedObject object, GLib.Object? context_object) {
+        public GLib.Value? deserialize(DeserializedObject object) {
             var type = object.get_string("type");
             if (type == null) {
                 warning("Not recognized type\n");
@@ -35,13 +37,12 @@ namespace Serialize {
                 warning("No deserializer for type: %s\n", type);
                 return null;
             }
-            return deserializer.deserialize_value(object, context_object);
+            return deserializer.deserialize_value(object);
         }
     }
 
-
     public delegate void DeserializedObjectDelegate(DeserializedObject object);
-    public delegate void DeserializedPropertyDelegate(string name, GLib.Value value);
+    public delegate void DeserializedPropertyDelegate(string name, GLib.Value? value);
 
     public class DeserializedObject : Object {
 
@@ -53,10 +54,6 @@ namespace Serialize {
             this.deserializers = deserializers;
         }
         
-        public GLib.Value? get_value(string name, string type_name) {
-            return deserializer.get_value(name, type_name);
-        }
-
         public string? get_string(string name) {
             return deserializer.get_string(name);
         }
@@ -73,11 +70,36 @@ namespace Serialize {
             return deserializer.get_boolean(name, default_value);
         }
 
-        public void for_each_property(DeserializedPropertyDelegate property_delegate, GLib.Object context_object) {
+        public GLib.Value? get_value(string property_name, PropertyTypeResolver type_resolver) {
+            var json_node = deserializer.get_object(property_name);
+            if (json_node == null) {
+                return null;
+            }
+            
+            var node = new JsonNode(deserializer.get_object(property_name));
+            if (node.is_value()) {
+                var value_type = type_resolver(property_name);
+                GLib.Value destination_type = GLib.Value(value_type);
+                
+                if (value_type.is_a(GLib.Type.ENUM)) {
+                    destination_type.set_enum((int) node.get_value().get_int64());
+                    return destination_type;
+                }
+                
+                node.get_value().transform(ref destination_type);
+                return destination_type;
+            } else if (node.is_object()) {
+                var deserializer = node.object_deserializer();
+                var value = deserializers.deserialize(new DeserializedObject(deserializer, deserializers));
+                return value;
+            }
+            return null;
+        }
+        
+        public void for_each_property(DeserializedPropertyDelegate property_delegate, PropertyTypeResolver type_resolver) {
             deserializer.for_each((node, index, name) => {
                 if (node.is_value()) {
-                    var param_spec = context_object.get_class().find_property(name);
-                    var value_type = param_spec.value_type;
+                    var value_type = type_resolver(name);
                     if (value_type.is_a(GLib.Type.ENUM)) {
                         GLib.Value val = GLib.Value(value_type);
                         val.set_enum((int) node.get_value().get_int64());
@@ -88,12 +110,16 @@ namespace Serialize {
                     property_delegate(name, node.get_value());
                 } else if (node.is_object()) {
                     var deserializer = node.object_deserializer();
-                    var value = deserializers.deserialize(new DeserializedObject(deserializer, deserializers), context_object);
-                    if (value == null) {
-                        return;
-                    }
+                    var value = deserializers.deserialize(new DeserializedObject(deserializer, deserializers));
                     property_delegate(name, value);
                 }
+            });
+        }
+        
+        public void for_each_property_with_context_object(DeserializedPropertyDelegate property_delegate, GLib.Object context_object) {
+            for_each_property(property_delegate, name => {
+                var param_spec = context_object.get_class().find_property(name);
+                return param_spec.value_type;
             });
         }
 

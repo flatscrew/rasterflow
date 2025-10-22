@@ -1,0 +1,11 @@
+{
+  "properties" : [
+    {
+      "name" : "fsdf",
+      "label" : "esdfasdf",
+      "type" : "guint"
+    }
+  ],
+  "nodes" : [],
+  "links" : []
+}

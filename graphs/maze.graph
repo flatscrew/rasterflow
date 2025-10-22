@@ -1,5 +1,33 @@
 {
-  "properties" : [],
+  "properties" : [
+    {
+      "name" : "aaa",
+      "label" : "aaaa",
+      "type" : "guint",
+      "value" : 5
+    },
+    {
+      "name" : "bool",
+      "label" : "bool",
+      "type" : "gboolean",
+      "value" : true
+    },
+    {
+      "name" : "color",
+      "label" : "color",
+      "type" : "GeglColor",
+      "value" : {
+        "type" : "GeglColor",
+        "color" : "rgb(0.380, 0.208, 0.514)"
+      }
+    },
+    {
+      "name" : "text",
+      "label" : "text",
+      "type" : "gchararray",
+      "value" : "test test test"
+    }
+  ],
   "nodes" : [
     {
       "model" : {      },
@@ -12,12 +40,14 @@
     },
     {
       "model" : {
+        "y" : 0.99999999999999989,
         "width" : 1000.0,
-        "height" : 1000.0
+        "height" : 1000.0,
+        "x" : 1.0999999999999999
       },
       "builder_id" : "gegl:crop",
-      "width" : 404,
-      "height" : 377,
+      "width" : 384,
+      "height" : 357,
       "expanded" : true,
       "position_x" : 374,
       "position_y" : 31
@@ -27,8 +57,8 @@
         "algorithm-type" : 0
       },
       "builder_id" : "gegl:maze",
-      "width" : 340,
-      "height" : 382,
+      "width" : 320,
+      "height" : 362,
       "expanded" : true,
       "position_x" : 821,
       "position_y" : 51
@@ -36,8 +66,8 @@
     {
       "model" : {      },
       "builder_id" : "image:display",
-      "width" : 387,
-      "height" : 484,
+      "width" : 367,
+      "height" : 464,
       "expanded" : true,
       "position_x" : 1267,
       "position_y" : 37,

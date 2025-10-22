@@ -2,6 +2,7 @@ public class CanvasGraph : Object {
 
     public signal void node_added(CanvasDisplayNode node);
     public signal void property_added(CanvasGraphProperty property);
+    public signal void properties_removed();
     
     private CanvasNodeFactory node_factory;
     private List<CanvasDisplayNode> all_nodes = new List<CanvasDisplayNode>();
@@ -42,6 +43,13 @@ public class CanvasGraph : Object {
         return all_properties;
     }
     
+    public void remove_all_properties() {
+        foreach (var property in all_properties) {
+            property.remove();
+        }
+        properties_removed();
+    }
+    
     public string serialize_graph(Serialize.CustomSerializers factory) {
         var serialized_graph = new Serialize.SerializedGraph(factory);
         foreach (var property in all_properties) {
@@ -57,11 +65,19 @@ public class CanvasGraph : Object {
         var deserialized_graph = new Serialize.DeserializedGraph.from_file(graph_file, deserializers);
 
         deserialized_graph.foreach_property(property_object => {
-            var name = property_object.get_string("name");
-            var label = property_object.get_string("label");
-            var property_value = property_object.get_value("value", "type");
+            var property_name = property_object.get_string("name");
+            var property_label = property_object.get_string("label");
+            var property_type_name = property_object.get_string("type");
+            var property_type = GLib.Type.from_name(property_type_name);
+            var property_value = property_object.get_value("value", name => {
+                return property_type;
+            });
             
-            add_property(new CanvasGraphProperty.from_value(name, label, property_value));
+            if (property_value != null) {
+                add_property(new CanvasGraphProperty.from_value(property_name, property_label, property_type, property_value));
+            } else {
+                add_property(new CanvasGraphProperty(property_name, property_label, property_type));
+            }
         });
         
         deserialized_graph.foreach_node(node_object => {

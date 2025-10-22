@@ -3,6 +3,7 @@ public class CanvasGraphPropertyRow : Gtk.Box {
 
     private Data.DataPropertyFactory data_property_factory;
     private Gtk.Label name_label;
+    private Gtk.Label type_label;
     
     public CanvasGraphPropertyRow (Data.DataPropertyFactory data_property_factory) {
         Object (orientation: Gtk.Orientation.HORIZONTAL, spacing: 6);
@@ -11,11 +12,19 @@ public class CanvasGraphPropertyRow : Gtk.Box {
         hexpand = true;
         margin_start = margin_end = margin_top = margin_bottom = 8;
 
+        this.type_label = new Gtk.Label("");
+        type_label.add_css_class("dim-label");
+        type_label.hexpand = true;
+        type_label.halign = Gtk.Align.END;
+        type_label.set_xalign(0);
+        append(type_label);
+        
         this.name_label = new Gtk.Label("");
         name_label.hexpand = true;
         name_label.halign = Gtk.Align.END;
         name_label.set_xalign(0);
         append(name_label);
+        
         
         create_drag_controller();
     }
@@ -55,14 +64,18 @@ public class CanvasGraphPropertyRow : Gtk.Box {
         
         this.property = prop;
 
-        var name_label = (Gtk.Label) get_first_child ();
-        name_label.set_label (prop.readable_name);
+        name_label.set_label(prop.readable_name);
+        type_label.set_label(prop.property_type.name());
         
         var data_property = data_property_factory.build(property.param_spec);
         data_property.changed.connect(this.property_changed);
         if (data_property == null) {
             return;
         }
+        if (prop.property_value != null) {
+            data_property.set_value_from_model(prop.property_value);
+        }
+        
         append(data_property);
     }
     
@@ -85,24 +98,23 @@ public class CanvasGraphPropertyListView : Gtk.Box {
         this.vexpand = true;
         this.hexpand = true;
 
-        store = new GLib.ListStore (typeof (CanvasGraphProperty));
+        this.store = new GLib.ListStore (typeof (CanvasGraphProperty));
         var selection = new Gtk.SingleSelection (store);
 
         var factory = new Gtk.SignalListItemFactory ();
         factory.setup.connect (setup_item);
         factory.bind.connect (bind_item);
 
-        list_view = new Gtk.ListView (selection, factory);
+        this.list_view = new Gtk.ListView (selection, factory);
         list_view.vexpand = true;
         list_view.hexpand = true;
         list_view.single_click_activate = true;
 
-        append (list_view);
+        append(list_view);
 
         reload_properties ();
-        graph.property_added.connect ((p) => {
-            store.append (p);
-        });
+        graph.property_added.connect(store.append);
+        graph.properties_removed.connect(store.remove_all);
     }
 
     private void setup_item (GLib.Object obj) {
@@ -116,8 +128,8 @@ public class CanvasGraphPropertyListView : Gtk.Box {
         var item = obj as Gtk.ListItem;
         if (item == null) return;
 
-        var prop = item.get_item () as CanvasGraphProperty;
-        var row = item.get_child () as CanvasGraphPropertyRow;
+        var prop = item.get_item() as CanvasGraphProperty;
+        var row = item.get_child() as CanvasGraphPropertyRow;
 
         if (prop != null && row != null)
             row.update_from_property (prop);
