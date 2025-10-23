@@ -165,7 +165,7 @@ public class ZoomableArea : Gtk.Widget {
     }
 
     public Gtk.Button create_reset_scale_button() {
-        var reset_zoom_button = new Gtk.Button.from_icon_name("zoom-original-symbolic");
+        var reset_zoom_button = new Gtk.Button.from_icon_name("zoom-original");
         reset_zoom_button.tooltip_text = "Reset to original size";
         reset_zoom_button.clicked.connect(this.reset_zoom);
         return reset_zoom_button;

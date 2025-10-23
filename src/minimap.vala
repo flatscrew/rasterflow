@@ -2,7 +2,7 @@ class MiniMap : Gtk.Widget {
     
     construct {
         set_layout_manager(new Gtk.BinLayout());
-        add_css_class("canvas_minimap");
+        add_css_class("osd");
     }
 
     private GtkFlow.NodeView node_view;

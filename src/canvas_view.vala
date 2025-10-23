@@ -133,7 +133,7 @@ public class CanvasView : Gtk.Widget {
         control_box.append(reset_scale);
         control_box.set_valign(Gtk.Align.END);
         control_box.set_halign(Gtk.Align.START);
-        control_box.add_css_class("canvas_scale");
+        control_box.add_css_class("osd");
 
         node_view_overlay.add_overlay(control_box);
     }

@@ -94,7 +94,7 @@ public class CanvasGraphPropertiesEditor : Gtk.Widget {
     public Gtk.ToggleButton create_toggle_button(Gtk.Paned editor_paned) {
         var button = new Gtk.ToggleButton();
         button.set_tooltip_text("Toggle graph properties");
-        button.add_css_class("canvas_properties_toggle");
+        button.add_css_class("osd");
     
         var icon = new Gtk.Image.from_icon_name("document-properties-symbolic");
         icon.set_pixel_size(16);
