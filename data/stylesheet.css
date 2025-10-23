@@ -42,3 +42,22 @@
 .rounded_bottom_right {
     border-bottom-right-radius: 5px;
 }
+
+.badge {
+    background: alpha(@error_bg_color, 0.85);
+    color: @error_fg_color;
+    border-radius: 9999px;
+    padding: 0 4px;
+    font-size: 8pt;
+    font-weight: bold;
+    min-width: 14px;
+    min-height: 14px;
+    text-align: center;
+    box-shadow: 0 1px 2px alpha(@black, 0.25);
+    margin-right: -0.25em;
+    margin-bottom: -0.25em;
+}
+
+.badge:backdrop {
+    opacity: 0.6; 
+}

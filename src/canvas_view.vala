@@ -80,7 +80,6 @@ public class CanvasView : Gtk.Widget {
         main_view.set_content(node_view_box);
         main_view.min_sidebar_width = 350;
         main_view.max_sidebar_width = 350;
-        //  main_view.collapsed = true;
         main_view.show_sidebar = true;
         main_view.set_parent(this);
     }

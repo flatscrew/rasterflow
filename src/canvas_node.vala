@@ -138,10 +138,10 @@ public class CanvasNode : GFlow.SimpleNode {
     }
 
     protected void log_error(string error_message) {
-        log.error(this, error_message);
+        log.add_error(this, error_message);
     }
 
     protected void log_warning(string warning_message) {
-        log.warning(this, warning_message);
+        log.add_warning(this, warning_message);
     }
 }

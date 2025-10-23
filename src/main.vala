@@ -129,6 +129,8 @@ class CanvasApplication : Gtk.Application {
       headerbar.pack_start(widget);
     }
 
+    headerbar.pack_start(new CanvasLogButton());
+    
     var toolbar_view = new Adw.ToolbarView();
     toolbar_view.add_top_bar(headerbar);
     toolbar_view.set_content(canvas_view);
