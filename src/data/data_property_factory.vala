@@ -96,6 +96,7 @@ namespace Data {
     private Data.AbstractDataProperty create_bool_property_widget(ParamSpec bool_spec) {
         var property = new Data.BoolProperty(bool_spec as ParamSpecBoolean);
         property.halign = Gtk.Align.START;
+        property.valign = Gtk.Align.CENTER;
         return property;
     }
 }

@@ -1,4 +1,5 @@
 using Gtk;
+using Adw;
 
 public class CanvasSignals : Object {
   public signal void before_file_load();
@@ -10,14 +11,15 @@ class CanvasApplication : Gtk.Application {
   private AppSettings settings;
   private History.HistoryOfChangesRecorder changes_recorder;
   private CanvasView canvas_view;
-  private Gtk.ApplicationWindow? window;
+  private Adw.ApplicationWindow? window;
 
   construct {
     base.application_id = "io.canvas.Canvas";
     base.flags = ApplicationFlags.FLAGS_NONE;
     this.settings = new AppSettings(this.application_id);
-    
     this.changes_recorder = History.HistoryOfChangesRecorder.instance;
+
+    Adw.init();
   }
   
   public CanvasApplication(string[] args) {
@@ -29,7 +31,7 @@ class CanvasApplication : Gtk.Application {
     var canvas_signals = new CanvasSignals();
 
     activate.connect (() => {
-      this.window = new Gtk.ApplicationWindow(this);
+      this.window = new Adw.ApplicationWindow(this);
       window.close_request.connect(this.window_closed);
       
       load_css();
@@ -58,11 +60,12 @@ class CanvasApplication : Gtk.Application {
       canvas_signals.before_file_load.connect_after(this.before_file_load);
       canvas_signals.after_file_load.connect_after(this.after_file_load);
 
-      build_header_bar(header_widgets);
+      var toolbar_view = build_toolbar_view(header_widgets);
+
       add_shortcuts(window);
       
       window.set_default_size(800, 600);
-      window.set_child(canvas_view);
+      window.set_content(toolbar_view);
       window.present();
       
       var window_dimensions = settings.read_window_dimensions();
@@ -80,7 +83,6 @@ class CanvasApplication : Gtk.Application {
     mark_busy();
     window.set_cursor_from_name("wait");
     window.set_sensitive(false);
-    
     changes_recorder.pause();
   }
 
@@ -88,7 +90,6 @@ class CanvasApplication : Gtk.Application {
     unmark_busy();
     window.set_cursor_from_name(null);
     window.set_sensitive(true);
-
     changes_recorder.clear();
     changes_recorder.resume();
   }
@@ -96,13 +97,23 @@ class CanvasApplication : Gtk.Application {
   private void load_css() {
     var css_provider = new Gtk.CssProvider();
     css_provider.load_from_resource("data/stylesheet.css");
-    Gtk.StyleContext.add_provider_for_display(Gdk.Display.get_default(), css_provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION);
+    Gtk.StyleContext.add_provider_for_display(
+      Gdk.Display.get_default(),
+      css_provider,
+      Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
+    );
   }
 
-  private void build_header_bar(CanvasHeaderbarWidgets header_widgets) {
-    var headerbar = new Gtk.HeaderBar ();
+  private Adw.ToolbarView build_toolbar_view(CanvasHeaderbarWidgets header_widgets) {
+    var headerbar = new Adw.HeaderBar();
+    headerbar.show_end_title_buttons = true;
+    headerbar.show_start_title_buttons = true;
 
-    headerbar.pack_start (canvas_view.create_node_chooser());
+    var nodes_properties_box = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 0);
+    nodes_properties_box.add_css_class("linked");
+    nodes_properties_box.append(canvas_view.create_node_chooser().get_menu_button());
+    nodes_properties_box.append(canvas_view.create_properties_toggle());
+    headerbar.pack_start(nodes_properties_box);
 
     var load_save_box = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 0);
     load_save_box.add_css_class("linked");
@@ -113,17 +124,16 @@ class CanvasApplication : Gtk.Application {
 
     headerbar.pack_start(load_save_box);
     headerbar.pack_start(new History.HistoryButtonsWidget());
-    headerbar.pack_end(create_theme_variant_switch());
 
     foreach (var widget in header_widgets.get_widgets()) {
       headerbar.pack_start(widget);
     }
-    
-    window.set_titlebar(headerbar);
-  }
 
-  private Gtk.Widget create_theme_variant_switch() {
-    return new ThemeVariantSwitch(this.settings);
+    var toolbar_view = new Adw.ToolbarView();
+    toolbar_view.add_top_bar(headerbar);
+    toolbar_view.set_content(canvas_view);
+
+    return toolbar_view;
   }
 }
 
@@ -131,4 +141,3 @@ int main (string[] args) {
   var app = new CanvasApplication(args);
   return app.run(args);
 }
-

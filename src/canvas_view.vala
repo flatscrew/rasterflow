@@ -13,6 +13,7 @@ public class CanvasView : Gtk.Widget {
     private ZoomableArea zoomable_area;
     private GtkFlow.NodeView node_view;
 
+    private Data.DataNodeChooser node_chooser;
     private Data.FileOriginNodeFactory file_origin_node_factory;
     private Gtk.Popover file_origin_popover;
 
@@ -65,9 +66,7 @@ public class CanvasView : Gtk.Widget {
         create_node_view();
         create_logs_area();
         create_minimap_overlay();
-        create_properties_toggle();
         create_root_pane();
-        
         
         this.data_drop_handler = new DataDropHandler();
         data_drop_handler.file_dropped.connect(this.add_file_data_node);
@@ -134,6 +133,8 @@ public class CanvasView : Gtk.Widget {
         control_box.set_valign(Gtk.Align.END);
         control_box.set_halign(Gtk.Align.START);
         control_box.add_css_class("osd");
+        control_box.add_css_class("toolbar");
+        control_box.add_css_class("canvas_overlay");
 
         node_view_overlay.add_overlay(control_box);
     }
@@ -158,12 +159,8 @@ public class CanvasView : Gtk.Widget {
         });
     }
     
-    private void create_properties_toggle() {
-        var toggle_button = properties_editor.create_toggle_button(this.main_pane);
-        toggle_button.set_valign(Gtk.Align.START);
-        toggle_button.set_halign(Gtk.Align.START);
-    
-        node_view_overlay.add_overlay(toggle_button);
+    public Gtk.Button create_properties_toggle() {
+        return properties_editor.create_toggle_button(this.main_pane);
     }
 
     private void logs_collapsed(int height) {
@@ -368,9 +365,8 @@ public class CanvasView : Gtk.Widget {
         });
     }
 
-    public Data.DataNodeChooser create_node_chooser() {
-        var node_chooser = new Data.DataNodeChooser.everything(node_factory);
-        node_chooser.set_tooltip_text("Add new node");
+    public unowned Data.DataNodeChooser create_node_chooser() {
+        this.node_chooser = new Data.DataNodeChooser.everything(node_factory);
         node_chooser.node_created.connect(canvas_graph.add_node);
         return node_chooser;
     }

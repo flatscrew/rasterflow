@@ -5,37 +5,7 @@
     background-size: 64px 64px;
 }
 
-.canvas_minimap { 
-    border-top-width: 1px;
-    border-left-width: 1px;
-    border-right-width: 1px;
-    border-bottom-width: 1px;
-    border-radius: 5px;
-    border-color: gray;
-    border-style: solid;
-    background: rgba(255, 255, 255, 0.1);
- }
-
- .canvas_scale { 
-    border-top-width: 1px;
-    border-left-width: 1px;
-    border-right-width: 1px;
-    border-bottom-width: 1px;
-    border-radius: 5px;
-    border-color: gray;
-    background: rgba(255, 255, 255, 0.1);
-    border-style: solid;
-    padding: 10px;
-    margin: 10px;
- }
- 
- .canvas_properties_toggle {
-    border-width: 1px;
-    border-radius: 5px;
-    border-color: gray;
-    background: rgba(255, 255, 255, 0.1);
-    border-style: solid;
-    padding: 10px;
+.canvas_overlay { 
     margin: 10px;
  }
 

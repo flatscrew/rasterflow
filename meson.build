@@ -26,7 +26,8 @@ dependencies = [
     dependency('json-glib-1.0'),
     dependency('gegl-0.4'),
     dependency('libportal'),
-    dependency('libportal-gtk4')
+    dependency('libportal-gtk4'),
+    dependency('libadwaita-1')
 ]
 
 if host_machine.system() == 'linux'
