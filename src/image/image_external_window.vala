@@ -81,13 +81,8 @@ namespace Image {
             };
         }
 
-        public void set_dimensions(int x, int y, int width, int height) {
-            WindowGeometryManager.set_geometry(this, Image.WindowGeometry() {
-                x = x,
-                y = y,
-                width = width,
-                height = height
-            });
+        public void set_dimensions(Gdk.Rectangle dimensions) {
+            WindowGeometryManager.set_geometry(this, dimensions);
         }
 
         private Gtk.Box add_action_bar_child_end(Gtk.Widget child) {

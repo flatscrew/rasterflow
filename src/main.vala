@@ -7,6 +7,7 @@ public class CanvasSignals : Object {
 
 class CanvasApplication : Gtk.Application {
 
+  private AppSettings settings;
   private History.HistoryOfChangesRecorder changes_recorder;
   private CanvasView canvas_view;
   private Gtk.ApplicationWindow? window;
@@ -14,10 +15,11 @@ class CanvasApplication : Gtk.Application {
   construct {
     base.application_id = "io.canvas.Canvas";
     base.flags = ApplicationFlags.FLAGS_NONE;
+    this.settings = new AppSettings(this.application_id);
     
     this.changes_recorder = History.HistoryOfChangesRecorder.instance;
   }
-
+  
   public CanvasApplication(string[] args) {
     var header_widgets = new CanvasHeaderbarWidgets();
     var data_node_factory = new CanvasNodeFactory();
@@ -28,6 +30,7 @@ class CanvasApplication : Gtk.Application {
 
     activate.connect (() => {
       this.window = new Gtk.ApplicationWindow(this);
+      window.close_request.connect(this.window_closed);
       
       load_css();
       
@@ -61,7 +64,16 @@ class CanvasApplication : Gtk.Application {
       window.set_default_size(800, 600);
       window.set_child(canvas_view);
       window.present();
+      
+      var window_dimensions = settings.read_window_dimensions();
+      WindowGeometryManager.set_geometry(window, window_dimensions);
     });
+  }
+  
+  private bool window_closed() {
+    var dimensions = WindowGeometryManager.get_geometry(this.window);
+    this.settings.write_window_dimensions(dimensions);
+    return false;
   }
 
   private void before_file_load() {
@@ -111,7 +123,7 @@ class CanvasApplication : Gtk.Application {
   }
 
   private Gtk.Widget create_theme_variant_switch() {
-    return new ThemeVariantSwitch(new GLib.Settings(this.application_id));
+    return new ThemeVariantSwitch(this.settings);
   }
 }
 

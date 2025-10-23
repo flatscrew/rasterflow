@@ -75,7 +75,9 @@ endif
 # vala sources
 vala_sources = [
     'src/main.vala',
+    'src/application_settings.vala',
     'src/minimap.vala',
+    'src/window_geometry.vala',
     'src/window_shortcuts.vala',
     'src/theme_variant_switch.vala',
     'src/data_drop_handler.vala',
@@ -130,7 +132,6 @@ vala_sources = [
     'src/image/gegl_node_operation_view.vala',
     'src/image/gegl_xml_file_node.vala',
     'src/image/gxml/gxml_export.vala',
-    'src/image/window_geometry.vala',
     'src/image/color_prober.vala',
     'src/image/color_property.vala',
     'src/image/history/gegl_node_property_control_taken_action.vala',
