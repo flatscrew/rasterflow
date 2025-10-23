@@ -1,6 +1,6 @@
 public class CanvasGraphPropertyRow : Gtk.Box {
 
-    public signal void removed(uint row_position);
+    public signal void removed(CanvasGraphProperty property, uint row_position);
 
     public CanvasGraphProperty property { get; set; }
 
@@ -76,7 +76,7 @@ public class CanvasGraphPropertyRow : Gtk.Box {
         
         this.property = prop;
         this.property.removed.connect(() => {
-            removed(this.position);
+            removed(this.property, this.position);
         });
         
         name_label.set_label(prop.readable_name);
@@ -104,6 +104,9 @@ public class CanvasGraphPropertyRow : Gtk.Box {
 }
 
 public class CanvasGraphPropertyListView : Gtk.Box {
+    
+    public signal void list_changed();
+    
     private CanvasGraph graph;
     private GLib.ListStore store;
     private Gtk.ListView list_view;
@@ -141,8 +144,11 @@ public class CanvasGraphPropertyListView : Gtk.Box {
         if (item == null) return;
 
         var row = new CanvasGraphPropertyRow(data_property_factory);
-        row.removed.connect(row_position => {
+        row.removed.connect((property, row_position) => {
+            this.graph.remove_property(property);
+            
             store.remove(row_position);
+            list_changed();
         });
         item.set_child(row);
     }

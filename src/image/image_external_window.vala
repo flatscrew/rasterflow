@@ -1,6 +1,6 @@
 namespace Image {
 
-    public class ExternalImageWindow : Gtk.Window {
+    public class ExternalImageWindow : Adw.Window {
         private ImageViewerPanningArea panning_area;
         private ImageViewer image_viewer;
         private Gtk.ScrolledWindow scroller;
@@ -26,7 +26,14 @@ namespace Image {
             create_action_bar();
             create_zoom_control();
 
-            set_child(box);
+            var header_bar = new Adw.HeaderBar();
+            header_bar.set_title_widget(new Gtk.Label(title));
+
+            var toolbar_view = new Adw.ToolbarView();
+            toolbar_view.add_top_bar(header_bar);
+            toolbar_view.set_content(box);
+
+            set_content(toolbar_view);
         }
 
         private void create_action_bar() {

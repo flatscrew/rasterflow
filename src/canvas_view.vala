@@ -6,8 +6,7 @@ public class CanvasView : Gtk.Widget {
 
     private Gtk.Overlay node_view_overlay;
     private Gtk.Box node_view_box;
-    private Gtk.Paned root_pane;
-    private Gtk.Paned main_pane;
+    private Adw.OverlaySplitView main_view;
     private Gtk.ScrolledWindow scrolled_window;
     private ScrollPanner scroll_panner;
     private ZoomableArea zoomable_area;
@@ -21,7 +20,6 @@ public class CanvasView : Gtk.Widget {
     private CanvasGraph canvas_graph;
     private CanvasGraphPropertiesEditor properties_editor;
     private CanvasSignals canvas_signals;
-    private CanvasLogsArea logs_area;
     private Gtk.Button save_button;
 
     private Serialize.CustomSerializers serializers;
@@ -36,7 +34,7 @@ public class CanvasView : Gtk.Widget {
     }
 
     ~CanvasView() {
-        root_pane.unparent();
+        main_view.unparent();
     }
 
     public CanvasView(
@@ -62,11 +60,9 @@ public class CanvasView : Gtk.Widget {
         this.properties_editor = new CanvasGraphPropertiesEditor(canvas_graph);
         this.node_view_box = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
         
-        create_main_pane();
+        create_main_view();
         create_node_view();
-        create_logs_area();
         create_minimap_overlay();
-        create_root_pane();
         
         this.data_drop_handler = new DataDropHandler();
         data_drop_handler.file_dropped.connect(this.add_file_data_node);
@@ -77,29 +73,18 @@ public class CanvasView : Gtk.Widget {
         property_drop_handler.property_dropped.connect(this.property_dropped);
         node_view.add_controller(property_drop_handler.data_drop_target);
     }
-    
-    private void create_root_pane() {
-        this.root_pane = new Gtk.Paned(Gtk.Orientation.VERTICAL);
-        root_pane.set_shrink_end_child(false);
-        root_pane.set_resize_end_child(false);
-        root_pane.set_wide_handle(true);
-        root_pane.set_start_child(main_pane);
-        root_pane.set_end_child(logs_area);
-        root_pane.set_parent(this);
-        root_pane.set_position(root_pane.max_position);
-    }
-    
-    private void create_main_pane() {
-        this.main_pane = new Gtk.Paned(Gtk.Orientation.HORIZONTAL);
-        main_pane.set_wide_handle(true);
-        main_pane.set_start_child(properties_editor);
-        main_pane.set_end_child(node_view_box);
-        main_pane.set_shrink_start_child(false);
-        main_pane.set_resize_start_child(false);
-        main_pane.set_shrink_end_child(true);
-        main_pane.set_position(0);
-    }
 
+    private void create_main_view() {
+        this.main_view = new Adw.OverlaySplitView();
+        main_view.set_sidebar(properties_editor);
+        main_view.set_content(node_view_box);
+        main_view.min_sidebar_width = 350;
+        main_view.max_sidebar_width = 350;
+        //  main_view.collapsed = true;
+        main_view.show_sidebar = true;
+        main_view.set_parent(this);
+    }
+    
     private void create_node_view() {
         this.node_view = new GtkFlow.NodeView();
         this.scrolled_window = new Gtk.ScrolledWindow();
@@ -148,24 +133,24 @@ public class CanvasView : Gtk.Widget {
         node_view_overlay.add_overlay(mini_map);
     }
 
-    private void create_logs_area() {
-        this.logs_area = new CanvasLogsArea();
-        logs_area.logs_collapsed.connect(this.logs_collapsed);
-        logs_area.log_node_selected.connect(node => {
-            if (node == null) {
-                return;
-            }
-            print("node=> %s\n", node.name);
-        });
-    }
+    //  private void create_logs_area() {
+    //      this.logs_area = new CanvasLogsArea();
+    //      logs_area.logs_collapsed.connect(this.logs_collapsed);
+    //      logs_area.log_node_selected.connect(node => {
+    //          if (node == null) {
+    //              return;
+    //          }
+    //          print("node=> %s\n", node.name);
+    //      });
+    //  }
     
     public Gtk.Button create_properties_toggle() {
-        return properties_editor.create_toggle_button(this.main_pane);
+        return properties_editor.create_toggle_button(this.main_view);
     }
 
-    private void logs_collapsed(int height) {
-        this.root_pane.set_position(root_pane.get_height() - height);
-    }
+    //  private void logs_collapsed(int height) {
+    //      this.root_pane.set_position(root_pane.get_height() - height);
+    //  }
 
     private void node_added(CanvasDisplayNode node) {
         node_view.add(node);

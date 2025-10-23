@@ -199,6 +199,9 @@ namespace Data {
             this.popover = new Gtk.Popover();
             popover.add_css_class("menu");
             popover.set_position(Gtk.PositionType.BOTTOM);
+            popover.halign = Gtk.Align.START;
+            popover.set_offset(-5, 0);
+            
             this.menu_button = new Gtk.MenuButton();
             menu_button.set_tooltip_text("Add operation node");
             menu_button.set_child(new Gtk.Image.from_icon_name("insert-object-symbolic"));

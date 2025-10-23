@@ -2,9 +2,6 @@ class MiniMap : Gtk.Widget {
     
     construct {
         set_layout_manager(new Gtk.BinLayout());
-        add_css_class("osd");
-        add_css_class("toolbar");
-        add_css_class("canvas_overlay");
     }
 
     private GtkFlow.NodeView node_view;
@@ -26,6 +23,9 @@ class MiniMap : Gtk.Widget {
         set_size_request(100, 100);
         
         this.box = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
+        box.add_css_class("osd");
+        box.add_css_class("toolbar");
+        box.add_css_class("canvas_overlay");
         box.set_parent(this);
 
         var mini_map = new GtkFlow.Minimap();

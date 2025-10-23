@@ -1,7 +1,7 @@
 public class ZoomableArea : Gtk.Widget {
     public signal void zoom_changed (float new_zoom, float old_zoom);
 
-    private const float ZOOM_TICK = 0.1f;
+    private const float ZOOM_TICK = 0.01f;
     
     private Gtk.Widget? child;
     private Gtk.ScrolledWindow scrolled;

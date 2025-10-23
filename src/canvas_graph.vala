@@ -2,6 +2,7 @@ public class CanvasGraph : Object {
 
     public signal void node_added(CanvasDisplayNode node);
     public signal void property_added(CanvasGraphProperty property);
+    public signal void property_removed(CanvasGraphProperty property);
     public signal void properties_removed();
     
     private CanvasNodeFactory node_factory;
@@ -33,6 +34,11 @@ public class CanvasGraph : Object {
     public void add_property(CanvasGraphProperty property) {
         all_properties.append(property);
         property_added(property);
+    }
+    
+    public void remove_property(CanvasGraphProperty property) {
+        all_properties.remove(property);
+        property_removed(property);
     }
     
     public bool has_any_property() {

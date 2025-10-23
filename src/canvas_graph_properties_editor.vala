@@ -8,8 +8,6 @@ public class CanvasGraphPropertiesEditor : Gtk.Widget {
     private Gtk.MenuButton add_property_button;
     private AddPropertyPopover popover;
     
-    private int last_width = 250;
-
     construct {
         set_layout_manager(new Gtk.BinLayout());
     }
@@ -20,7 +18,6 @@ public class CanvasGraphPropertiesEditor : Gtk.Widget {
 
     public CanvasGraphPropertiesEditor(CanvasGraph canvas_graph) {
         this.canvas_graph = canvas_graph;
-        this.visible = false;
         this.editor_box = create_main_layout();
         editor_box.set_parent(this);
         
@@ -28,6 +25,7 @@ public class CanvasGraphPropertiesEditor : Gtk.Widget {
         canvas_graph.property_added.connect((prop) => {
             update_visibility();
         });
+        canvas_graph.properties_removed.connect(this.update_visibility);
     }
     
     private void add_property(string name, string label, GLib.Type type) {
@@ -58,8 +56,10 @@ public class CanvasGraphPropertiesEditor : Gtk.Widget {
         add_property_box.append(add_property_button);
         
         this.property_list_view = new CanvasGraphPropertyListView(this.canvas_graph);
+        property_list_view.list_changed.connect_after(this.update_visibility);
         
         var content_box = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
+        content_box.add_css_class("view");
         content_box.halign = Gtk.Align.FILL;
         content_box.valign = Gtk.Align.FILL;
         content_box.vexpand = true;
@@ -68,9 +68,32 @@ public class CanvasGraphPropertiesEditor : Gtk.Widget {
         return content_box;
     }
     
+    private Gtk.Widget create_pin_button(Adw.OverlaySplitView split_view) {
+        var pin_button = new Gtk.ToggleButton();
+        pin_button.set_icon_name("pin-symbolic");
+        pin_button.set_tooltip_text("Pin sidebar");
+        pin_button.valign = Gtk.Align.START;
+        pin_button.halign = Gtk.Align.END;
+        pin_button.margin_top = 6;
+        pin_button.margin_end = 6;
+        pin_button.add_css_class("flat");
+    
+        split_view.bind_property(
+            "show-sidebar",
+            pin_button,
+            "active",
+            BindingFlags.BIDIRECTIONAL | BindingFlags.SYNC_CREATE
+        );
+    
+        pin_button.notify["active"].connect(() => {
+            pin_button.set_icon_name(pin_button.active ? "unpin-symbolic" : "pin-symbolic");
+        });
+    
+        return pin_button;
+    }
+    
     private void update_visibility() {
         bool has_props = canvas_graph.has_any_property();
-
         add_property_box.visible = !has_props;
         property_list_view.visible = has_props;
     }
@@ -91,7 +114,7 @@ public class CanvasGraphPropertiesEditor : Gtk.Widget {
         return button;
     }
 
-    public Gtk.ToggleButton create_toggle_button(Gtk.Paned editor_paned) {
+    public Gtk.ToggleButton create_toggle_button(Adw.OverlaySplitView split_view) {
         var button = new Gtk.ToggleButton();
         button.set_tooltip_text("Toggle graph properties");
     
@@ -99,26 +122,25 @@ public class CanvasGraphPropertiesEditor : Gtk.Widget {
         icon.set_pixel_size(16);
         button.set_child(icon);
     
-        button.toggled.connect(() => {
-            bool active = button.active;
-            icon.set_from_icon_name(active ? "window-close-symbolic" : "document-properties-symbolic");
-            handle_toggle(button, editor_paned);
-        });
+        split_view.bind_property(
+            "show-sidebar",
+            button,
+            "active",
+            BindingFlags.BIDIRECTIONAL | BindingFlags.SYNC_CREATE
+        );
+    
+        button.bind_property(
+            "active",
+            icon,
+            "icon-name",
+            BindingFlags.SYNC_CREATE,
+            (binding, from_value, ref to_value) => {
+                bool active = from_value.get_boolean();
+                to_value.set_string(active ? "window-close-symbolic" : "document-properties-symbolic");
+                return true;
+            }
+        );
     
         return button;
-    }
-
-    private void handle_toggle(Gtk.ToggleButton button, Gtk.Paned editor_paned) {
-        bool active = button.active;
-
-        if (active) {
-            this.visible = true;
-            editor_paned.set_position(last_width);
-        } else {
-            this.visible = false;
-            int pos = editor_paned.get_position();
-            if (pos > 0) last_width = pos;
-            editor_paned.set_position(0);
-        }
     }
 }
