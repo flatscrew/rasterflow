@@ -34,6 +34,8 @@ public class CanvasGraph : Object {
     public void add_property(CanvasGraphProperty property) {
         all_properties.append(property);
         property_added(property);
+        
+        property.removed.connect(this.remove_property);
     }
     
     public void remove_property(CanvasGraphProperty property) {
@@ -50,10 +52,14 @@ public class CanvasGraph : Object {
     }
     
     public void remove_all_properties() {
+        if (all_properties == null || all_properties.length() == 0) {
+            return;
+        }
         foreach (var property in all_properties) {
             property.remove();
         }
         properties_removed();
+        all_properties = new List<CanvasGraphProperty>();
     }
     
     public string serialize_graph(Serialize.CustomSerializers factory) {

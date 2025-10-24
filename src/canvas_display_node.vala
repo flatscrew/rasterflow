@@ -61,7 +61,7 @@ public class CanvasDisplayNode : GtkFlow.Node {
     private Gtk.Box node_box;
     private Gtk.ActionBar action_bar;
     private Gtk.Button delete_button;
-    private Gtk.ColorButton color_chooser_button;
+    private Gtk.ColorDialogButton color_chooser_button;
     private Gtk.CssProvider? custom_backround_css;
 
     private string builder_id;
@@ -112,6 +112,12 @@ public class CanvasDisplayNode : GtkFlow.Node {
     
     private void apply_css_provider() {
         this.custom_backround_css = new Gtk.CssProvider();
+        this.get_style_context().add_provider(custom_backround_css, Gtk.STYLE_PROVIDER_PRIORITY_USER);
+    
+        reset_background_color();
+    }
+    
+    private void reset_background_color() {
         var css = "
         .gtkflow_node {
             background-color: @theme_bg_color;
@@ -123,7 +129,6 @@ public class CanvasDisplayNode : GtkFlow.Node {
         }
         ";
         custom_backround_css.load_from_data(css.data);
-        this.get_style_context().add_provider(custom_backround_css, Gtk.STYLE_PROVIDER_PRIORITY_USER);
     }
     
     private void record_position_changed(int old_x, int old_y, int new_x, int new_y) {
@@ -257,14 +262,29 @@ public class CanvasDisplayNode : GtkFlow.Node {
         }
         title_bar.append_left(new Gtk.Image.from_gicon(icon));
     }
-
+    
     private void add_color_chooser(Data.TitleBar title_bar) {
-        this.color_chooser_button = new Gtk.ColorButton();
-        color_chooser_button.color_set.connect(() => {
+        var dialog = new Gtk.ColorDialog();
+        color_chooser_button = new Gtk.ColorDialogButton(dialog);
+        color_chooser_button.set_tooltip_text("Set node color (Ctrl+Click to reset)");
+        color_chooser_button.notify["rgba"].connect(() => {
             change_background_color(color_chooser_button.get_rgba());
         });
+    
         title_bar.append_left(color_chooser_button);
+        
+        var gesture = new Gtk.GestureClick();
+        gesture.set_propagation_phase(Gtk.PropagationPhase.CAPTURE);
+        gesture.pressed.connect((n_press, x, y) => {
+            var state = gesture.get_current_event_state();
+            if ((state & Gdk.ModifierType.CONTROL_MASK) != 0) {
+                gesture.set_state(Gtk.EventSequenceState.CLAIMED);
+                change_background_color(null);
+            }
+        });
+        color_chooser_button.add_controller(gesture);
     }
+    
 
     public new void add_child(Gtk.Widget child) {
         node_box.append(child);
@@ -315,10 +335,14 @@ public class CanvasDisplayNode : GtkFlow.Node {
         return luminance > 0.5;
     }
 
-    private void change_background_color(Gdk.RGBA new_color) {
+    private void change_background_color(Gdk.RGBA? new_color) {
         this.node_color = new_color;
-        this.highlight_color = new_color;
-
+        
+        if (node_color == null) {
+            reset_background_color();
+            return;
+        }
+        
         var css = "
         .gtkflow_node {
             background-color: %s;

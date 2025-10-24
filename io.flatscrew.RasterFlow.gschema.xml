@@ -2,9 +2,9 @@
 <schemalist>
   <schema id="io.canvas.Canvas" path="/io/canvas/Canvas/">
 
-    <key name="dark-variant" type="b">
+    <key name="sidebar-visible" type="b">
       <default>false</default>
-      <summary>Use dark variant theme</summary>
+      <summary>Show sidebar</summary>
     </key>
 
     <key name="window-x" type="i">

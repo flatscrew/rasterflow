@@ -3,7 +3,8 @@ public class CanvasGraphPropertiesEditor : Gtk.Widget {
     private CanvasGraph canvas_graph;
     private Gtk.Box editor_box;
     private Gtk.Box add_property_box;
-    private CanvasGraphPropertyListView property_list_view;
+    private AdwCanvasGraphPropertyListView adw_property_list_view;
+    //  private CanvasGraphPropertyListView property_list_view;
     private Gtk.ActionBar action_bar;
     private Gtk.MenuButton add_property_button;
     private AddPropertyPopover popover;
@@ -55,8 +56,11 @@ public class CanvasGraphPropertiesEditor : Gtk.Widget {
         add_property_box.append(new Gtk.Label("Add new property"));
         add_property_box.append(add_property_button);
         
-        this.property_list_view = new CanvasGraphPropertyListView(this.canvas_graph);
-        property_list_view.list_changed.connect_after(this.update_visibility);
+        
+        this.adw_property_list_view = new AdwCanvasGraphPropertyListView(this.canvas_graph);
+        adw_property_list_view.list_changed.connect_after(this.update_visibility);
+        //  this.property_list_view = new CanvasGraphPropertyListView(this.canvas_graph);
+        //  property_list_view.list_changed.connect_after(this.update_visibility);
         
         var content_box = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
         content_box.add_css_class("view");
@@ -64,38 +68,17 @@ public class CanvasGraphPropertiesEditor : Gtk.Widget {
         content_box.valign = Gtk.Align.FILL;
         content_box.vexpand = true;
         content_box.append(add_property_box);
-        content_box.append(property_list_view);
+        //  content_box.append(property_list_view);
+        content_box.append(adw_property_list_view);
+        
         return content_box;
-    }
-    
-    private Gtk.Widget create_pin_button(Adw.OverlaySplitView split_view) {
-        var pin_button = new Gtk.ToggleButton();
-        pin_button.set_icon_name("pin-symbolic");
-        pin_button.set_tooltip_text("Pin sidebar");
-        pin_button.valign = Gtk.Align.START;
-        pin_button.halign = Gtk.Align.END;
-        pin_button.margin_top = 6;
-        pin_button.margin_end = 6;
-        pin_button.add_css_class("flat");
-    
-        split_view.bind_property(
-            "show-sidebar",
-            pin_button,
-            "active",
-            BindingFlags.BIDIRECTIONAL | BindingFlags.SYNC_CREATE
-        );
-    
-        pin_button.notify["active"].connect(() => {
-            pin_button.set_icon_name(pin_button.active ? "unpin-symbolic" : "pin-symbolic");
-        });
-    
-        return pin_button;
     }
     
     private void update_visibility() {
         bool has_props = canvas_graph.has_any_property();
         add_property_box.visible = !has_props;
-        property_list_view.visible = has_props;
+        //  property_list_view.visible = has_props;
+        adw_property_list_view.visible = has_props;
     }
 
     private Gtk.ActionBar create_action_bar() {
@@ -127,18 +110,6 @@ public class CanvasGraphPropertiesEditor : Gtk.Widget {
             button,
             "active",
             BindingFlags.BIDIRECTIONAL | BindingFlags.SYNC_CREATE
-        );
-    
-        button.bind_property(
-            "active",
-            icon,
-            "icon-name",
-            BindingFlags.SYNC_CREATE,
-            (binding, from_value, ref to_value) => {
-                bool active = from_value.get_boolean();
-                to_value.set_string(active ? "window-close-symbolic" : "document-properties-symbolic");
-                return true;
-            }
         );
     
         return button;

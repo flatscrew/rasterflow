@@ -80,8 +80,15 @@ public class CanvasView : Gtk.Widget {
         main_view.set_content(node_view_box);
         main_view.min_sidebar_width = 350;
         main_view.max_sidebar_width = 350;
-        main_view.show_sidebar = true;
         main_view.set_parent(this);
+    }
+    
+    public void show_properties_sidebar(bool show_properties) {
+        main_view.show_sidebar = show_properties;
+    }
+    
+    public bool is_properties_sidebar_shown() {
+        return main_view.show_sidebar;
     }
     
     private void create_node_view() {
@@ -132,24 +139,9 @@ public class CanvasView : Gtk.Widget {
         node_view_overlay.add_overlay(mini_map);
     }
 
-    //  private void create_logs_area() {
-    //      this.logs_area = new CanvasLogsArea();
-    //      logs_area.logs_collapsed.connect(this.logs_collapsed);
-    //      logs_area.log_node_selected.connect(node => {
-    //          if (node == null) {
-    //              return;
-    //          }
-    //          print("node=> %s\n", node.name);
-    //      });
-    //  }
-    
     public Gtk.Button create_properties_toggle() {
         return properties_editor.create_toggle_button(this.main_view);
     }
-
-    //  private void logs_collapsed(int height) {
-    //      this.root_pane.set_position(root_pane.get_height() - height);
-    //  }
 
     private void node_added(CanvasDisplayNode node) {
         node_view.add(node);
@@ -387,4 +379,6 @@ public class CanvasView : Gtk.Widget {
         export_button.clicked.connect(this.export_to_png);
         return export_button;
     }
+    
+    
 }

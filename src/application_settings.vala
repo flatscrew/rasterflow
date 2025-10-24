@@ -1,7 +1,7 @@
 public class AppSettings : Object {
     private GLib.Settings settings;
 
-    private const string DARK_VARIANT_PROPERTY = "dark-variant";
+    private const string SIDEBAR_VISIBLE = "sidebar-visible";
     private const string WINDOW_X_KEY = "window-x";
     private const string WINDOW_Y_KEY = "window-y";
     private const string WINDOW_WIDTH_KEY = "window-width";
@@ -27,29 +27,11 @@ public class AppSettings : Object {
         return rect;
     }
 
-    public void bind_theme_variant(Gtk.Switch variant_switch) {
-        var gtk_settings = Gtk.Settings.get_default();
-
-        variant_switch.bind_property(
-            "active",
-            gtk_settings,
-            "gtk-application-prefer-dark-theme",
-            GLib.BindingFlags.SYNC_CREATE | GLib.BindingFlags.BIDIRECTIONAL
-        );
-
-        settings.bind(
-            DARK_VARIANT_PROPERTY,
-            variant_switch,
-            "active",
-            GLib.SettingsBindFlags.DEFAULT
-        );
+    public bool is_sidebar_visible() {
+        return settings.get_boolean(SIDEBAR_VISIBLE);
     }
 
-    public bool get_dark_variant() {
-        return settings.get_boolean(DARK_VARIANT_PROPERTY);
-    }
-
-    public void set_dark_variant(bool value) {
-        settings.set_boolean(DARK_VARIANT_PROPERTY, value);
+    public void write_sidebar_visible(bool value) {
+        settings.set_boolean(SIDEBAR_VISIBLE, value);
     }
 }

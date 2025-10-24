@@ -80,6 +80,7 @@ namespace Data {
 
     private Data.AbstractDataProperty create_uint_property_widget(ParamSpec uint_spec) {
         var property = new Data.UIntProperty(uint_spec as ParamSpecUInt);
+        property.valign = Gtk.Align.CENTER;
         return property;
     }
 

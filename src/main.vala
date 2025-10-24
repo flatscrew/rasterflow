@@ -56,6 +56,7 @@ class CanvasApplication : Gtk.Application {
         serializers,
         deserializers
       );
+      canvas_view.show_properties_sidebar(settings.is_sidebar_visible());
 
       canvas_signals.before_file_load.connect_after(this.before_file_load);
       canvas_signals.after_file_load.connect_after(this.after_file_load);
@@ -76,6 +77,7 @@ class CanvasApplication : Gtk.Application {
   private bool window_closed() {
     var dimensions = WindowGeometryManager.get_geometry(this.window);
     this.settings.write_window_dimensions(dimensions);
+    this.settings.write_sidebar_visible(canvas_view.is_properties_sidebar_shown());
     return false;
   }
 

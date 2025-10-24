@@ -61,3 +61,9 @@
 .badge:backdrop {
     opacity: 0.6; 
 }
+
+.draggable-chip {
+    border-radius: 10px;
+    border: 1px solid alpha(black, 0.5);
+}
+  

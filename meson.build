@@ -80,7 +80,6 @@ vala_sources = [
     'src/minimap.vala',
     'src/window_geometry.vala',
     'src/window_shortcuts.vala',
-    'src/theme_variant_switch.vala',
     'src/data_drop_handler.vala',
     'src/canvas_view.vala',
     'src/canvas_node.vala',

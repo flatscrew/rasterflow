@@ -18,7 +18,7 @@
       "type" : "GeglColor",
       "value" : {
         "type" : "GeglColor",
-        "color" : "rgb(0.380, 0.208, 0.514)"
+        "color" : "rgb(0.898, 0.647, 0.039)"
       }
     },
     {
@@ -32,8 +32,8 @@
     {
       "model" : {      },
       "builder_id" : "gegl:buffer-source",
-      "width" : 166,
-      "height" : 127,
+      "width" : 174,
+      "height" : 150,
       "expanded" : false,
       "position_x" : 80,
       "position_y" : 61
@@ -46,8 +46,8 @@
         "x" : 1.0999999999999999
       },
       "builder_id" : "gegl:crop",
-      "width" : 384,
-      "height" : 357,
+      "width" : 382,
+      "height" : 355,
       "expanded" : true,
       "position_x" : 374,
       "position_y" : 31
@@ -57,8 +57,8 @@
         "algorithm-type" : 0
       },
       "builder_id" : "gegl:maze",
-      "width" : 320,
-      "height" : 362,
+      "width" : 318,
+      "height" : 360,
       "expanded" : true,
       "position_x" : 821,
       "position_y" : 51
@@ -66,8 +66,8 @@
     {
       "model" : {      },
       "builder_id" : "image:display",
-      "width" : 367,
-      "height" : 464,
+      "width" : 365,
+      "height" : 462,
       "expanded" : true,
       "position_x" : 1267,
       "position_y" : 37,
