@@ -39,9 +39,7 @@ namespace Image {
         }
         
         private void renew_properties_contracts() {
-            gegl_operation_node.for_each_property_as_sink(property_name => {
-                properties_editor.renew_contract(property_name);
-            });
+            gegl_operation_node.for_each_property_as_sink(properties_editor.renew_contract);
         }
 
         private void create_process_gegl_button() {
@@ -78,7 +76,7 @@ namespace Image {
                 compose_overrides
             );
 
-            data_display_view.add_child(properties_editor);
+            this.data_display_view.add_child(properties_editor);
             data_display_view.set_margin(10);
 
             if (properties_editor.has_properties) {

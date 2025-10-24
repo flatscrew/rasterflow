@@ -43,21 +43,12 @@ public class AdwCanvasGraphPropertyRow : Adw.ActionRow {
             val.set_object (property);
             return new Gdk.ContentProvider.for_value (val);
         });
-        drag_source.drag_begin.connect (drag => {
-            var label = new Gtk.Label(property.readable_name);
-            
-            int width, height;
-            label.measure(Gtk.Orientation.HORIZONTAL, -1, out width, null, null, null);
-            label.measure(Gtk.Orientation.VERTICAL, -1, out height, null, null, null);
-        
-            var snapshot = new Gtk.Snapshot();
-            label.allocate(width, height, -1, null); // wymusza układ
-            label.snapshot(snapshot);
-        
-            Graphene.Size size = { (float) width, (float) height };
-            var paintable = snapshot.to_paintable(size);
-        
-            drag_source.set_icon(paintable, width / 2, height / 2);
+        drag_source.drag_begin.connect((drag) => {
+            add_css_class("drag-active");
+        });
+    
+        drag_source.drag_end.connect(() => {
+            remove_css_class("drag-active");
         });
         this.add_controller (drag_source);
     }

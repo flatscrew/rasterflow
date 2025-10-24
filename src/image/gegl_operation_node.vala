@@ -275,7 +275,6 @@ namespace Image {
             if (props == null) return;
             props.for_each_node(node => {
                 var property_as_sink = node.get_value()?.get_string();
-                message("##############3 %s", property_as_sink);
                 this.properties_as_sinks.append(property_as_sink);  
             });
         }

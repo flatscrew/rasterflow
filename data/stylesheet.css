@@ -62,8 +62,11 @@
     opacity: 0.6; 
 }
 
-.draggable-chip {
-    border-radius: 10px;
-    border: 1px solid alpha(black, 0.5);
+.drag-active {
+    background-color: alpha(@accent_bg_color, 0.2);
+    transition: background-color 120ms ease;
 }
-  
+
+.drag-active > * {
+opacity: 0.9;
+}

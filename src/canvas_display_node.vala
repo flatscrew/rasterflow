@@ -59,7 +59,7 @@ public class CanvasDisplayNode : GtkFlow.Node {
     private Graphene.Size previous_node_size = {width: 100, height: 200};
     private Gtk.Expander node_expander;
     private Gtk.Box node_box;
-    private Gtk.ActionBar action_bar;
+    private CanvasActionBar action_bar;
     private Gtk.Button delete_button;
     private Gtk.ColorDialogButton color_chooser_button;
     private Gtk.CssProvider? custom_backround_css;
@@ -114,14 +114,17 @@ public class CanvasDisplayNode : GtkFlow.Node {
         this.custom_backround_css = new Gtk.CssProvider();
         this.get_style_context().add_provider(custom_backround_css, Gtk.STYLE_PROVIDER_PRIORITY_USER);
     
-        reset_background_color();
+        remove_css_class("gtkflow_node");
+        add_css_class("card");
+        add_css_class("view");
+        add_css_class("canvas_node");
+        
+        //  reset_background_color();
     }
     
     private void reset_background_color() {
         var css = "
-        .gtkflow_node {
-            background-color: @theme_bg_color;
-            box-shadow: none;
+        .canvas_node {
         }
 
         .dark {
@@ -179,18 +182,16 @@ public class CanvasDisplayNode : GtkFlow.Node {
     }
 
     private void create_action_bar() {
-        this.action_bar = new Gtk.ActionBar();
-        action_bar.add_css_class("rounded_bottom_right");
-        action_bar.add_css_class("rounded_bottom_left");
-
+        this.action_bar = new CanvasActionBar();
         base.add_child(action_bar);
     }
+    
 
     public Gtk.Box add_action_bar_child_start(Gtk.Widget child) {
         var wrapper = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 0);
         wrapper.margin_start = 5;
         wrapper.append(child);
-        action_bar.pack_start(wrapper);
+        action_bar.add_action_start(wrapper);
         return wrapper;
     }
 
@@ -198,12 +199,12 @@ public class CanvasDisplayNode : GtkFlow.Node {
         var wrapper = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 0);
         wrapper.margin_end = 5;
         wrapper.append(child);
-        action_bar.pack_end(wrapper);
+        action_bar.add_action_end(wrapper);
         return wrapper;
     }
 
     public void remove_from_actionbar(Gtk.Widget child) {
-        action_bar.remove(child);
+        action_bar.remove_action(child);
     }
 
     private void node_expanded() {
@@ -344,9 +345,8 @@ public class CanvasDisplayNode : GtkFlow.Node {
         }
         
         var css = "
-        .gtkflow_node {
+        .canvas_node {
             background-color: %s;
-            box-shadow: none;
         }
 
         .dark {
