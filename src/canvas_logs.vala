@@ -20,7 +20,7 @@ public class CanvasLog : Object {
         return CanvasLog.instance;
     }
 
-    public GLib.ListModel get_model() {
+    public GLib.ListStore get_model() {
         return list_model;
     }
 

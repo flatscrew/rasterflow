@@ -10,7 +10,7 @@ public class TimeSorter : Gtk.Sorter {
 public class CanvasLogsWindow : Adw.ApplicationWindow {
     private CanvasLog log;
     private Gtk.ColumnView list_view;
-    private GLib.ListStore list_model;
+    private Gtk.SortListModel sorted_model;
     private Gtk.SingleSelection selection;
 
     public CanvasLogsWindow() {
@@ -26,11 +26,10 @@ public class CanvasLogsWindow : Adw.ApplicationWindow {
         clear_button.set_tooltip_text("Clear all logs");
         clear_button.clicked.connect(log.clear);
         headerbar.pack_start(clear_button);
-
-        list_model = new GLib.ListStore(typeof(LogEntry));
-        selection = new Gtk.SingleSelection(log.get_model());
-
-        log.cleared.connect(() => list_model.remove_all());
+        
+        var sorter = new TimeSorter();
+        this.sorted_model = new Gtk.SortListModel(log.get_model(), sorter);
+        this.selection = new Gtk.SingleSelection(sorted_model);
 
         list_view = new Gtk.ColumnView(selection);
         list_view.hexpand = list_view.vexpand = true;
