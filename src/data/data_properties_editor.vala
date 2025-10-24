@@ -164,6 +164,7 @@ namespace Data {
 
         private History.HistoryOfChangesRecorder history_recorder; 
         private Gtk.Grid properties_grid;
+        private Gee.Map<string, PropertiesGridEntry> entries = new Gee.HashMap<string, PropertiesGridEntry>();
         private GLib.Object data_object;
 
         private PropertyControlRequestHandler on_take_control;
@@ -227,6 +228,7 @@ namespace Data {
                 // TODO check if property is supported here and if its not then dont add it at all
                 var entry = create_properties_grid_entry(param_spec, data_property_widget, property_decorator);
                 entry.attach_to_grid(properties_grid, ref row);
+                entries.set(param_spec.name, entry);
             }
 
             return has_properties;
@@ -298,16 +300,43 @@ namespace Data {
                 properties_grid_entry.hide();
 
                 if (on_take_control != null) {
-                    var contract = new PropertyControlContract(this, data_object, param_spec, properties_grid_entry);
-                    contract.property_value_changed.connect((name, value) => {
-                        data_property_changed(name, value);
-                    });
+                    var contract = crate_property_control_contract(param_spec);
+                    contract.released.connect(properties_grid_entry.show);
+                    contract.renewed.connect(properties_grid_entry.hide);
                     
                     on_take_control(contract);
                 }
             });
 
             return take_property_control_button;
+        }
+        
+        public void renew_contract(string property_name) {
+            var param_spec = data_object.get_class().find_property(property_name);
+            if (param_spec == null) {
+                warning("Unable to find property for contract renewal: %s", property_name);
+                return;
+            }
+            
+            if (this.on_take_control == null) return;
+            
+            var entry = entries.get(property_name);
+            if (entry == null) return;
+            entry.hide();
+            
+            var contract = crate_property_control_contract(param_spec);
+            contract.released.connect(entry.show);
+            contract.renewed.connect(entry.hide);
+            
+            on_take_control(contract);
+        }
+        
+        private PropertyControlContract crate_property_control_contract(ParamSpec param_spec) {
+            var contract = new PropertyControlContract(this, data_object, param_spec);
+            contract.property_value_changed.connect((name, value) => {
+                data_property_changed(name, value);
+            });
+            return contract;
         }
 
         private void data_property_value_changed(string property_name, GLib.Value? property_value) {
@@ -382,18 +411,15 @@ namespace Data {
         
         public ParamSpec param_spec { public get; private set;}
         private GLib.Object data_object;
-        private PropertiesGridEntry entry;
     
         private unowned DataPropertiesEditor owner;
     
         public PropertyControlContract(DataPropertiesEditor owner,
                                        GLib.Object data_object,
-                                       ParamSpec param_spec,
-                                       PropertiesGridEntry entry) {
+                                       ParamSpec param_spec) {
             this.owner = owner;
             this.data_object = data_object;
             this.param_spec = param_spec;
-            this.entry = entry;
         }
     
         public GLib.Value get_value() {
@@ -408,12 +434,10 @@ namespace Data {
         }
     
         public void release() {
-            entry.show();
             released();
         }
         
         public void renew() {
-            entry.hide();
             renewed();
         }
     }

@@ -4,6 +4,7 @@ namespace Image {
         private GeglOperationNode gegl_operation_node;
         private GeglOperationOverridesCallback? operation_overrides_callback;
         private Data.DataDisplayView data_display_view;
+        private Data.DataPropertiesEditor properties_editor;
         private History.HistoryOfChangesRecorder changes_recorder;
 
         public GeglOperationDisplayNode(string builder_id, GeglOperationNode node) {
@@ -36,6 +37,12 @@ namespace Image {
                 create_gegl_export_button();
             }
         }
+        
+        private void renew_properties_contracts() {
+            gegl_operation_node.for_each_property_as_sink(property_name => {
+                properties_editor.renew_contract(property_name);
+            });
+        }
 
         private void create_process_gegl_button() {
             var render_button = new Gtk.Button.from_icon_name("media-playback-start");
@@ -58,12 +65,12 @@ namespace Image {
             scrolled_window.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC); 
             scrolled_window.set_placement(Gtk.CornerType.TOP_RIGHT);
 
-            var properties_editor = new Data.DataPropertiesEditor(operation);
+            this.properties_editor = new Data.DataPropertiesEditor(operation);
             properties_editor.vexpand = true;
             properties_editor.data_property_changed.connect(this.property_changed);
             properties_editor.enable_control_override(
                 this.check_supported_pad_data_type, 
-                "Promote as property pad",
+                "Promote as source pad",
                 this.on_property_control_taken
             );
             properties_editor.populate_properties(
@@ -88,16 +95,8 @@ namespace Image {
         }
 
         private void on_property_control_taken(Data.PropertyControlContract control_contract) {
-            var property_sink = new CanvasNodePropertySink(control_contract);
-            property_sink.contract_renewed.connect(() => {
-                gegl_operation_node.add_sink(property_sink);
-            });
-            property_sink.contract_released.connect(() => {
-                gegl_operation_node.remove_sink(property_sink);
-            });
-            
-            gegl_operation_node.add_sink(property_sink);
-            changes_recorder.record(new PropertyControlTakenAction(control_contract, gegl_operation_node));
+            gegl_operation_node.add_property_sink(control_contract);
+            changes_recorder.record(new PropertyControlContractAcquiredAction(control_contract, gegl_operation_node));
         }
 
         private void sink_added(GFlow.Sink new_sink) {
@@ -166,5 +165,12 @@ namespace Image {
                 }
             });
         }
+        
+        public override void deserialize(Serialize.DeserializedObject deserializer) {
+            base.deserialize(deserializer);
+            
+            renew_properties_contracts();
+        }
+        
     }
 }

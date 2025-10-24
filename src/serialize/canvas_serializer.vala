@@ -118,6 +118,10 @@ namespace Serialize {
         public SerializedObject new_object() {
             return new SerializedObject(json_array.new_object(), factory);
         }
+        
+        public void add_string(string? value) {
+            json_array.add_string(value);
+        }
     }
 
     public class SerializationContext : Object {

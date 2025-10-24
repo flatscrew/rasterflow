@@ -1,10 +1,10 @@
 namespace Image {
     
-    public class PropertyControlTakenAction : Object, History.IAction {
+    public class PropertyControlContractAcquiredAction : Object, History.IAction {
         private weak Data.PropertyControlContract control_contract;
         private weak GeglOperationNode gegl_node;
         
-        public PropertyControlTakenAction(
+        public PropertyControlContractAcquiredAction(
             Data.PropertyControlContract control_contract,
             GeglOperationNode gegl_node
         ) {

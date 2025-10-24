@@ -152,6 +152,12 @@ namespace Serialize {
                 object_delegate(new DeserializedObject(json_node.object_deserializer(), deserializers));
             });
         }
+        
+        public void for_each_node(GLib.Func<JsonNode> aaa) {
+            deserializer.for_each(json_node => {
+                aaa(json_node);
+            });
+        }
     }
 
     public interface Deserializable : Object {
