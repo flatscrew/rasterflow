@@ -25,15 +25,15 @@ dependencies = [
     dependency('gio-2.0'),
     dependency('json-glib-1.0'),
     dependency('gegl-0.4'),
-    dependency('libportal'),
-    dependency('libportal-gtk4'),
     dependency('libadwaita-1')
 ]
 
 if host_machine.system() == 'linux'
   dependencies += [
     dependency('gtk4-x11'),
-    dependency('x11')
+    dependency('x11'),
+    dependency('libportal'),
+    dependency('libportal-gtk4'),
   ]
 endif
 
@@ -135,7 +135,6 @@ vala_sources = [
     'src/image/gegl_node_operation_view.vala',
     'src/image/gegl_xml_file_node.vala',
     'src/image/gxml/gxml_export.vala',
-    'src/image/color_prober.vala',
     'src/image/color_property.vala',
     'src/image/history/gegl_node_property_control_taken_action.vala',
     'src/image/plugin.vala',
@@ -164,6 +163,12 @@ vala_sources = [
     'src/history/action/link_nodes_action.vala',
     'src/history/action/unlink_nodes_action.vala',
 ]
+
+if host_machine.system() == 'linux'
+  vala_sources += [
+    'src/image/color_prober.vala',
+  ]
+endif
 
 executable(
   'rasterflow',

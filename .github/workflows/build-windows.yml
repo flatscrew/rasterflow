@@ -40,6 +40,7 @@ jobs:
             mingw-w64-x86_64-gobject-introspection
             mingw-w64-x86_64-libgee
             mingw-w64-x86_64-openssl
+            mingw-w64-x86_64-libadwaita
             zip
             unzip
 
