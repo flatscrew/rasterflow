@@ -26,6 +26,11 @@
       "label" : "text",
       "type" : "gchararray",
       "value" : "test test test"
+    },
+    {
+      "name" : "size",
+      "label" : "Size",
+      "type" : "gint"
     }
   ],
   "nodes" : [
@@ -61,15 +66,13 @@
         "x" : 16,
         "_properties_as_sinks" : [
           "x",
-          "y",
-          "x",
           "y"
         ]
       },
       "builder_id" : "gegl:maze",
-      "width" : 178,
-      "height" : 292,
-      "expanded" : false,
+      "width" : 340,
+      "height" : 660,
+      "expanded" : true,
       "position_x" : 870,
       "position_y" : 12
     },

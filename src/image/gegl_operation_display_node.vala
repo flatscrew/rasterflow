@@ -39,7 +39,7 @@ namespace Image {
         }
         
         private void renew_properties_contracts() {
-            gegl_operation_node.for_each_property_as_sink(properties_editor.renew_contract);
+            gegl_operation_node.for_each_deserialized_property_as_sink(properties_editor.renew_contract);
         }
 
         private void create_process_gegl_button() {

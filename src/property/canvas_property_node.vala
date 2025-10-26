@@ -1,5 +1,7 @@
 public class CanvasNodePropertySink : CanvasNodeSink {
     
+    private History.HistoryOfChangesRecorder changes_recorder;
+    
     public signal void contract_released();
     public signal void contract_renewed();
     
@@ -7,6 +9,7 @@ public class CanvasNodePropertySink : CanvasNodeSink {
 
     public CanvasNodePropertySink(Data.PropertyControlContract control_contract) {
         base.with_type(control_contract.param_spec.value_type);
+        this.changes_recorder = History.HistoryOfChangesRecorder.instance;
         this.control_contract = control_contract;
         this.name = control_contract.param_spec.get_nick();
         
@@ -17,8 +20,6 @@ public class CanvasNodePropertySink : CanvasNodeSink {
     }
     
     private void sink_value_changed(GLib.Value? value = null, string? flow_id = null) {
-        message("Value changed\n");
-        message("null? %s", (value == null) ? "yes" : "no");
         if (value == null) {
             return;
         }
@@ -71,10 +72,14 @@ public class CanvasPropertyNode : CanvasNode {
 
 public class CanvasPropertyDisplayNode : GtkFlow.Node {
     
+    private History.HistoryOfChangesRecorder changes_recorder;
     private CanvasNodePropertySource? node_source;
     
     public CanvasPropertyDisplayNode(CanvasPropertyNode property_node) {
         base.with_margin(property_node, 10, new PropertyNodeSourceLabelFactory(property_node));
+        this.changes_recorder = History.HistoryOfChangesRecorder.instance;
+        this.position_changed.connect(record_position_changed);
+        
         apply_css_provider();
         
         try {
@@ -85,6 +90,10 @@ public class CanvasPropertyDisplayNode : GtkFlow.Node {
         property_node.source_added.connect(this.source_added);
         property_node.property.removed.connect(this.remove);
         property_node.property.value_changed.connect(this.property_changed);
+    }
+    
+    private void record_position_changed(int old_x, int old_y, int new_x, int new_y) {
+        changes_recorder.record_node_moved(this, old_x, old_y, new_x, new_y);
     }
     
     private void source_added(GFlow.Source new_source) {

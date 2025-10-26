@@ -55,9 +55,6 @@ public class CanvasGraph : Object {
         if (all_properties == null || all_properties.length() == 0) {
             return;
         }
-        foreach (var property in all_properties) {
-            property.remove();
-        }
         properties_removed();
         all_properties = new List<CanvasGraphProperty>();
     }
