@@ -31,7 +31,7 @@
       "name" : "size",
       "label" : "Size",
       "type" : "gint",
-      "value" : 0
+      "value" : 1
     }
   ],
   "nodes" : [
@@ -63,19 +63,20 @@
     },
     {
       "model" : {
+        "y" : 1,
         "algorithm-type" : 0,
-        "x" : 16,
+        "x" : 1,
         "_properties_as_sinks" : [
           "x",
           "y"
         ]
       },
       "builder_id" : "gegl:maze",
-      "width" : 178,
-      "height" : 292,
-      "expanded" : false,
-      "position_x" : 870,
-      "position_y" : 12
+      "width" : 320,
+      "height" : 659,
+      "expanded" : true,
+      "position_x" : 995,
+      "position_y" : 81
     },
     {
       "model" : {      },
@@ -83,8 +84,8 @@
       "width" : 357,
       "height" : 454,
       "expanded" : true,
-      "position_x" : 1267,
-      "position_y" : 37,
+      "position_x" : 1344,
+      "position_y" : 48,
       "external-window" : {
         "active" : false
       }
@@ -95,8 +96,8 @@
       "property_name" : "size",
       "width" : 112,
       "height" : 93,
-      "position_x" : 814,
-      "position_y" : 465
+      "position_x" : 803,
+      "position_y" : 216
     }
   ],
   "links" : [

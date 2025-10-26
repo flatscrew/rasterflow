@@ -139,8 +139,8 @@ namespace Image {
         }
         
         private Gee.Map<string, GLib.Type> changed_properties = new Gee.HashMap<string, GLib.Type>();
-        private List<string> properties_as_sinks = new List<string>();
-        private List<string> deserialized_properties_as_sinks = new List<string>();
+        private Gee.List<string> properties_as_sinks = new Gee.ArrayList<string>();
+        private Gee.List<string> deserialized_properties_as_sinks = new Gee.ArrayList<string>();
         
         ~GeglOperationNode() {
             remove_from_graph();
@@ -235,7 +235,7 @@ namespace Image {
             
             property_sink.contract_renewed.connect(() => {
                 add_sink(property_sink);
-                properties_as_sinks.append(property_name);
+                properties_as_sinks.add(property_name);
             });
             property_sink.contract_released.connect(() => {
                 remove_sink(property_sink);
@@ -243,11 +243,14 @@ namespace Image {
             });
             
             add_sink(property_sink);
-            properties_as_sinks.append(property_name);
+            properties_as_sinks.add(property_name);
         }
         
         public void for_each_deserialized_property_as_sink(GLib.Func<string> callback) {
-            deserialized_properties_as_sinks.copy().foreach(callback);
+            deserialized_properties_as_sinks.foreach(prop => {
+                callback(prop);
+                return true;   
+            });
         }
 
         protected override void serialize(Serialize.SerializedObject serializer) {
@@ -261,6 +264,7 @@ namespace Image {
             
             var sinks_properties = serializer.new_array("_properties_as_sinks");
             foreach (var property_sink in this.properties_as_sinks) {
+                message("---------> %s", property_sink);
                 sinks_properties.add_string(property_sink);
             }
         }
@@ -276,7 +280,7 @@ namespace Image {
             if (props == null) return;
             props.for_each_node(node => {
                 var property_as_sink = node.get_value()?.get_string();
-                this.deserialized_properties_as_sinks.append(property_as_sink);  
+                this.deserialized_properties_as_sinks.add(property_as_sink);  
             });
         }
 

@@ -164,29 +164,8 @@ namespace Serialize {
                 if (!canvas_source.can_serialize_links()) {
                     continue;
                 }
-
-                unowned var connected_sinks = canvas_source.sinks;
-                if (connected_sinks.length() == 0) {
-                    continue;
-                }
-
-                var link = links_array.new_object();
-                link.set_int("node_index", context.node_index(node.n as CanvasNode));
-                link.set_string("source_name", canvas_source.name);
-
-                var linked_sinks = link.new_array("sinks");
-
-                foreach (var connected_sink in connected_sinks) {
-                    var canvas_sink = connected_sink as CanvasNodeSink;
-                    if (!canvas_sink.can_serialize()) {
-                        continue;
-                    }
-                    var sink_node = canvas_sink.node as CanvasNode;
-
-                    var linked_sink = linked_sinks.new_object();
-                    linked_sink.set_int("node_index", context.node_index(sink_node));
-                    linked_sink.set_string("sink_name", canvas_sink.name);
-                }
+                
+                serialize_sinks(context, node.n as CanvasNode, canvas_source);
             }
         }
         
@@ -196,6 +175,31 @@ namespace Serialize {
 
         public void serialize_property_node(CanvasPropertyDisplayNode node, SerializationContext context) {
             node.serialize(new SerializedObject(property_nodes_array.new_object(), custom_serializers));
+        }
+        
+        private void serialize_sinks(SerializationContext context, CanvasNode node, CanvasNodeSource source) {
+            unowned var connected_sinks = source.sinks;
+            if (connected_sinks.length() == 0) {
+                return;
+            }
+            
+            var link = links_array.new_object();
+            link.set_int("node_index", context.node_index(node));
+            link.set_string("source_name", source.name);
+
+            var linked_sinks = link.new_array("sinks");
+
+            foreach (var connected_sink in connected_sinks) {
+                var canvas_sink = connected_sink as CanvasNodeSink;
+                if (!canvas_sink.can_serialize()) {
+                    continue;
+                }
+                var sink_node = canvas_sink.node as CanvasNode;
+
+                var linked_sink = linked_sinks.new_object();
+                linked_sink.set_int("node_index", context.node_index(sink_node));
+                linked_sink.set_string("sink_name", canvas_sink.name);
+            }
         }
         
         public string to_json() {
