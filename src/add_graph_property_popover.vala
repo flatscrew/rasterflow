@@ -1,3 +1,9 @@
+public delegate bool PropertyValidator(string property_name, out string error_message);
+
+public bool any_property(string property_name) {
+    return true;
+}
+
 public class AddPropertyPopover : Gtk.Popover {
 
     public signal void property_added(string name, string label, GLib.Type property_type);
@@ -11,6 +17,7 @@ public class AddPropertyPopover : Gtk.Popover {
         }
     }
 
+    private PropertyValidator validator;
     private Data.DataPropertyFactory property_factory;
     private Gtk.Box popover_box;
     private Gtk.Grid grid;
@@ -23,9 +30,12 @@ public class AddPropertyPopover : Gtk.Popover {
         set_autohide(true);
     }
 
-    public AddPropertyPopover () {
+    public AddPropertyPopover(PropertyValidator validator = any_property) {
         Object (has_arrow: true);
 
+        this.validator = (property_name, out message) => {
+            return validator(property_name, out message);
+        };
         this.property_factory = Data.DataPropertyFactory.instance;
         this.grid = create_grid();
         this.popover_box = new Gtk.Box(Gtk.Orientation.VERTICAL, 8);
@@ -173,6 +183,12 @@ public class AddPropertyPopover : Gtk.Popover {
             error_message = "Name must start with a lowercase letter and contain only lowercase letters, digits, or hyphens.";
             return false;
         }
+        
+        string message;
+        if (!this.validator(name, out message)) {
+            error_message = message;
+            return false;
+        }
     
         error_message = null;
         return true;
@@ -207,7 +223,6 @@ public class AddPropertyPopover : Gtk.Popover {
         string? tooltip_replacement = null
     ) 
     {
-        
         entry.remove_css_class("error");
         entry.set_icon_from_icon_name(Gtk.EntryIconPosition.SECONDARY, icon_replacement);
         entry.set_icon_tooltip_text(Gtk.EntryIconPosition.SECONDARY, tooltip_replacement);

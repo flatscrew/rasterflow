@@ -18,7 +18,7 @@
       "type" : "GeglColor",
       "value" : {
         "type" : "GeglColor",
-        "color" : "rgb(0.898, 0.647, 0.039)"
+        "color" : "rgb(0.110, 0.443, 0.847)"
       }
     },
     {
@@ -31,7 +31,7 @@
       "name" : "size",
       "label" : "Size",
       "type" : "gint",
-      "value" : 1
+      "value" : 20
     }
   ],
   "nodes" : [
@@ -43,8 +43,8 @@
       "width" : 174,
       "height" : 185,
       "expanded" : false,
-      "position_x" : 80,
-      "position_y" : 61
+      "position_x" : 52,
+      "position_y" : 39
     },
     {
       "model" : {
@@ -58,25 +58,32 @@
       "width" : 374,
       "height" : 347,
       "expanded" : true,
-      "position_x" : 374,
-      "position_y" : 31
+      "color" : "rgb(97,53,131)",
+      "position_x" : 329,
+      "position_y" : 49
     },
     {
       "model" : {
-        "y" : 1,
+        "y" : 20,
         "algorithm-type" : 0,
-        "x" : 1,
+        "tileable" : true,
+        "fg-color" : {
+          "type" : "GeglColor",
+          "color" : "rgb(0.110, 0.443, 0.847)"
+        },
+        "x" : 20,
         "_properties_as_sinks" : [
           "x",
-          "y"
+          "y",
+          "fg-color"
         ]
       },
       "builder_id" : "gegl:maze",
       "width" : 320,
-      "height" : 659,
+      "height" : 587,
       "expanded" : true,
-      "position_x" : 995,
-      "position_y" : 81
+      "position_x" : 947,
+      "position_y" : 31
     },
     {
       "model" : {      },
@@ -84,8 +91,8 @@
       "width" : 357,
       "height" : 454,
       "expanded" : true,
-      "position_x" : 1344,
-      "position_y" : 48,
+      "position_x" : 1317,
+      "position_y" : 101,
       "external-window" : {
         "active" : false
       }
@@ -96,8 +103,15 @@
       "property_name" : "size",
       "width" : 112,
       "height" : 93,
-      "position_x" : 803,
-      "position_y" : 216
+      "position_x" : 741,
+      "position_y" : 144
+    },
+    {
+      "property_name" : "color",
+      "width" : 151,
+      "height" : 93,
+      "position_x" : 610,
+      "position_y" : 460
     }
   ],
   "links" : [
@@ -128,6 +142,30 @@
         {
           "node_index" : 3,
           "sink_name" : "Input"
+        }
+      ]
+    },
+    {
+      "node_index" : 4,
+      "source_name" : "size",
+      "sinks" : [
+        {
+          "node_index" : 2,
+          "sink_name" : "Width"
+        },
+        {
+          "node_index" : 2,
+          "sink_name" : "Height"
+        }
+      ]
+    },
+    {
+      "node_index" : 5,
+      "source_name" : "color",
+      "sinks" : [
+        {
+          "node_index" : 2,
+          "sink_name" : "Foreground Color"
         }
       ]
     }

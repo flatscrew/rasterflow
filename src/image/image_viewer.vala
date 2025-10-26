@@ -7,7 +7,7 @@ namespace Image {
 
     public class ImageViewer : Gtk.DrawingArea {
 
-        private const double ZOOM_TICK = 0.01;
+        private const double ZOOM_TICK = 0.05;
         private const double DEFAULT_ZOOM_MAX = 3.0;
         private const double ZOOM_MIN = 1.0;
 

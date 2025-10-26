@@ -67,6 +67,10 @@ public class CanvasGraph : Object {
         return all_properties.size > 0;
     }
     
+    public bool has_property(string property_name) {
+        return all_properties.has_key(property_name);
+    }
+    
     public void foreach_property(GLib.Func<CanvasGraphProperty> callback) {
         all_properties.values.foreach(element => {
             callback(element);

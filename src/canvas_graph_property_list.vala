@@ -99,7 +99,7 @@ public class CanvasGraphPropertyListView : Gtk.Box {
     }
 
     private Gtk.MenuButton create_add_property_button() {
-        this.popover = new AddPropertyPopover();
+        this.popover = new AddPropertyPopover(this.validate_property);
         popover.property_added.connect(this.property_added);
     
         var button = new Gtk.MenuButton();
@@ -114,6 +114,11 @@ public class CanvasGraphPropertyListView : Gtk.Box {
     
         button.set_child(content);
         return button;
+    }
+    
+    private bool validate_property(string property_name, out string message) {
+        message = "Name already used.";
+        return !graph.has_property(property_name);
     }
     
     private void property_added(string name, string label, GLib.Type type) {

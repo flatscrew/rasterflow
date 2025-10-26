@@ -175,6 +175,16 @@ namespace Serialize {
 
         public void serialize_property_node(CanvasPropertyDisplayNode node, SerializationContext context) {
             node.serialize(new SerializedObject(property_nodes_array.new_object(), custom_serializers));
+        
+            unowned var sources = node.n.get_sources();
+            foreach (var source in sources) {
+                var canvas_source = source as CanvasNodeSource;
+                if (!canvas_source.can_serialize_links()) {
+                    continue;
+                }
+                
+                serialize_sinks(context, node.n as CanvasNode, canvas_source);
+            }
         }
         
         private void serialize_sinks(SerializationContext context, CanvasNode node, CanvasNodeSource source) {

@@ -105,7 +105,6 @@ vala_sources = [
     'src/serialize/json_deserializer.vala',
 
     # property node
-    'src/property/canvas_property_bridge.vala',
     'src/property/canvas_property_node.vala',
 
     # generic data
