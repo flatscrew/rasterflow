@@ -261,7 +261,6 @@ namespace Image {
             
             var sinks_properties = serializer.new_array("_properties_as_sinks");
             foreach (var property_sink in this.properties_as_sinks) {
-                message("----> %s", property_sink);
                 sinks_properties.add_string(property_sink);
             }
         }

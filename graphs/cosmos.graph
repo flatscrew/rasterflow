@@ -10,11 +10,11 @@
     {
       "model" : {
         "transparency-threshold" : 0.20000000000000004,
-        "opacity-threshold" : 0.30000000000000016,
         "color" : {
           "type" : "GeglColor",
           "color" : "rgb(0.102, 0.373, 0.706)"
         },
+        "opacity-threshold" : 0.30000000000000016,
         "_properties_as_sinks" : []
       },
       "builder_id" : "gegl:color-to-alpha",
@@ -58,8 +58,8 @@
     {
       "model" : {
         "hue" : 6.5999999999999925,
-        "lightness" : -6.3999999999999932,
         "chroma" : 16.89999999999997,
+        "lightness" : -6.3999999999999932,
         "_properties_as_sinks" : []
       },
       "builder_id" : "gegl:hue-chroma",
@@ -98,7 +98,7 @@
         "_properties_as_sinks" : []
       },
       "builder_id" : "svg:dst-over",
-      "width" : 143,
+      "width" : 145,
       "height" : 243,
       "expanded" : false,
       "position_x" : 1693,
@@ -125,7 +125,7 @@
         "_properties_as_sinks" : []
       },
       "builder_id" : "gegl:crop",
-      "width" : 122,
+      "width" : 145,
       "height" : 243,
       "expanded" : false,
       "position_x" : 1932,
@@ -152,7 +152,7 @@
       },
       "builder_id" : "gegl:lens-flare",
       "width" : 298,
-      "height" : 268,
+      "height" : 410,
       "expanded" : true,
       "position_x" : 2298,
       "position_y" : 130

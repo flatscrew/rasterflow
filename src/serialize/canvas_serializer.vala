@@ -143,6 +143,7 @@ namespace Serialize {
         private JsonObjectSerializer json_root;
         private JsonArraySerializer properties_array;
         private JsonArraySerializer nodes_array;
+        private JsonArraySerializer property_nodes_array;
         private JsonArraySerializer links_array;
 
         public SerializedGraph(CustomSerializers factory) {
@@ -150,6 +151,7 @@ namespace Serialize {
             this.json_root = new JsonObjectSerializer.new_root();
             this.properties_array = json_root.new_array("properties");
             this.nodes_array = json_root.new_array("nodes");
+            this.property_nodes_array = json_root.new_array("property_nodes");
             this.links_array = json_root.new_array("links");
         }
         
@@ -192,6 +194,10 @@ namespace Serialize {
             property.serialize(new SerializedObject(properties_array.new_object(), custom_serializers));
         }
 
+        public void serialize_property_node(CanvasPropertyDisplayNode node, SerializationContext context) {
+            node.serialize(new SerializedObject(property_nodes_array.new_object(), custom_serializers));
+        }
+        
         public string to_json() {
             Json.Generator generator = new Json.Generator();
             generator.pretty = true;

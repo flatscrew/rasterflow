@@ -133,8 +133,7 @@ public class CanvasGraphPropertyListView : Gtk.Box {
 
     private void reload_properties() {
         clear_properties();
-        foreach (var prop in graph.get_all_properties())
-            add_property(prop);
+        graph.foreach_property(this.add_property);
     }
 
     private void clear_properties() {

@@ -184,6 +184,7 @@ namespace Serialize {
 
         private DeserializedArray properties;
         private DeserializedArray nodes;
+        private DeserializedArray property_nodes;
         private DeserializedArray links;
 
         public DeserializedGraph.from_file(GLib.File graph_file, CustomDeserializers deserializers) {
@@ -201,6 +202,7 @@ namespace Serialize {
                     
                     this.properties = new DeserializedArray(new JsonArrayDeserializer(root_object.get_member("properties")), deserializers);
                     this.nodes = new DeserializedArray(new JsonArrayDeserializer(root_object.get_member("nodes")), deserializers);
+                    this.property_nodes = new DeserializedArray(new JsonArrayDeserializer(root_object.get_member("property_nodes")), deserializers);
                     this.links = new DeserializedArray(new JsonArrayDeserializer(root_object.get_member("links")), deserializers);
                 }
             } catch (Error e) {
@@ -215,6 +217,10 @@ namespace Serialize {
         
         public void foreach_node(DeserializedObjectDelegate object_delegate) {
             nodes.for_each(object_delegate);
+        }
+        
+        public void foreach_property_node(DeserializedObjectDelegate object_delegate) {
+            property_nodes.for_each(object_delegate);
         }
 
         public void foreach_link(DeserializedObjectDelegate object_delegate) {

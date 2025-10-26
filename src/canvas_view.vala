@@ -56,6 +56,7 @@ public class CanvasView : Gtk.Widget {
 
         this.canvas_graph = new CanvasGraph(node_factory);
         canvas_graph.node_added.connect_after(this.node_added);
+        canvas_graph.property_node_added.connect_after(this.property_node_added);
         
         this.properties_editor = new CanvasGraphPropertiesEditor(canvas_graph);
         this.node_view_box = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
@@ -149,22 +150,26 @@ public class CanvasView : Gtk.Widget {
 
         changes_recorder.record(new History.AddNodeAction(node_view, node));
     }
-
+    
     private void add_text_data_node(string text) {
         debug("Text: %s\n", text);
     }
     
     private void property_dropped(CanvasGraphProperty property, double x, double y) {
         var property_n = new CanvasPropertyNode(property); 
-        var property_node = new CanvasPropertyDisplayNode(property_n);
-        node_view.add(property_node);
-        property_node.set_position((int) x, (int) y);
+        var property_node = new CanvasPropertyDisplayNode(property_n, x, y);
         
-        property_n.add_source(new CanvasNodePropertySource(property));
-    
-        changes_recorder.record(new History.AddPropertyNodeAction(node_view, property_node));
+        canvas_graph.add_property_node(property_node);
     }
-
+    
+    private void property_node_added(CanvasPropertyDisplayNode property_node) {
+        node_view.add(property_node);
+        changes_recorder.record(new History.AddPropertyNodeAction(node_view, property_node));
+        
+        property_node.init_property_source();
+        property_node.init_position();
+    }
+    
     private void add_file_data_node(GLib.File file, double x, double y) {
         try {
             var file_info = file.query_info ("*", FileQueryInfoFlags.NONE);

@@ -1,10 +1,10 @@
 {
   "properties" : [
     {
-      "name" : "aaa",
-      "label" : "aaaa",
-      "type" : "guint",
-      "value" : 5
+      "name" : "text",
+      "label" : "text",
+      "type" : "gchararray",
+      "value" : "test test test"
     },
     {
       "name" : "bool",
@@ -22,15 +22,16 @@
       }
     },
     {
-      "name" : "text",
-      "label" : "text",
-      "type" : "gchararray",
-      "value" : "test test test"
+      "name" : "aaa",
+      "label" : "aaaa",
+      "type" : "guint",
+      "value" : 5
     },
     {
       "name" : "size",
       "label" : "Size",
-      "type" : "gint"
+      "type" : "gint",
+      "value" : 0
     }
   ],
   "nodes" : [
@@ -70,9 +71,9 @@
         ]
       },
       "builder_id" : "gegl:maze",
-      "width" : 340,
-      "height" : 660,
-      "expanded" : true,
+      "width" : 178,
+      "height" : 292,
+      "expanded" : false,
       "position_x" : 870,
       "position_y" : 12
     },
@@ -87,6 +88,15 @@
       "external-window" : {
         "active" : false
       }
+    }
+  ],
+  "property_nodes" : [
+    {
+      "property_name" : "size",
+      "width" : 112,
+      "height" : 93,
+      "position_x" : 814,
+      "position_y" : 465
     }
   ],
   "links" : [

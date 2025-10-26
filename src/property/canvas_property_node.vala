@@ -68,15 +68,26 @@ public class CanvasPropertyNode : CanvasNode {
         base.resizable = false;
         this.property = property;
     }
+    
+    public void init_source() {
+        add_source(new CanvasNodePropertySource(property));
+    }
 }
 
 public class CanvasPropertyDisplayNode : GtkFlow.Node {
     
+    public signal void removed(CanvasPropertyDisplayNode removed_node);
+    
+    private double x_initial; 
+    private double y_initial;
     private History.HistoryOfChangesRecorder changes_recorder;
     private CanvasNodePropertySource? node_source;
     
-    public CanvasPropertyDisplayNode(CanvasPropertyNode property_node) {
+    public CanvasPropertyDisplayNode(CanvasPropertyNode property_node, double x_initial = 0, double y_initial = 0) {
         base.with_margin(property_node, 10, new PropertyNodeSourceLabelFactory(property_node));
+        this.x_initial = x_initial;
+        this.y_initial = y_initial;
+        
         this.changes_recorder = History.HistoryOfChangesRecorder.instance;
         this.position_changed.connect(record_position_changed);
         
@@ -90,6 +101,15 @@ public class CanvasPropertyDisplayNode : GtkFlow.Node {
         property_node.source_added.connect(this.source_added);
         property_node.property.removed.connect(this.remove);
         property_node.property.value_changed.connect(this.property_changed);
+    }
+    
+    public void init_position() {
+        set_position((int) x_initial, (int) y_initial);
+    }
+    
+    public void init_property_source() {
+        var property_node = n as CanvasPropertyNode;
+        property_node.init_source();
     }
     
     private void record_position_changed(int old_x, int old_y, int new_x, int new_y) {
@@ -170,16 +190,34 @@ public class CanvasPropertyDisplayNode : GtkFlow.Node {
         title_bar.append_right(delete_button);
     }
 
+    public virtual void serialize(Serialize.SerializedObject serializer) {
+        var property_node = n as CanvasPropertyNode;
+        serializer.set_string("property_name", property_node.property.name);
+        serializer.set_int("width", get_width());
+        serializer.set_int("height", get_height());
+        
+        Graphene.Rect bounds;
+        if (base.compute_bounds(get_parent(), out bounds)) {
+            serializer.set_int("position_x", (int) bounds.get_x());
+            serializer.set_int("position_y", (int) bounds.get_y());
+        }
+    }
+    
+    public void deserialize(Serialize.DeserializedObject deserializer) {
+        set_size_request(deserializer.get_int("width"), deserializer.get_int("height"));
+        set_position(deserializer.get_int("position_x"), deserializer.get_int("position_y"));
+    }
+    
     private void remove_node() {
+        //  stop_sinks_history_recording();
         {
-            
-            //  int x, y;
-            //  get_position(out x, out y);
-            //  var parent = this.parent as GtkFlow.NodeView;
-            //  changes_recorder.record(new History.RemoveNodeAction(parent, this, x, y), true);
+            int x, y;
+            get_position(out x, out y);
+            var parent = this.parent as GtkFlow.NodeView;
+            changes_recorder.record(new History.RemovePropertyNodeAction(parent, this, x, y), true);
             
             this.remove();
-            //  removed(this);
+            removed(this);
         }
     }
 }

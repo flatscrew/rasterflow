@@ -155,6 +155,7 @@ vala_sources = [
     'src/history/action/remove_node_action.vala',
     'src/history/action/add_node_action.vala',
     'src/history/action/add_property_node_action.vala',
+    'src/history/action/remove_property_node_action.vala',
     'src/history/action/add_graph_property_action.vala',
     'src/history/action/remove_graph_property_action.vala',
     'src/history/action/resize_node_action.vala',
