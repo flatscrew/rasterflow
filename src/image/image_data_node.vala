@@ -103,14 +103,12 @@ namespace Image {
             window_label.valign = Gtk.Align.CENTER;
 
             this.title_label = new Gtk.Label("Title:");
-            title_label.visible = false;
             title_label.valign = Gtk.Align.CENTER;
 
             this.window_title_entry = new Gtk.Entry();
             window_title_entry.placeholder_text = "Image window";
             window_title_entry.text = "Image window";
             window_title_entry.hexpand = true;
-            window_title_entry.visible = false;
             window_title_entry.valign = Gtk.Align.CENTER;
             window_title_entry.changed.connect(() => {
                 if (external_window != null)
@@ -128,7 +126,6 @@ namespace Image {
             window_display_section.append(title_label);
             window_display_section.append(window_title_entry);
 
-            data_display_view.add_child(new Gtk.Separator(Gtk.Orientation.HORIZONTAL));
             data_display_view.add_child(window_display_section);
         }
 
@@ -139,8 +136,8 @@ namespace Image {
         private void create_window_switch() {
             this.window_switch = new Gtk.Switch();
             window_switch.valign = Gtk.Align.CENTER;
-            window_switch.bind_property("active", window_title_entry, "visible", BindingFlags.DEFAULT | BindingFlags.SYNC_CREATE);
-            window_switch.bind_property("active", title_label, "visible", BindingFlags.DEFAULT | BindingFlags.SYNC_CREATE);
+            window_switch.bind_property("active", window_title_entry, "sensitive", BindingFlags.DEFAULT | BindingFlags.SYNC_CREATE);
+            window_switch.bind_property("active", title_label, "sensitive", BindingFlags.DEFAULT | BindingFlags.SYNC_CREATE);
             window_switch.notify["active"].connect(external_window_switch_changed);
 
             this.window_switch_listen_events = true;

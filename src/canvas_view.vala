@@ -309,7 +309,7 @@ public class CanvasView : Gtk.Widget {
             return false;
         });
 
-        canvas_signals.after_file_load();
+        canvas_signals.after_file_load(selected_file.get_basename());
     }
 
     private void export_to_png() {

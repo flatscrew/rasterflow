@@ -3,7 +3,7 @@ using Adw;
 
 public class CanvasSignals : Object {
   public signal void before_file_load();
-  public signal void after_file_load();
+  public signal void after_file_load(string? file_name);
 }
 
 class CanvasApplication : Gtk.Application {
@@ -33,6 +33,7 @@ class CanvasApplication : Gtk.Application {
     activate.connect (() => {
       this.window = new Adw.ApplicationWindow(this);
       window.close_request.connect(this.window_closed);
+      window.set_title("RasterFlow");
       
       load_css();
       
@@ -88,10 +89,13 @@ class CanvasApplication : Gtk.Application {
     changes_recorder.pause();
   }
 
-  private void after_file_load() {
+  private void after_file_load(string? file_name) {
     unmark_busy();
+    
     window.set_cursor_from_name(null);
     window.set_sensitive(true);
+    window.set_title("RasterFlow - %s".printf(file_name));
+    
     changes_recorder.clear();
     changes_recorder.resume();
   }

@@ -53,14 +53,10 @@ public class CanvasActionBar : Gtk.Widget {
         var parent = child.get_parent().get_parent();
         if (parent == null) return;
         
-        
-        message("PARENT ===== > %s", parent.name);
-        
         if (parent == start_box) {
             start_box.remove(child.get_parent());
             return;
         }
-        
         end_box.remove(child.get_parent());
     }
 }

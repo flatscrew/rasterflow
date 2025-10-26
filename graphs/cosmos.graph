@@ -10,11 +10,11 @@
     {
       "model" : {
         "transparency-threshold" : 0.20000000000000004,
-        "opacity-threshold" : 0.30000000000000016,
         "color" : {
           "type" : "GeglColor",
           "color" : "rgb(0.102, 0.373, 0.706)"
         },
+        "opacity-threshold" : 0.30000000000000016,
         "_properties_as_sinks" : []
       },
       "builder_id" : "gegl:color-to-alpha",
@@ -45,14 +45,21 @@
       "position_x" : 3090,
       "position_y" : 151,
       "external-window" : {
-        "active" : false
+        "active" : true,
+        "title" : "Image window",
+        "dimensions" : {
+          "x" : -20,
+          "y" : -20,
+          "width" : 1320,
+          "height" : 1480
+        }
       }
     },
     {
       "model" : {
         "hue" : 6.5999999999999925,
-        "lightness" : -6.3999999999999932,
         "chroma" : 16.89999999999997,
+        "lightness" : -6.3999999999999932,
         "_properties_as_sinks" : []
       },
       "builder_id" : "gegl:hue-chroma",
