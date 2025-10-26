@@ -358,7 +358,8 @@ namespace Data {
         private Gtk.Label property_label(GLib.ParamSpec param_spec, bool multiline = false) {
             var name = param_spec.get_nick();
 
-            var label = new Gtk.Label("%s:".printf(name[0].to_string().up().concat(name.substring(1))));
+            var label = new Gtk.Label(name[0].to_string().up().concat(name.substring(1)));
+            label.justify = Gtk.Justification.RIGHT;
             label.halign = Gtk.Align.END;
 
             label.valign = Gtk.Align.CENTER;

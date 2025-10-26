@@ -1,3 +1,85 @@
+public class CanvasNodeDetailsView : Gtk.Widget {
+    private Gtk.Box vertical_box;
+    private Gtk.Box content_box;
+    private Gtk.Image arrow_icon;
+    private bool _expanded;
+
+    public bool expanded {
+        get { return _expanded; }
+        set { toggle_expanded(value); }
+    }
+
+    construct {
+        set_layout_manager(new Gtk.BinLayout());
+        add_css_class("canvas_node_expander");
+        add_css_class("card");
+        vexpand = hexpand = true;
+    }
+
+    public CanvasNodeDetailsView() {
+        vertical_box = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
+        vertical_box.vexpand = vertical_box.hexpand = true;
+
+        create_header();
+        create_content();
+    }
+
+    private void create_header() {
+        var header = new Adw.ActionRow();
+        header.add_css_class("rounded_top");
+        header.set_activatable(true);
+        
+        var title = new Gtk.Label("Node details");
+        title.halign = Gtk.Align.START;
+        title.hexpand = true;
+        title.wrap = false;
+        header.add_prefix(title);
+        
+        var click = new Gtk.GestureClick();
+        click.released.connect(() => toggle_expanded(!_expanded));
+        header.add_controller(click);
+
+        var icon_theme = Gtk.IconTheme.get_for_display(Gdk.Display.get_default());
+        var paintable = icon_theme.lookup_icon("pan-end-symbolic", null, 16, 1,
+            Gtk.TextDirection.NONE,
+            Gtk.IconLookupFlags.FORCE_SYMBOLIC);
+        arrow_icon = new Gtk.Image.from_paintable(paintable);
+        header.add_suffix(arrow_icon);
+
+        vertical_box.append(header);
+    }
+
+    private void create_content() {
+        content_box = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 0);
+        content_box.vexpand = content_box.hexpand = true;
+        content_box.visible = false;
+        vertical_box.append(content_box);
+        vertical_box.set_parent(this);
+    }
+
+    private void toggle_expanded(bool expand) {
+        _expanded = expand;
+        notify_property("expanded");
+        
+        content_box.visible = expand;
+
+        var icon_name = expand ? "pan-down-symbolic" : "pan-end-symbolic";
+        var icon_theme = Gtk.IconTheme.get_for_display(Gdk.Display.get_default());
+        var paintable = icon_theme.lookup_icon(icon_name, null, 16, 1,
+            Gtk.TextDirection.NONE,
+            Gtk.IconLookupFlags.FORCE_SYMBOLIC);
+        arrow_icon.set_from_paintable(paintable);
+    }
+
+    public void set_child(Gtk.Widget child) {
+        content_box.append(child);
+    }
+
+    ~CanvasNodeDetailsView() {
+        vertical_box.unparent();
+    }
+}
+
 public delegate void BuilderConsumer(CanvasNodeBuilder builder);
 
 public class CanvasNodeFactory : Object {
@@ -57,7 +139,7 @@ public class CanvasDisplayNode : GtkFlow.Node {
 
     private History.HistoryOfChangesRecorder changes_recorder;
     private Graphene.Size previous_node_size = {width: 100, height: 200};
-    private Gtk.Expander node_expander;
+    private CanvasNodeDetailsView node_expander;
     private Gtk.Box node_box;
     private CanvasActionBar action_bar;
     private Gtk.Button delete_button;
@@ -118,8 +200,6 @@ public class CanvasDisplayNode : GtkFlow.Node {
         add_css_class("card");
         add_css_class("view");
         add_css_class("canvas_node");
-        
-        //  reset_background_color();
     }
     
     private void reset_background_color() {
@@ -161,14 +241,12 @@ public class CanvasDisplayNode : GtkFlow.Node {
     private void create_node_content() {
         this.size_changed.connect(this.node_resized);
 
-        this.node_expander = new Gtk.Expander("Node details");
-        node_expander.add_css_class("canvas_node_expander");
-        node_expander.set_resize_toplevel(true);
+        this.node_expander = new CanvasNodeDetailsView();
         node_expander.vexpand = node_expander.hexpand = true;
         node_expander.notify["expanded"].connect(node_expanded);
 
         this.node_box = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
-        node_box.add_css_class("rounded_bottom");
+        node_box.hexpand = node_box.vexpand = true;
         node_expander.set_child(node_box);
         base.add_child(node_expander);
     }
@@ -208,7 +286,8 @@ public class CanvasDisplayNode : GtkFlow.Node {
     }
 
     private void node_expanded() {
-        changes_recorder.record(new History.ToggleExpanderAction(this.node_expander, this, get_width(), get_height()));
+        //  changes_recorder.record(new History.ToggleExpanderAction(this.node_expander, this, get_width(), get_height()));
+        
         if (!this.node_expander.expanded) {
             this.previous_node_size = Graphene.Size(){
                 width = get_width(),

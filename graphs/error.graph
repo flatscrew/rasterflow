@@ -5,7 +5,7 @@
       "model" : {      },
       "builder_id" : "image:display",
       "width" : 160,
-      "height" : 150,
+      "height" : 185,
       "expanded" : false,
       "position_x" : 550,
       "position_y" : 140,
@@ -14,10 +14,12 @@
       }
     },
     {
-      "model" : {      },
+      "model" : {
+        "_properties_as_sinks" : []
+      },
       "builder_id" : "gegl:grid",
       "width" : 119,
-      "height" : 150,
+      "height" : 185,
       "expanded" : false,
       "position_x" : 120,
       "position_y" : 130

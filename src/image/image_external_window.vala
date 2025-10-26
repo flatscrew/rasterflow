@@ -38,9 +38,6 @@ namespace Image {
 
         private void create_action_bar() {
             this.action_bar = new Gtk.ActionBar();
-            action_bar.add_css_class("rounded_bottom_right");
-            action_bar.add_css_class("rounded_bottom_left");
-
             box.append(action_bar);
         }
 

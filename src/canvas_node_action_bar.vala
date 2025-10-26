@@ -15,7 +15,10 @@ public class CanvasActionBar : Gtk.Widget {
         container.vexpand = false;
 
         start_box = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 6);
+        start_box.name = "start-box";
+        
         end_box = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 6);
+        end_box.name = "end-box";
         end_box.halign = Gtk.Align.END;
         end_box.hexpand = true;
 
@@ -47,7 +50,17 @@ public class CanvasActionBar : Gtk.Widget {
     }
 
     public void remove_action(Gtk.Widget child) {
-        start_box.remove(child);
-        end_box.remove(child);
+        var parent = child.get_parent().get_parent();
+        if (parent == null) return;
+        
+        
+        message("PARENT ===== > %s", parent.name);
+        
+        if (parent == start_box) {
+            start_box.remove(child.get_parent());
+            return;
+        }
+        
+        end_box.remove(child.get_parent());
     }
 }

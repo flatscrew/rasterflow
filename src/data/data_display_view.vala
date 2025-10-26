@@ -19,7 +19,7 @@ namespace Data {
 
         private void create_node_with_details() {
             this.node_box = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
-            node_box.add_css_class("card");
+            //  node_box.add_css_class("card");
             this.node_children_box = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
             node_children_box.vexpand = true;
             node_box.append(node_children_box);

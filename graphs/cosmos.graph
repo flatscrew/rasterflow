@@ -10,26 +10,28 @@
     {
       "model" : {
         "transparency-threshold" : 0.20000000000000004,
+        "opacity-threshold" : 0.30000000000000016,
         "color" : {
           "type" : "GeglColor",
           "color" : "rgb(0.102, 0.373, 0.706)"
         },
-        "opacity-threshold" : 0.30000000000000016
+        "_properties_as_sinks" : []
       },
       "builder_id" : "gegl:color-to-alpha",
       "width" : 174,
-      "height" : 179,
+      "height" : 214,
       "expanded" : false,
-      "position_x" : 297,
-      "position_y" : 68
+      "position_x" : 420,
+      "position_y" : 44
     },
     {
       "model" : {
-        "path" : "/home/activey/Pictures/ja.jpeg"
+        "path" : "/home/activey/Pictures/ja.jpeg",
+        "_properties_as_sinks" : []
       },
       "builder_id" : "gegl:load",
       "width" : 216,
-      "height" : 150,
+      "height" : 185,
       "expanded" : false,
       "position_x" : 37,
       "position_y" : 66
@@ -38,10 +40,10 @@
       "model" : {      },
       "builder_id" : "image:display",
       "width" : 251,
-      "height" : 239,
+      "height" : 274,
       "expanded" : true,
-      "position_x" : 2141,
-      "position_y" : 231,
+      "position_x" : 3090,
+      "position_y" : 151,
       "external-window" : {
         "active" : true,
         "title" : "Image window",
@@ -56,116 +58,126 @@
     {
       "model" : {
         "hue" : 6.5999999999999925,
+        "lightness" : -6.3999999999999932,
         "chroma" : 16.89999999999997,
-        "lightness" : -6.3999999999999932
+        "_properties_as_sinks" : []
       },
       "builder_id" : "gegl:hue-chroma",
       "width" : 167,
-      "height" : 179,
+      "height" : 214,
       "expanded" : false,
-      "position_x" : 552,
-      "position_y" : 41
+      "position_x" : 789,
+      "position_y" : 32
     },
     {
       "model" : {
-        "scale" : 1.8000000000000007
+        "scale" : 1.8000000000000007,
+        "_properties_as_sinks" : []
       },
       "builder_id" : "gegl:saturation",
       "width" : 154,
-      "height" : 179,
+      "height" : 214,
       "expanded" : false,
-      "position_x" : 807,
-      "position_y" : 24
+      "position_x" : 1151,
+      "position_y" : 29
     },
     {
       "model" : {
-        "path" : "/home/activey/Pictures/cosmic-space-galaxy-stockcake.jpg"
+        "path" : "/home/activey/Pictures/cosmic-space-galaxy-stockcake.jpg",
+        "_properties_as_sinks" : []
       },
       "builder_id" : "gegl:load",
       "width" : 216,
-      "height" : 150,
+      "height" : 185,
       "expanded" : false,
-      "position_x" : 109,
-      "position_y" : 786
+      "position_x" : 191,
+      "position_y" : 742
     },
     {
-      "model" : {      },
+      "model" : {
+        "_properties_as_sinks" : []
+      },
       "builder_id" : "svg:dst-over",
       "width" : 143,
-      "height" : 208,
+      "height" : 243,
       "expanded" : false,
-      "position_x" : 1241,
-      "position_y" : 179
+      "position_x" : 1693,
+      "position_y" : 99
     },
     {
       "model" : {
         "width" : 800.0,
-        "height" : 800.0
+        "height" : 800.0,
+        "_properties_as_sinks" : []
       },
       "builder_id" : "gegl:crop",
-      "width" : 122,
-      "height" : 208,
-      "expanded" : false,
-      "position_x" : 1036,
-      "position_y" : 376
+      "width" : 424,
+      "height" : 576,
+      "expanded" : true,
+      "position_x" : 1233,
+      "position_y" : 408
     },
     {
       "model" : {
         "width" : 600.0,
         "height" : 750.0,
-        "x" : 100.0
+        "x" : 100.0,
+        "_properties_as_sinks" : []
       },
       "builder_id" : "gegl:crop",
       "width" : 122,
-      "height" : 208,
+      "height" : 243,
       "expanded" : false,
-      "position_x" : 1456,
-      "position_y" : 129
+      "position_x" : 1932,
+      "position_y" : 121
     },
     {
       "model" : {
         "size-x" : 4,
-        "size-y" : 4
+        "size-y" : 4,
+        "_properties_as_sinks" : []
       },
       "builder_id" : "gegl:pixelize",
-      "width" : 316,
+      "width" : 320,
       "height" : 320,
       "expanded" : true,
-      "position_x" : 1784,
-      "position_y" : 422
+      "position_x" : 2691,
+      "position_y" : 324
     },
     {
       "model" : {
         "pos-x" : 0.30000000000000004,
-        "pos-y" : 0.20000000000000004
+        "pos-y" : 0.20000000000000004,
+        "_properties_as_sinks" : []
       },
       "builder_id" : "gegl:lens-flare",
-      "width" : 155,
-      "height" : 179,
-      "expanded" : false,
-      "position_x" : 1605,
-      "position_y" : 149
+      "width" : 298,
+      "height" : 268,
+      "expanded" : true,
+      "position_x" : 2298,
+      "position_y" : 130
     },
     {
       "model" : {
         "y" : 2.0,
-        "x" : 2.0
+        "x" : 2.0,
+        "_properties_as_sinks" : []
       },
       "builder_id" : "gegl:scale-ratio",
       "width" : 156,
-      "height" : 179,
+      "height" : 214,
       "expanded" : false,
-      "position_x" : 545,
-      "position_y" : 322
+      "position_x" : 653,
+      "position_y" : 662
     },
     {
       "model" : {      },
       "builder_id" : "image:display",
       "width" : 160,
-      "height" : 150,
+      "height" : 185,
       "expanded" : false,
-      "position_x" : 184,
-      "position_y" : 343,
+      "position_x" : 386,
+      "position_y" : 410,
       "external-window" : {
         "active" : false
       }
