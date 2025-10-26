@@ -23,5 +23,9 @@ namespace History {
 
             property.remove();
         }
+        
+        public string get_label() {
+            return "Remove graph property";
+        }
     }
 }

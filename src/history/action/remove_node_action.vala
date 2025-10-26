@@ -71,6 +71,10 @@ namespace History {
 
             node.remove();
         }
+        
+        public string get_label() {
+            return "Remove node";
+        }
     }
 
 }

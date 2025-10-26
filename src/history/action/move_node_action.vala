@@ -27,5 +27,9 @@ namespace History {
                 node.set_position(new_x, new_y);
                 node.parent.queue_allocate();
         }
+        
+        public string get_label() {
+            return "Mode node";
+        }
     }
 }

@@ -84,6 +84,14 @@ namespace History {
             this.recording_enabled = true;
         }
 
+        public IAction? peek_undo() {
+            return undo_stack.peek();
+        }
+        
+        public IAction? peek_redo() {
+            return redo_stack.peek();
+        }
+        
         public int count_undo { get { return undo_stack.size; } }
         public int count_redo { get { return redo_stack.size; } }
         public bool can_undo { get { return !undo_stack.is_empty; } }

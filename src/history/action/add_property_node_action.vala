@@ -29,5 +29,9 @@ namespace History {
             
             node.set_position(x, y);
         }
+        
+        public string get_label() {
+            return "Add property node";
+        }
     }
 }

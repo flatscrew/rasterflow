@@ -22,5 +22,9 @@ namespace History {
             parent_view.add(node);
             parent_view.queue_allocate();
         }
+        
+        public string get_label() {
+            return "Add node";
+        }
     }
 }

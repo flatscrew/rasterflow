@@ -20,6 +20,12 @@ namespace History {
             _list.clear();
         }
 
+        public IAction? peek() {
+            if (_list.is_empty)
+                return null;
+            return _list.last();
+        }
+        
         public int size {
             get { return _list.size; }
         }

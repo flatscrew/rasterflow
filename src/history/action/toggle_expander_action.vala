@@ -34,5 +34,9 @@ namespace History {
                 node.set_size_request(old_width, old_height);
             }
         }
+        
+        public string get_label() {
+            return "Expand node details";
+        }
     }
 }

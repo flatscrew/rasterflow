@@ -28,5 +28,9 @@ namespace History {
                 return;
             target.set_property(property_name, new_value);
         }
+        
+        public string get_label() {
+            return "Change property";
+        }
     }
 }

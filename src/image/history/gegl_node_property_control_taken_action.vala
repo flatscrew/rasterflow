@@ -19,5 +19,9 @@ namespace Image {
         public void redo() {
             this.control_contract.renew();
         }
+        
+        public string get_label() {
+            return "Take property control";
+        }
     }
 }

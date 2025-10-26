@@ -21,5 +21,9 @@ namespace History {
 
             canvas_graph.add_property(new_property);
         }
+        
+        public string get_label() {
+            return "Add graph property";
+        }
     }
 }
