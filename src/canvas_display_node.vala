@@ -139,7 +139,7 @@ public class CanvasDisplayNode : GtkFlow.Node {
 
     private History.HistoryOfChangesRecorder changes_recorder;
     private Graphene.Size previous_node_size = {width: 100, height: 200};
-    private CanvasNodeDetailsView node_expander;
+    private CanvasNodeDetailsView details_view;
     private Gtk.Box node_box;
     private CanvasActionBar action_bar;
     private Gtk.Button delete_button;
@@ -157,7 +157,7 @@ public class CanvasDisplayNode : GtkFlow.Node {
 
     public bool can_expand {
         set {
-            node_expander.sensitive = value;
+            details_view.sensitive = value;
         }
     }
     
@@ -241,20 +241,20 @@ public class CanvasDisplayNode : GtkFlow.Node {
     private void create_node_content() {
         this.size_changed.connect(this.node_resized);
 
-        this.node_expander = new CanvasNodeDetailsView();
-        node_expander.vexpand = node_expander.hexpand = true;
-        node_expander.notify["expanded"].connect(node_expanded);
+        this.details_view = new CanvasNodeDetailsView();
+        details_view.vexpand = details_view.hexpand = true;
+        details_view.notify["expanded"].connect(node_expanded);
 
         this.node_box = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
         node_box.hexpand = node_box.vexpand = true;
-        node_expander.set_child(node_box);
-        base.add_child(node_expander);
+        details_view.set_child(node_box);
+        base.add_child(details_view);
     }
 
     private void node_resized(int old_width, int old_height, int new_width, int new_height) {
         if (old_width < new_width || old_height < new_height) {
-            if (!node_expander.expanded) {
-                node_expander.expanded = true;
+            if (!details_view.expanded) {
+                details_view.expanded = true;
             }
         }
     }
@@ -286,9 +286,9 @@ public class CanvasDisplayNode : GtkFlow.Node {
     }
 
     private void node_expanded() {
-        changes_recorder.record(new History.ToggleExpanderAction(this.node_expander, this, get_width(), get_height()));
+        changes_recorder.record(new History.ToggleExpanderAction(this.details_view, this, get_width(), get_height()));
         
-        if (!this.node_expander.expanded) {
+        if (!this.details_view.expanded) {
             this.previous_node_size = Graphene.Size(){
                 width = get_width(),
                 height = get_height()
@@ -377,7 +377,7 @@ public class CanvasDisplayNode : GtkFlow.Node {
         serializer.set_string("builder_id", builder_id);
         serializer.set_int("width", get_width());
         serializer.set_int("height", get_height());
-        serializer.set_bool("expanded", node_expander.expanded);
+        serializer.set_bool("expanded", details_view.expanded);
 
         if (node_color != null) {
             serializer.set_string("color", node_color.to_string());
@@ -396,7 +396,7 @@ public class CanvasDisplayNode : GtkFlow.Node {
         
         var expanded = deserializer.get_bool("expanded", false);
         if (expanded) {
-            node_expander.expanded = true;
+            details_view.expanded = true;
         }
         set_size_request(deserializer.get_int("width"), deserializer.get_int("height"));
         set_position(deserializer.get_int("position_x"), deserializer.get_int("position_y"));

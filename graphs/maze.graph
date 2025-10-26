@@ -35,7 +35,7 @@
       },
       "builder_id" : "gegl:buffer-source",
       "width" : 174,
-      "height" : 150,
+      "height" : 185,
       "expanded" : false,
       "position_x" : 80,
       "position_y" : 61
@@ -61,13 +61,15 @@
         "x" : 16,
         "_properties_as_sinks" : [
           "x",
+          "y",
+          "x",
           "y"
         ]
       },
       "builder_id" : "gegl:maze",
-      "width" : 316,
-      "height" : 352,
-      "expanded" : true,
+      "width" : 178,
+      "height" : 292,
+      "expanded" : false,
       "position_x" : 870,
       "position_y" : 12
     },

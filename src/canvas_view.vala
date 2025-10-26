@@ -158,10 +158,11 @@ public class CanvasView : Gtk.Widget {
         var property_n = new CanvasPropertyNode(property); 
         var property_node = new CanvasPropertyDisplayNode(property_n);
         node_view.add(property_node);
+        property_node.set_position((int) x, (int) y);
         
         property_n.add_source(new CanvasNodePropertySource(property));
-        
-        property_node.set_position((int) x, (int) y);
+    
+        changes_recorder.record(new History.AddPropertyNodeAction(node_view, property_node));
     }
 
     private void add_file_data_node(GLib.File file, double x, double y) {
