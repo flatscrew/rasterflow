@@ -82,8 +82,8 @@
       "width" : 320,
       "height" : 587,
       "expanded" : true,
-      "position_x" : 947,
-      "position_y" : 31
+      "position_x" : 1076,
+      "position_y" : 64
     },
     {
       "model" : {      },
@@ -91,8 +91,8 @@
       "width" : 357,
       "height" : 454,
       "expanded" : true,
-      "position_x" : 1317,
-      "position_y" : 101,
+      "position_x" : 1507,
+      "position_y" : 167,
       "external-window" : {
         "active" : false
       }
