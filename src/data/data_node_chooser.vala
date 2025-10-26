@@ -183,7 +183,7 @@ namespace Data {
         }
     }
 
-    public class DataNodeChooser : Gtk.Widget {
+    public class DataNodeChooser : Object {
 
         public signal void node_created(CanvasDisplayNode data_node);
 
@@ -193,20 +193,21 @@ namespace Data {
         private DataNodeChooserBox node_chooser_box;
         private Gtk.Popover popover;
 
-        construct {
-            base.set_layout_manager(new Gtk.BinLayout());
-        }
-
         private DataNodeChooser(CanvasNodeFactory node_factory) {
             this.node_factory = node_factory;
             
             this.popover = new Gtk.Popover();
+            popover.add_css_class("menu");
             popover.set_position(Gtk.PositionType.BOTTOM);
+            popover.halign = Gtk.Align.START;
+            popover.set_offset(-5, 0);
+            
             this.menu_button = new Gtk.MenuButton();
+            menu_button.set_tooltip_text("Add operation node");
             menu_button.set_child(new Gtk.Image.from_icon_name("insert-object-symbolic"));
-            menu_button.set_parent(this);
             menu_button.set_popover(popover);
-
+            menu_button.add_css_class("button");
+            
             this.node_chooser_box = new DataNodeChooserBox(this.node_factory);
             node_chooser_box.builder_selected.connect(this.builder_selected);
             popover.set_child(node_chooser_box);
@@ -237,8 +238,8 @@ namespace Data {
             this(node_factory);
         }
 
-        ~DataNodeChooser() {
-            menu_button.unparent();
+        public unowned Gtk.MenuButton get_menu_button() {
+            return this.menu_button;
         }
     }
 }

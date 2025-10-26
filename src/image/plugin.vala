@@ -100,9 +100,11 @@ public string initialize_image_plugin(Plugin.PluginContribution plugin_contribut
         headerbar_widgets.add_widget(new Image.ImageProcessingRealtimeModeSwitch());
     });
 
+#if LINUX
     plugin_contribution.contribute_app_window(app_window => {
         Image.ColorProber.init(app_window);
     });
+#endif
 
     // overrides
     Image.GeglOperationOverrides.override_operation("gegl:load", overrides => {
@@ -113,11 +115,11 @@ public string initialize_image_plugin(Plugin.PluginContribution plugin_contribut
             });
     });
 
+    // TODO make it in plugin contribution instead?
     // custom data types for property editor
-    Data.CustomPropertyFactory.get_instance()
-        .register(typeof(Gegl.Color), param_spec => {
-            return new Image.ColorProperty(param_spec);
-        });
+    Data.DataPropertyFactory.instance.register(typeof(Gegl.Color), param_spec => {
+        return new Image.ColorProperty(param_spec);
+    });
 
 	return "image";
 }

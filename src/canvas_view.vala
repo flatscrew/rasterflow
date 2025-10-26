@@ -4,26 +4,29 @@ public class CanvasView : Gtk.Widget {
 
     private History.HistoryOfChangesRecorder changes_recorder;
 
+    private Gtk.Overlay node_view_overlay;
     private Gtk.Box node_view_box;
-    private Gtk.Paned main_pane;
+    private Adw.OverlaySplitView main_view;
     private Gtk.ScrolledWindow scrolled_window;
     private ScrollPanner scroll_panner;
     private ZoomableArea zoomable_area;
     private GtkFlow.NodeView node_view;
 
+    private Data.DataNodeChooser node_chooser;
     private Data.FileOriginNodeFactory file_origin_node_factory;
     private Gtk.Popover file_origin_popover;
 
     private CanvasNodeFactory node_factory;
-    private CanvasNodes canvas_nodes;
+    private CanvasGraph canvas_graph;
+    private CanvasGraphPropertiesEditor properties_editor;
     private CanvasSignals canvas_signals;
-    private CanvasLogsArea logs_area;
     private Gtk.Button save_button;
 
     private Serialize.CustomSerializers serializers;
     private Serialize.CustomDeserializers deserializers;
 
     private DataDropHandler data_drop_handler;
+    private PropertyDropHandler property_drop_handler;
     private string current_graph_file;
 
     construct {
@@ -31,7 +34,7 @@ public class CanvasView : Gtk.Widget {
     }
 
     ~CanvasView() {
-        main_pane.unparent();
+        main_view.unparent();
     }
 
     public CanvasView(
@@ -51,29 +54,44 @@ public class CanvasView : Gtk.Widget {
         this.serializers = serializers;
         this.deserializers = deserializers;
 
+        this.canvas_graph = new CanvasGraph(node_factory);
+        canvas_graph.node_added.connect_after(this.node_added);
+        canvas_graph.property_node_added.connect_after(this.property_node_added);
+        
+        this.properties_editor = new CanvasGraphPropertiesEditor(canvas_graph);
+        this.node_view_box = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
+        
+        create_main_view();
+        create_node_view();
+        create_minimap_overlay();
+        
         this.data_drop_handler = new DataDropHandler();
         data_drop_handler.file_dropped.connect(this.add_file_data_node);
         data_drop_handler.text_dropped.connect(this.add_text_data_node);
-        add_controller (data_drop_handler.data_drop_target);
-
-        this.canvas_nodes = new CanvasNodes(node_factory);
-        canvas_nodes.node_added.connect_after(this.node_added);
+        add_controller(data_drop_handler.data_drop_target);
         
-        this.node_view_box = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
-        create_node_view();
-        create_minimap_overlay();
-        create_logs_area();
-
-        this.main_pane = new Gtk.Paned(Gtk.Orientation.VERTICAL);
-        main_pane.set_shrink_end_child(false);
-        main_pane.set_resize_end_child(false);
-        main_pane.set_wide_handle(true);
-        main_pane.set_start_child(node_view_box);
-        main_pane.set_end_child(logs_area);
-        main_pane.set_parent(this);
-        main_pane.set_position(main_pane.max_position);
+        this.property_drop_handler = new PropertyDropHandler();
+        property_drop_handler.property_dropped.connect(this.property_dropped);
+        node_view.add_controller(property_drop_handler.data_drop_target);
     }
 
+    private void create_main_view() {
+        this.main_view = new Adw.OverlaySplitView();
+        main_view.set_sidebar(properties_editor);
+        main_view.set_content(node_view_box);
+        main_view.min_sidebar_width = 350;
+        main_view.max_sidebar_width = 350;
+        main_view.set_parent(this);
+    }
+    
+    public void show_properties_sidebar(bool show_properties) {
+        main_view.show_sidebar = show_properties;
+    }
+    
+    public bool is_properties_sidebar_shown() {
+        return main_view.show_sidebar;
+    }
+    
     private void create_node_view() {
         this.node_view = new GtkFlow.NodeView();
         this.scrolled_window = new Gtk.ScrolledWindow();
@@ -81,7 +99,12 @@ public class CanvasView : Gtk.Widget {
         scrolled_window.set_policy(Gtk.PolicyType.EXTERNAL, Gtk.PolicyType.EXTERNAL);
         scrolled_window.add_css_class("canvas_view");
         scrolled_window.vexpand = scrolled_window.hexpand = true;
-        this.node_view_box.append(scrolled_window);
+        
+        this.node_view_overlay = new Gtk.Overlay();
+        node_view_overlay.set_hexpand(true);
+        node_view_overlay.set_vexpand(true);
+        node_view_overlay.set_child(scrolled_window);
+        this.node_view_box.append(node_view_overlay);
         
         this.scroll_panner = new ScrollPanner();
         scroll_panner.enable_panning(scrolled_window);
@@ -92,48 +115,33 @@ public class CanvasView : Gtk.Widget {
     private void create_zoom_control_overlay() {
         this.zoomable_area = new ZoomableArea(scrolled_window, node_view);
 
-        var overlay = new Gtk.Overlay();
         var scale_widget = zoomable_area.create_scale_widget();
         scale_widget.set_can_focus(false);
 
         var reset_scale = zoomable_area.create_reset_scale_button();
-
         var control_box = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 5);
         control_box.append(scale_widget);
         control_box.append(reset_scale);
         control_box.set_valign(Gtk.Align.END);
         control_box.set_halign(Gtk.Align.START);
-        control_box.add_css_class("canvas_scale");
+        control_box.add_css_class("osd");
+        control_box.add_css_class("toolbar");
+        control_box.add_css_class("canvas_overlay");
 
-        overlay.add_overlay(control_box);
-        node_view_box.append(overlay);
+        node_view_overlay.add_overlay(control_box);
     }
 
     private void create_minimap_overlay() {
-        var overlay = new Gtk.Overlay();
         var mini_map = new MiniMap(node_view);
         mini_map.set_valign(Gtk.Align.END);
         mini_map.set_halign(Gtk.Align.END);
         mini_map.set_can_focus(false);
 
-        overlay.add_overlay(mini_map);
-
-        node_view_box.append(overlay);
+        node_view_overlay.add_overlay(mini_map);
     }
 
-    private void create_logs_area() {
-        this.logs_area = new CanvasLogsArea();
-        logs_area.logs_collapsed.connect(this.logs_collapsed);
-        logs_area.log_node_selected.connect(node => {
-            if (node == null) {
-                return;
-            }
-            print("node=> %s\n", node.name);
-        });
-    }
-
-    private void logs_collapsed(int height) {
-        this.main_pane.set_position(main_pane.get_height() - height);
+    public Gtk.Button create_properties_toggle() {
+        return properties_editor.create_toggle_button(this.main_view);
     }
 
     private void node_added(CanvasDisplayNode node) {
@@ -142,11 +150,26 @@ public class CanvasView : Gtk.Widget {
 
         changes_recorder.record(new History.AddNodeAction(node_view, node));
     }
-
+    
     private void add_text_data_node(string text) {
         debug("Text: %s\n", text);
     }
-
+    
+    private void property_dropped(CanvasGraphProperty property, double x, double y) {
+        var property_n = new CanvasPropertyNode(property); 
+        var property_node = new CanvasPropertyDisplayNode(property_n, x, y);
+        
+        canvas_graph.add_property_node(property_node);
+    }
+    
+    private void property_node_added(CanvasPropertyDisplayNode property_node) {
+        node_view.add(property_node);
+        changes_recorder.record(new History.AddPropertyNodeAction(node_view, property_node));
+        
+        property_node.init_property_source();
+        property_node.init_position();
+    }
+    
     private void add_file_data_node(GLib.File file, double x, double y) {
         try {
             var file_info = file.query_info ("*", FileQueryInfoFlags.NONE);
@@ -163,7 +186,7 @@ public class CanvasView : Gtk.Widget {
                 var node_builder = builder.find_builder(node_factory);
                 try {
                     var new_node = node_builder.create();
-                    canvas_nodes.add(new_node);
+                    canvas_graph.add_node(new_node);
 
                     builder.apply_file_data(new_node, file, file_info);
                     new_node.set_position((int) x, (int) y);
@@ -191,8 +214,6 @@ public class CanvasView : Gtk.Widget {
                 x: (int)x,
                 y: (int)y
             });
-
-
             file_origin_popover.popup();
 
         } catch (Error e) {
@@ -218,7 +239,7 @@ public class CanvasView : Gtk.Widget {
         }
 
         try {
-            var serialized_graph = canvas_nodes.serialize_graph(serializers);
+            var serialized_graph = canvas_graph.serialize_graph(serializers);
             FileUtils.set_contents_full(current_graph_file, serialized_graph, serialized_graph.length, GLib.FileSetContentsFlags.CONSISTENT);
         } catch (FileError e) {
             warning(e.message);                        
@@ -240,7 +261,7 @@ public class CanvasView : Gtk.Widget {
                     current_graph_file = file.get_path();
                     save_button.set_sensitive(true);
 
-                    var serialized_graph = canvas_nodes.serialize_graph(serializers);
+                    var serialized_graph = canvas_graph.serialize_graph(serializers);
                     FileUtils.set_contents_full(
                         current_graph_file,
                         serialized_graph,
@@ -278,8 +299,9 @@ public class CanvasView : Gtk.Widget {
     void load_graph_sync (GLib.File selected_file) {
         canvas_signals.before_file_load();
 
-        canvas_nodes.remove_all();
-        canvas_nodes.deserialize_graph(selected_file, deserializers);
+        canvas_graph.remove_all_properties();
+        canvas_graph.remove_all_nodes();
+        canvas_graph.deserialize_graph(selected_file, deserializers);
         
         Idle.add(() => {
             node_view.queue_resize();
@@ -325,10 +347,9 @@ public class CanvasView : Gtk.Widget {
         });
     }
 
-    public Data.DataNodeChooser create_node_chooser() {
-        var node_chooser = new Data.DataNodeChooser.everything(node_factory);
-        node_chooser.set_tooltip_text("Add new node");
-        node_chooser.node_created.connect(canvas_nodes.add);
+    public unowned Data.DataNodeChooser create_node_chooser() {
+        this.node_chooser = new Data.DataNodeChooser.everything(node_factory);
+        node_chooser.node_created.connect(canvas_graph.add_node);
         return node_chooser;
     }
 
@@ -364,4 +385,6 @@ public class CanvasView : Gtk.Widget {
         export_button.clicked.connect(this.export_to_png);
         return export_button;
     }
+    
+    
 }

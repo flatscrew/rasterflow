@@ -4,6 +4,7 @@ namespace Image {
         private GeglOperationNode gegl_operation_node;
         private GeglOperationOverridesCallback? operation_overrides_callback;
         private Data.DataDisplayView data_display_view;
+        private Data.DataPropertiesEditor properties_editor;
         private History.HistoryOfChangesRecorder changes_recorder;
 
         public GeglOperationDisplayNode(string builder_id, GeglOperationNode node) {
@@ -36,6 +37,10 @@ namespace Image {
                 create_gegl_export_button();
             }
         }
+        
+        private void renew_properties_contracts() {
+            gegl_operation_node.for_each_deserialized_property_as_sink(properties_editor.renew_contract);
+        }
 
         private void create_process_gegl_button() {
             var render_button = new Gtk.Button.from_icon_name("media-playback-start");
@@ -58,12 +63,12 @@ namespace Image {
             scrolled_window.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC); 
             scrolled_window.set_placement(Gtk.CornerType.TOP_RIGHT);
 
-            var properties_editor = new Data.DataPropertiesEditor(operation);
+            this.properties_editor = new Data.DataPropertiesEditor(operation);
             properties_editor.vexpand = true;
             properties_editor.data_property_changed.connect(this.property_changed);
             properties_editor.enable_control_override(
                 this.check_supported_pad_data_type, 
-                "Promote as property pad",
+                "Promote as source pad",
                 this.on_property_control_taken
             );
             properties_editor.populate_properties(
@@ -71,7 +76,7 @@ namespace Image {
                 compose_overrides
             );
 
-            data_display_view.add_child(properties_editor);
+            this.data_display_view.add_child(properties_editor);
             data_display_view.set_margin(10);
 
             if (properties_editor.has_properties) {
@@ -79,30 +84,17 @@ namespace Image {
                 add_child(scrolled_window);
             } else {
                 n.resizable = false;
+                base.can_expand = false;
             }
         }
 
         private bool check_supported_pad_data_type(GLib.ParamSpec param_spec) {
-            if (param_spec is ParamSpecString 
-                || param_spec is ParamSpecInt
-                || param_spec is ParamSpecDouble) {
-                return true;
-            }
-            // TODO introduce one place for supported types maybe?
-            return false;
+            return Data.DataPropertyFactory.instance.supports(param_spec);
         }
 
         private void on_property_control_taken(Data.PropertyControlContract control_contract) {
-            var property_sink = new CanvasNodePropertySink(control_contract);
-            property_sink.contract_renewed.connect(() => {
-                gegl_operation_node.add_sink(property_sink);
-            });
-            property_sink.contract_released.connect(() => {
-                gegl_operation_node.remove_sink(property_sink);
-            });
-            
-            gegl_operation_node.add_sink(property_sink);
-            changes_recorder.record(new PropertyControlTakenAction(control_contract, gegl_operation_node));
+            gegl_operation_node.add_property_sink(control_contract);
+            changes_recorder.record(new PropertyControlContractAcquiredAction(control_contract, gegl_operation_node));
         }
 
         private void sink_added(GFlow.Sink new_sink) {
@@ -138,7 +130,7 @@ namespace Image {
             gegl_operation_node.get_gegl_operation().set_property(name, value);
         }
 
-        private void property_changed(string property_name, GLib.Value property_value) {
+        private void property_changed(string property_name, GLib.Value? property_value) {
             unowned var node = n as GeglOperationNode;
             node.process_gegl();
         }
@@ -171,5 +163,12 @@ namespace Image {
                 }
             });
         }
+        
+        public override void deserialize(Serialize.DeserializedObject deserializer) {
+            base.deserialize(deserializer);
+            
+            renew_properties_contracts();
+        }
+        
     }
 }

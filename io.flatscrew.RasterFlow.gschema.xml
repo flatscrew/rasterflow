@@ -1,8 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist>
   <schema id="io.canvas.Canvas" path="/io/canvas/Canvas/">
-    <key name="dark-variant" type="b">
+
+    <key name="sidebar-visible" type="b">
       <default>false</default>
+      <summary>Show sidebar</summary>
     </key>
+
+    <key name="window-x" type="i">
+      <default>-1</default>
+      <summary>Window position X</summary>
+    </key>
+
+    <key name="window-y" type="i">
+      <default>-1</default>
+      <summary>Window position Y</summary>
+    </key>
+
+    <key name="window-width" type="i">
+      <default>800</default>
+      <summary>Window width</summary>
+    </key>
+
+    <key name="window-height" type="i">
+      <default>600</default>
+      <summary>Window height</summary>
+    </key>
+
   </schema>
 </schemalist>

@@ -1,6 +1,6 @@
 namespace Image {
 
-    public class ExternalImageWindow : Gtk.Window {
+    public class ExternalImageWindow : Adw.Window {
         private ImageViewerPanningArea panning_area;
         private ImageViewer image_viewer;
         private Gtk.ScrolledWindow scroller;
@@ -26,14 +26,18 @@ namespace Image {
             create_action_bar();
             create_zoom_control();
 
-            set_child(box);
+            var header_bar = new Adw.HeaderBar();
+            header_bar.set_title_widget(new Gtk.Label(title));
+
+            var toolbar_view = new Adw.ToolbarView();
+            toolbar_view.add_top_bar(header_bar);
+            toolbar_view.set_content(box);
+
+            set_content(toolbar_view);
         }
 
         private void create_action_bar() {
             this.action_bar = new Gtk.ActionBar();
-            action_bar.add_css_class("rounded_bottom_right");
-            action_bar.add_css_class("rounded_bottom_left");
-
             box.append(action_bar);
         }
 
@@ -61,7 +65,7 @@ namespace Image {
             var scale = image_viewer.create_scale_widget();
             this.zoom_control = add_action_bar_child_end(scale);
 
-            this.reset_zoom_button = new Gtk.Button.from_icon_name("zoom-original");
+            this.reset_zoom_button = new Gtk.Button.from_icon_name("zoom-original-symbolic");
             reset_zoom_button.tooltip_text = "Reset to original size";
             reset_zoom_button.clicked.connect(image_viewer.reset_zoom);
             this.reset_zoom_control = add_action_bar_child_end(reset_zoom_button);
@@ -81,13 +85,8 @@ namespace Image {
             };
         }
 
-        public void set_dimensions(int x, int y, int width, int height) {
-            WindowGeometryManager.set_geometry(this, Image.WindowGeometry() {
-                x = x,
-                y = y,
-                width = width,
-                height = height
-            });
+        public void set_dimensions(Gdk.Rectangle dimensions) {
+            WindowGeometryManager.set_geometry(this, dimensions);
         }
 
         private Gtk.Box add_action_bar_child_end(Gtk.Widget child) {

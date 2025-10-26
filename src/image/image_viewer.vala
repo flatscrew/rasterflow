@@ -7,7 +7,7 @@ namespace Image {
 
     public class ImageViewer : Gtk.DrawingArea {
 
-        private const double ZOOM_TICK = 0.1;
+        private const double ZOOM_TICK = 0.05;
         private const double DEFAULT_ZOOM_MAX = 3.0;
         private const double ZOOM_MIN = 1.0;
 
@@ -136,6 +136,13 @@ namespace Image {
         }
 
         public ImageDimensions get_dimensions () {
+            if (texture == null) {
+                return {
+                    width: 0,
+                    height: 0
+                };
+            }
+            
             var tex_w = texture.get_width ();
             var tex_h = texture.get_height ();
 

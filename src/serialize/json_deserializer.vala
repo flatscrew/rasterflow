@@ -20,7 +20,7 @@ namespace Serialize {
             return node.get_node_type() == Json.NodeType.VALUE;
         }
 
-        public GLib.Value get_value() {
+        public GLib.Value? get_value() {
             return node.get_value();
         }
 
@@ -81,7 +81,7 @@ namespace Serialize {
                 node_delegate(new JsonNode(member_node), -1, member_name);
             });
         }
-
+        
         public int get_int(string key, int default_value = 0) {
             if (!object_node.get_object().has_member(key)) {
                 return default_value;

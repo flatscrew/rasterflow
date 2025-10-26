@@ -39,7 +39,7 @@ namespace History {
             changed();
         }
 
-        public void record_node_moved(CanvasDisplayNode moved_node, int old_x, int old_y, int new_x, int new_y) {
+        public void record_node_moved(GtkFlow.Node moved_node, int old_x, int old_y, int new_x, int new_y) {
             this.record(new History.MoveNodeAction(moved_node, old_x, old_y, new_x, new_y));
         }
 
@@ -84,6 +84,14 @@ namespace History {
             this.recording_enabled = true;
         }
 
+        public IAction? peek_undo() {
+            return undo_stack.peek();
+        }
+        
+        public IAction? peek_redo() {
+            return redo_stack.peek();
+        }
+        
         public int count_undo { get { return undo_stack.size; } }
         public int count_redo { get { return redo_stack.size; } }
         public bool can_undo { get { return !undo_stack.is_empty; } }

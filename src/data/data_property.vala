@@ -1,34 +1,6 @@
 namespace Data {
 
-    public class CustomPropertyFactory : Object {
-
-        private static CustomPropertyFactory? instance = null;
-
-        public static CustomPropertyFactory get_instance() {
-            if (CustomPropertyFactory.instance == null) {
-                CustomPropertyFactory.instance = new CustomPropertyFactory();
-            }
-            return CustomPropertyFactory.instance;
-        }
-
-        private Gee.Map<GLib.Type, DataPropertyOverrideBuilder> typed_builders = new Gee.HashMap<GLib.Type, DataPropertyOverrideBuilder>();
-
-        public CustomPropertyFactory register(GLib.Type type, DataPropertyBuilderFunc property_func) {
-            typed_builders.set(type, new DataPropertyOverrideBuilder(property_func));
-            return this;
-        }
-
-        public Data.DataProperty? build(ParamSpec param_spec, GLib.Object data_object) {
-            var property_type = param_spec.value_type;
-            var builder = typed_builders.get(property_type);
-            if (builder == null) {
-                return null;
-            }
-            return builder.build_property(param_spec, data_object);
-        }
-    }
-
-    public abstract class DataProperty : Gtk.Widget {
+    public abstract class AbstractDataProperty : Gtk.Widget {
         construct {
             set_layout_manager(new Gtk.BinLayout());
         }
@@ -49,7 +21,7 @@ namespace Data {
             }
         }
 
-        protected DataProperty(GLib.ParamSpec param_spec, bool multiline = false) {
+        protected AbstractDataProperty(GLib.ParamSpec param_spec, bool multiline = false) {
             this.param_spec = param_spec;
             this.multiline = multiline;
 
@@ -82,7 +54,7 @@ namespace Data {
         }
     }
 
-    class DoubleProperty : DataProperty {
+    class DoubleProperty : AbstractDataProperty {
         
         private Gtk.SpinButton spin_button;
 
@@ -107,7 +79,7 @@ namespace Data {
         }
     }
 
-    class IntProperty : DataProperty {
+    class IntProperty : AbstractDataProperty {
         
         private Gtk.SpinButton spin_button;
         private bool publish = true;
@@ -125,7 +97,7 @@ namespace Data {
                 if (!publish) {
                     return;
                 }
-                property_value_changed(spin_button.value);
+                property_value_changed((int)spin_button.value);
             });
 
             spin_button.set_parent(this);
@@ -144,7 +116,7 @@ namespace Data {
         }
     }
 
-    class UIntProperty : DataProperty {
+    class UIntProperty : AbstractDataProperty {
         
         private Gtk.SpinButton spin_button;
 
@@ -158,7 +130,7 @@ namespace Data {
             this.spin_button = new Gtk.SpinButton.with_range(uint_specs.minimum, uint_specs.maximum, 1);
             spin_button.value = uint_specs.default_value;
             spin_button.value_changed.connect(() => {
-                property_value_changed(spin_button.value);
+                property_value_changed((uint) spin_button.value);
             });
 
             spin_button.set_parent(this);
@@ -169,7 +141,7 @@ namespace Data {
         }
     }
 
-    class UInt64Property : DataProperty {
+    class UInt64Property : AbstractDataProperty {
         
         private Gtk.SpinButton spin_button;
 
@@ -183,7 +155,7 @@ namespace Data {
             this.spin_button = new Gtk.SpinButton.with_range(uint64_specs.minimum, uint64_specs.maximum, 1);
             spin_button.value = uint64_specs.default_value;
             spin_button.value_changed.connect(() => {
-                property_value_changed(spin_button.value);
+                property_value_changed((uint64) spin_button.value);
             });
 
             spin_button.set_parent(this);
@@ -194,7 +166,7 @@ namespace Data {
         }
     }
 
-    class EnumProperty : DataProperty {
+    class EnumProperty : AbstractDataProperty {
         
         private Gtk.ComboBoxText combobox;
 
@@ -223,9 +195,13 @@ namespace Data {
 
             combobox.set_parent(this);
         }
+        
+        protected override void set_property_value(GLib.Value value) {
+            combobox.active = value.get_enum();
+        }
     }
 
-    class StringProperty : DataProperty {
+    class StringProperty : AbstractDataProperty {
         
         private Gtk.Entry text_entry;
 
@@ -253,9 +229,7 @@ namespace Data {
         }
     }
 
-    
-
-    class BoolProperty : DataProperty {
+    class BoolProperty : AbstractDataProperty {
         
         private Gtk.Switch switch_button;
 

@@ -1,5 +1,5 @@
 namespace Image {
-    public class ColorProperty : Data.DataProperty {
+    public class ColorProperty : Data.AbstractDataProperty {
         private Gtk.Box box;
         private Gtk.ColorButton color_button;
         private Gtk.ToggleButton prober_button;
@@ -12,16 +12,13 @@ namespace Image {
             base(color_specs);
             box = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 6);
             color_button = new Gtk.ColorButton();
-            prober_button = new Gtk.ToggleButton();
-            prober_button.add_css_class ("flat");
-            prober_button.set_child(new Gtk.Image.from_icon_name ("color-select-symbolic"));
-            prober_button.set_tooltip_text("Probe color from screen");
             
             color_button.set_use_alpha(true);
             box.append(color_button);
-            box.append(prober_button);
             box.set_parent(this);
-
+#if LINUX
+            create_color_prober();
+#endif
             color_button.color_set.connect(() => {
                 var rgba = color_button.rgba;
                 double r = rgba.red;
@@ -34,11 +31,21 @@ namespace Image {
                 );
                 property_value_changed(new Gegl.Color(color_str));
             });
+        }
+
+#if LINUX
+        private void create_color_prober() {
+            prober_button = new Gtk.ToggleButton();
+            prober_button.add_css_class ("flat");
+            prober_button.set_child(new Gtk.Image.from_icon_name ("color-select-symbolic"));
+            prober_button.set_tooltip_text("Probe color from screen");
 
             prober_button.toggled.connect(() => {
                 if (prober_button.active)
                     pick_color_async.begin();
             });
+            
+            box.append(prober_button);
         }
 
         private async void pick_color_async() {
@@ -62,6 +69,7 @@ namespace Image {
             );
             property_value_changed(new Gegl.Color(color_str));
         }
+#endif
 
         string color_part(double v) {
             return "%.6f".printf(v).replace(",", ".");

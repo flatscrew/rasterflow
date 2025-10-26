@@ -197,12 +197,7 @@ namespace Image {
             external_window.present();
 
             if (last_window_dimensions != null) {
-                external_window.set_dimensions(
-                    last_window_dimensions.x,
-                    last_window_dimensions.y,
-                    last_window_dimensions.width,
-                    last_window_dimensions.height
-                );
+                external_window.set_dimensions(last_window_dimensions);
             }
 
             return external_window;
@@ -373,7 +368,7 @@ namespace Image {
                         width = width,
                         height = height
                     };
-                    this.external_window.set_dimensions(x, y, width, height);
+                    this.external_window.set_dimensions(last_window_dimensions);
                 }
             }
             this.window_switch_listen_events = true;

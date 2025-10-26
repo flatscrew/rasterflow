@@ -26,5 +26,9 @@ namespace History {
                 node.set_size_request(new_width, new_height);
                 node.parent.queue_allocate();
         }
+        
+        public string get_label() {
+            return "Resize node";
+        }
     }
 }

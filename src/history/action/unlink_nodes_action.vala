@@ -28,5 +28,9 @@ namespace History {
                 warning(e.message);
             }
         }
+        
+        public string get_label() {
+            return "Unlink nodes";
+        }
     }
 }

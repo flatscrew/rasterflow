@@ -1,0 +1,40 @@
+{
+  "properties" : [],
+  "nodes" : [
+    {
+      "model" : {      },
+      "builder_id" : "image:display",
+      "width" : 160,
+      "height" : 185,
+      "expanded" : false,
+      "position_x" : 550,
+      "position_y" : 140,
+      "external-window" : {
+        "active" : false
+      }
+    },
+    {
+      "model" : {
+        "_properties_as_sinks" : []
+      },
+      "builder_id" : "gegl:grid",
+      "width" : 334,
+      "height" : 638,
+      "expanded" : true,
+      "position_x" : 120,
+      "position_y" : 130
+    }
+  ],
+  "links" : [
+    {
+      "node_index" : 1,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 0,
+          "sink_name" : "Input"
+        }
+      ]
+    }
+  ]
+}

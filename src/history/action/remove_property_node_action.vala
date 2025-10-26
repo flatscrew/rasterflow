@@ -1,8 +1,8 @@
 namespace History {
 
-    public class RemoveNodeAction : Object, IAction {
+    public class RemovePropertyNodeAction : Object, IAction {
         private weak GtkFlow.NodeView parent_view;
-        private CanvasDisplayNode node;
+        private CanvasPropertyDisplayNode node;
         private int pos_x;
         private int pos_y;
         private int width;
@@ -20,7 +20,7 @@ namespace History {
             }
         }
 
-        public RemoveNodeAction(GtkFlow.NodeView parent_view, CanvasDisplayNode node, int previous_x, int previous_y) {
+        public RemovePropertyNodeAction(GtkFlow.NodeView parent_view, CanvasPropertyDisplayNode node, int previous_x, int previous_y) {
             this.parent_view = parent_view;
             this.node = node;
             this.pos_x = previous_x;
@@ -58,10 +58,13 @@ namespace History {
             node.set_size_request(width, height);
 
             foreach (var link in saved_links) {
-                link.sink.link(link.source);
+                try {
+                    link.sink.link(link.source);
+                } catch (Error e) {
+                    warning(e.message);
+                }
             }
 
-            node.undo_remove();
             parent_view.queue_allocate();
         }
 
@@ -73,7 +76,7 @@ namespace History {
         }
         
         public string get_label() {
-            return "Remove node";
+            return "Remove property node";
         }
     }
 

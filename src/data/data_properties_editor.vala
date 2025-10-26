@@ -13,28 +13,28 @@ namespace Data {
             }
         }
 
-        public Data.DataProperty? build_property(ParamSpec param_spec, GLib.Object data_object) {
-            return composer.build_property(param_spec, data_object);
+        public Data.AbstractDataProperty? build_property(ParamSpec param_spec) {
+            return composer.build_property(param_spec);
         }
     }
 
     public class PropertyOverridesComposer {
-        private Gee.Map<string, DataPropertyOverrideBuilder> property_builders = new Gee.HashMap<string, DataPropertyOverrideBuilder>();
+        private Gee.Map<string, DataPropertyBuilder> property_builders = new Gee.HashMap<string, DataPropertyBuilder>();
 
         internal void override_property(string property_name, DataPropertyBuilderFunc property_func) {
-            add_property_override_builder(property_name, new DataPropertyOverrideBuilder(property_func));
+            add_property_override_builder(property_name, new DataPropertyBuilder(property_func));
         }
 
-        protected void add_property_override_builder(string property_name, DataPropertyOverrideBuilder builder) {
+        protected void add_property_override_builder(string property_name, DataPropertyBuilder builder) {
             property_builders.set(property_name, builder);
         }
 
-        internal Data.DataProperty? build_property(ParamSpec param_spec, GLib.Object data_object) {
+        internal Data.AbstractDataProperty? build_property(ParamSpec param_spec) {
             var builder = property_builders.get(param_spec.name);
             if (builder == null) {
                 return null;
             }
-            return builder.build_property(param_spec, data_object);
+            return builder.build_property(param_spec);
         }
 
         internal void copy_to(PropertyOverridesComposer other_composer) {
@@ -44,34 +44,29 @@ namespace Data {
         }
     }
 
-    protected class DataPropertyOverrideBuilder {
+    protected class DataPropertyBuilder {
         private DataPropertyBuilderFunc property_func;
 
-        internal DataPropertyOverrideBuilder(DataPropertyBuilderFunc property_func) {
-            this.property_func = (param_spec, data_object) => {
-                return property_func(param_spec, data_object);
+        internal DataPropertyBuilder(DataPropertyBuilderFunc property_func) {
+            this.property_func = (param_spec) => {
+                return property_func(param_spec);
             };
         }
 
-        public Data.DataProperty build_property(GLib.ParamSpec param_spec, GLib.Object data_object) {
-            return this.property_func(param_spec, data_object);
+        public Data.AbstractDataProperty build_property(GLib.ParamSpec param_spec) {
+            return this.property_func(param_spec);
         }
     } 
 
-    public delegate Data.DataProperty DataPropertyBuilderFunc (GLib.ParamSpec param_spec, GLib.Object data_object);
+    public delegate Data.AbstractDataProperty DataPropertyBuilderFunc(GLib.ParamSpec param_spec);
 
     class DataPropertyWrapper : Gtk.Widget {
 
         public signal void property_value_changed(string property_name, GLib.Value property_value);
-        internal signal void object_property_value_changed(GLib.Value new_value);
 
-        private Gtk.Widget property_widget;
+        private AbstractDataProperty? property_widget;
+        
         internal bool multiline {
-            get;
-            private set;
-        }
-
-        public bool writable {
             get;
             private set;
         }
@@ -85,113 +80,31 @@ namespace Data {
             property_widget.unparent();
         }
 
-        public DataPropertyWrapper(GLib.ParamSpec param_spec, GLib.Object data_object, DataPropertiesOverrideCallback? overrides_callback = null) {
-            var not_supported_label = new Gtk.Label("");
-            not_supported_label.set_markup("<b><span foreground='red'>Not supported type</span></b>: %s".printf(param_spec.value_type.name()));
-            not_supported_label.halign = Gtk.Align.START;
-            this.property_widget = not_supported_label;
-
+        public DataPropertyWrapper(
+            GLib.ParamSpec param_spec, 
+            AbstractDataProperty data_property_widget
+        )
+        {
+            var writable = false;
             if ((param_spec.flags & ParamFlags.WRITABLE) == ParamFlags.WRITABLE) {
-                this.writable = true;
+                writable = true;
             }
 
-            var property = override_property(param_spec, data_object, overrides_callback);
-            if (property != null) {
-                property_widget = property;
-            } else {
-                if (param_spec is ParamSpecDouble) {
-                    property = create_double_property_widget(param_spec as ParamSpecDouble);
-                } else if (param_spec is ParamSpecString) {
-                    property = create_string_property_widget(param_spec as ParamSpecString);
-                } else if (param_spec is ParamSpecBoolean) {
-                    property = create_bool_property_widget(param_spec as ParamSpecBoolean);
-                } else if (param_spec is ParamSpecInt) {
-                    property = create_int_property_widget(param_spec as ParamSpecInt);
-                } else if (param_spec is ParamSpecUInt) {
-                    property = create_uint_property_widget(param_spec as ParamSpecUInt);
-                } else if (param_spec is ParamSpecUInt64) {
-                    property = create_uint64_property_widget(param_spec as ParamSpecUInt64);
-                } else if (param_spec is ParamSpecEnum) {
-                    property = create_enum_property_widget(param_spec as ParamSpecEnum);
-                } else {
-                    var custom_property_widget = CustomPropertyFactory.get_instance().build(param_spec, data_object);
-                    if (custom_property_widget == null) {
-                        warning("unhandled property type: %s = %s\n", param_spec.name, param_spec.value_type.name());
-                    } else {
-                        property = custom_property_widget;
-                    }
-                }
-            }
-            if (property != null) {
-                property_widget = property;
-                multiline = property.multiline;
-                
-                property.changed.connect(this.property_changed);
-                object_property_value_changed.connect(property.set_value_from_model);
-            }
-
+            this.property_widget = data_property_widget;
             property_widget.valign = Gtk.Align.CENTER;
             property_widget.set_parent(this);
-
-            if (!this.writable) {
+            property_widget.changed.connect(this.property_changed);
+            
+            if (!writable) {
                 set_tooltip_text("Read only property");
                 set_sensitive(false);
             }
         }
-
-        private Data.DataProperty? override_property(ParamSpec param_spec, GLib.Object data_object, DataPropertiesOverrideCallback? overrides_callback) {
-            if (overrides_callback == null) {
-                return null;
-            }
-            var property = overrides_callback.build_property(param_spec, data_object);
-            if (property != null) {
-                var default_value = property.default_value();
-                if (default_value != null) {
-                    property_changed(param_spec.name, default_value);
-                }
-                return property;
-            }
-            return null;
+        
+        internal void object_property_value_changed(GLib.Value new_value) {
+            property_widget.set_value_from_model(new_value);
         }
-
-        private Data.DataProperty create_double_property_widget(ParamSpecDouble double_specs) {
-            var property = new Data.DoubleProperty(double_specs);
-            property.halign = Gtk.Align.START;
-            return property;
-        }
-
-        private Data.DataProperty create_int_property_widget(ParamSpecInt int_spec) {
-            var property = new Data.IntProperty(int_spec);
-            return property;
-        }
-
-        private Data.DataProperty create_uint_property_widget(ParamSpecUInt uint_spec) {
-            var property = new Data.UIntProperty(uint_spec);
-            return property;
-        }
-
-        private Data.DataProperty create_uint64_property_widget(ParamSpecUInt64 uint64_spec) {
-            var property = new Data.UInt64Property(uint64_spec);
-            return property;
-        }
-
-        private Data.DataProperty create_enum_property_widget(ParamSpecEnum enum_spec) {
-            var property = new Data.EnumProperty(enum_spec);
-            property.halign = Gtk.Align.START;
-            return property;
-        }
-
-        private Data.DataProperty create_string_property_widget(ParamSpecString string_spec) {
-            var property = new Data.StringProperty(string_spec);
-            return property;
-        }
-
-        private Data.DataProperty create_bool_property_widget(ParamSpecBoolean bool_spec) {
-            var property = new Data.BoolProperty(bool_spec);
-            property.halign = Gtk.Align.START;
-            return property;
-        }
-
+        
         private void property_changed(string property_name, GLib.Value property_value) {
             property_value_changed(property_name, property_value);
         }
@@ -204,7 +117,7 @@ namespace Data {
     public class PropertiesGridEntry : Object {
         public Gtk.Label property_label;
         public Gtk.Label? description_label;
-        public Gtk.Widget property_decorator;
+        public Gtk.Widget property_widget;
         public Gtk.Button? override_button;
     
         public int row_start { get; private set; }
@@ -212,12 +125,11 @@ namespace Data {
     
         public void attach_to_grid(Gtk.Grid grid, ref int current_row) {
             if (override_button != null) {
-                message("adding button\n");
                 grid.attach(override_button, 0, current_row, 1, 1);
             }
     
             grid.attach(property_label, 1, current_row, 1, 1);
-            grid.attach(property_decorator, 2, current_row, 1, 1);
+            grid.attach(property_widget, 2, current_row, 1, 1);
             row_start = current_row;
     
             if (description_label != null) {
@@ -232,14 +144,14 @@ namespace Data {
     
         public void hide() {
             property_label.visible = false;
-            if (property_decorator != null) property_decorator.visible = false;
+            if (property_widget != null) property_widget.visible = false;
             if (description_label != null) description_label.visible = false;
             if (override_button != null) override_button.visible = false;
         }
     
         public void show() {
             property_label.visible = true;
-            if (property_decorator != null) property_decorator.visible = true;
+            if (property_widget != null) property_widget.visible = true;
             if (description_label != null) description_label.visible = true;
             if (override_button != null) override_button.visible = true;
         }
@@ -252,8 +164,8 @@ namespace Data {
 
         private History.HistoryOfChangesRecorder history_recorder; 
         private Gtk.Grid properties_grid;
+        private Gee.Map<string, PropertiesGridEntry> entries = new Gee.HashMap<string, PropertiesGridEntry>();
         private GLib.Object data_object;
-        private Gee.Map<string, GLib.Type> changed_properties = new Gee.HashMap<string, GLib.Type>();
 
         private PropertyControlRequestHandler on_take_control;
         private DataPropertyFilter? control_override_filter;
@@ -297,31 +209,60 @@ namespace Data {
             foreach (var param_spec in data_object.get_class().list_properties()) {
                 if (!filter(param_spec))
                     continue;
-
+                    
+                var data_property_widget = override_property(param_spec, new DataPropertiesOverrideCallback(overrides_func));
+                if (data_property_widget == null) {
+                    var factored_property_widget = DataPropertyFactory.instance.build(param_spec);
+                    if (factored_property_widget == null) {
+                        warning("unhandled property type: %s = %s\n", param_spec.name, param_spec.value_type.name());
+                    } else {
+                        data_property_widget = factored_property_widget;
+                    }
+                }
+                if (data_property_widget == null) {
+                    continue;
+                }
+                    
                 this.has_properties = true;
 
-                var entry = create_property_entry(param_spec, overrides_func, property_decorator);
+                // TODO check if property is supported here and if its not then dont add it at all
+                var entry = create_properties_grid_entry(param_spec, data_property_widget, property_decorator);
                 entry.attach_to_grid(properties_grid, ref row);
+                entries.set(param_spec.name, entry);
             }
 
             return has_properties;
         }
         
-        private PropertiesGridEntry create_property_entry(
+        private Data.AbstractDataProperty? override_property(ParamSpec param_spec, DataPropertiesOverrideCallback overrides_callback) {
+            if (overrides_callback == null) {
+                return null;
+            }
+            var property = overrides_callback.build_property(param_spec);
+            //  if (property != null) {
+            //      // TODO is it necessary?
+            //      var default_value = property.default_value();
+            //      if (default_value != null) {
+            //          property_changed(param_spec.name, default_value);
+            //      }
+            //      return property;
+            //  }
+            return property;
+        }
+        
+        private PropertiesGridEntry create_properties_grid_entry(
             ParamSpec param_spec,
-            DataPropertiesOverrideFunc overrides_func,
+            AbstractDataProperty data_property_widget,
             PropertyDecorator property_decorator
         ) {
             var property_wrapper = new DataPropertyWrapper(
                 param_spec,
-                data_object,
-                new DataPropertiesOverrideCallback(overrides_func)
+                data_property_widget
             );
         
             data_object.notify[param_spec.name].connect(property_spec => {
                 GLib.Value value = GLib.Value(property_spec.value_type);
                 data_object.get_property(property_spec.name, ref value);
-                changed_properties.set(property_spec.name, property_spec.value_type);
                 property_wrapper.object_property_value_changed(value);
             });
         
@@ -330,14 +271,15 @@ namespace Data {
         
             var desc_label = description_label(param_spec);
             var label = property_label(param_spec, property_wrapper.multiline);
-            var decorator = property_decorator(property_wrapper, param_spec);
+            var property_widget = property_decorator(property_wrapper, param_spec);
         
             var entry = new PropertiesGridEntry() {
                 property_label = label,
                 description_label = desc_label,
-                property_decorator = decorator
+                property_widget = property_widget
             };
         
+            // override property control button
             if (property_control_override && param_type_supported_for_control_override(param_spec)) {
                 var override_btn = create_property_control_override_button(param_spec, entry);
                 entry.override_button = override_btn;
@@ -352,20 +294,54 @@ namespace Data {
         ) {
             // TODO make it possible to use a custom icon
             var take_property_control_button = new Gtk.Button.from_icon_name("list-add-symbolic");
+            take_property_control_button.valign = Gtk.Align.CENTER;
+            
+            take_property_control_button.add_css_class("flat");
             take_property_control_button.tooltip_text = this.take_control_tooltip;
             take_property_control_button.clicked.connect(() => {
                 properties_grid_entry.hide();
 
                 if (on_take_control != null) {
-                    var contract = new PropertyControlContract(this, data_object, param_spec, properties_grid_entry);
+                    var contract = crate_property_control_contract(param_spec);
+                    contract.released.connect(properties_grid_entry.show);
+                    contract.renewed.connect(properties_grid_entry.hide);
+                    
                     on_take_control(contract);
                 }
             });
 
             return take_property_control_button;
         }
+        
+        public void renew_contract(string property_name) {
+            var param_spec = data_object.get_class().find_property(property_name);
+            if (param_spec == null) {
+                warning("Unable to find property for contract renewal: %s", property_name);
+                return;
+            }
+            
+            if (this.on_take_control == null) return;
+            
+            var entry = entries.get(property_name);
+            if (entry == null) return;
+            entry.hide();
+            
+            var contract = crate_property_control_contract(param_spec);
+            contract.released.connect(entry.show);
+            contract.renewed.connect(entry.hide);
+            
+            on_take_control(contract);
+        }
+        
+        private PropertyControlContract crate_property_control_contract(ParamSpec param_spec) {
+            var contract = new PropertyControlContract(this, data_object, param_spec);
+            contract.property_value_changed.connect((name, value) => {
+                data_property_changed(name, value);
+            });
+            return contract;
+        }
 
-        private void data_property_value_changed(string property_name, GLib.Value property_value) {
+        private void data_property_value_changed(string property_name, GLib.Value? property_value) {
             var pspec = data_object.get_class().find_property(property_name);
             if (pspec == null)
                 return;
@@ -384,7 +360,8 @@ namespace Data {
         private Gtk.Label property_label(GLib.ParamSpec param_spec, bool multiline = false) {
             var name = param_spec.get_nick();
 
-            var label = new Gtk.Label("%s:".printf(name[0].to_string().up().concat(name.substring(1))));
+            var label = new Gtk.Label(name[0].to_string().up().concat(name.substring(1)));
+            label.justify = Gtk.Justification.RIGHT;
             label.halign = Gtk.Align.END;
 
             label.valign = Gtk.Align.CENTER;
@@ -433,21 +410,19 @@ namespace Data {
     public class PropertyControlContract : Object {
         public signal void released();
         public signal void renewed();
+        public signal void property_value_changed(string property_name, GLib.Value? property_value);
         
         public ParamSpec param_spec { public get; private set;}
         private GLib.Object data_object;
-        private PropertiesGridEntry entry;
     
         private unowned DataPropertiesEditor owner;
     
         public PropertyControlContract(DataPropertiesEditor owner,
                                        GLib.Object data_object,
-                                       ParamSpec param_spec,
-                                       PropertiesGridEntry entry) {
+                                       ParamSpec param_spec) {
             this.owner = owner;
             this.data_object = data_object;
             this.param_spec = param_spec;
-            this.entry = entry;
         }
     
         public GLib.Value get_value() {
@@ -458,15 +433,14 @@ namespace Data {
     
         public void set_value(GLib.Value? value) {
             data_object.set_property(param_spec.name, value);
+            property_value_changed(param_spec.name, value);
         }
     
         public void release() {
-            entry.show();
             released();
         }
         
         public void renew() {
-            entry.hide();
             renewed();
         }
     }

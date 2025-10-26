@@ -25,14 +25,15 @@ dependencies = [
     dependency('gio-2.0'),
     dependency('json-glib-1.0'),
     dependency('gegl-0.4'),
-    dependency('libportal'),
-    dependency('libportal-gtk4')
+    dependency('libadwaita-1')
 ]
 
 if host_machine.system() == 'linux'
   dependencies += [
     dependency('gtk4-x11'),
-    dependency('x11')
+    dependency('x11'),
+    dependency('libportal'),
+    dependency('libportal-gtk4'),
   ]
 endif
 
@@ -75,15 +76,24 @@ endif
 # vala sources
 vala_sources = [
     'src/main.vala',
+    'src/application_settings.vala',
     'src/minimap.vala',
+    'src/window_geometry.vala',
     'src/window_shortcuts.vala',
-    'src/theme_variant_switch.vala',
     'src/data_drop_handler.vala',
     'src/canvas_view.vala',
     'src/canvas_node.vala',
-    'src/canvas_nodes.vala',
+    'src/canvas_display_node.vala',
+    'src/canvas_node_action_bar.vala',
+    'src/canvas_graph_property.vala',
+    'src/canvas_graph_property_list.vala',
+    'src/canvas_graph.vala',
     'src/canvas_logs.vala',
+    'src/canvas_log_button.vala',
+    'src/canvas_log_window.vala',
     'src/canvas_headerbar.vala',
+    'src/canvas_graph_properties_editor.vala',
+    'src/add_graph_property_popover.vala',
     'src/colors.vala',
     'src/panning_scrolled_window.vala',
     'src/zoomable_area.vala',
@@ -95,11 +105,11 @@ vala_sources = [
     'src/serialize/json_deserializer.vala',
 
     # property node
-    'src/property/canvas_property_bridge.vala',
     'src/property/canvas_property_node.vala',
 
     # generic data
     'src/data/data_property.vala',
+    'src/data/data_property_factory.vala',
     'src/data/title_bar.vala',
     'src/data/node_data.vala',
     'src/data/data_node_chooser.vala',
@@ -124,8 +134,6 @@ vala_sources = [
     'src/image/gegl_node_operation_view.vala',
     'src/image/gegl_xml_file_node.vala',
     'src/image/gxml/gxml_export.vala',
-    'src/image/window_geometry.vala',
-    'src/image/color_prober.vala',
     'src/image/color_property.vala',
     'src/image/history/gegl_node_property_control_taken_action.vala',
     'src/image/plugin.vala',
@@ -145,12 +153,22 @@ vala_sources = [
     'src/history/action/move_node_action.vala',
     'src/history/action/remove_node_action.vala',
     'src/history/action/add_node_action.vala',
+    'src/history/action/add_property_node_action.vala',
+    'src/history/action/remove_property_node_action.vala',
+    'src/history/action/add_graph_property_action.vala',
+    'src/history/action/remove_graph_property_action.vala',
     'src/history/action/resize_node_action.vala',
     'src/history/action/toggle_expander_action.vala',
     'src/history/action/change_property_action.vala',
     'src/history/action/link_nodes_action.vala',
     'src/history/action/unlink_nodes_action.vala',
 ]
+
+if host_machine.system() == 'linux'
+  vala_sources += [
+    'src/image/color_prober.vala',
+  ]
+endif
 
 executable(
   'rasterflow',

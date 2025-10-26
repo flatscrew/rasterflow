@@ -1,4 +1,11 @@
 {
+  "properties" : [
+    {
+      "name" : "pixel-size",
+      "label" : "Pixel size",
+      "type" : "gint"
+    }
+  ],
   "nodes" : [
     {
       "model" : {
@@ -7,151 +14,169 @@
         "color" : {
           "type" : "GeglColor",
           "color" : "rgb(0.102, 0.373, 0.706)"
-        }
+        },
+        "_properties_as_sinks" : []
       },
       "builder_id" : "gegl:color-to-alpha",
-      "width" : 166,
-      "height" : 156,
+      "width" : 174,
+      "height" : 214,
       "expanded" : false,
-      "position_x" : 297,
-      "position_y" : 68
+      "position_x" : 420,
+      "position_y" : 44
     },
     {
       "model" : {
-        "path" : "/home/activey/Pictures/ja.jpeg"
+        "path" : "/home/activey/Pictures/ja.jpeg",
+        "_properties_as_sinks" : []
       },
       "builder_id" : "gegl:load",
-      "width" : 208,
-      "height" : 127,
+      "width" : 216,
+      "height" : 185,
       "expanded" : false,
-      "position_x" : 77,
-      "position_y" : 96
+      "position_x" : 37,
+      "position_y" : 66
     },
     {
       "model" : {      },
       "builder_id" : "image:display",
-      "width" : 152,
-      "height" : 127,
-      "expanded" : false,
-      "position_x" : 2141,
-      "position_y" : 231,
+      "width" : 408,
+      "height" : 487,
+      "expanded" : true,
+      "position_x" : 3090,
+      "position_y" : 151,
       "external-window" : {
-        "active" : true,
-        "title" : "Image window",
-        "dimensions" : {
-          "x" : 256,
-          "y" : 310,
-          "width" : 1571,
-          "height" : 987
-        }
+        "active" : false
       }
     },
     {
       "model" : {
         "hue" : 6.5999999999999925,
         "lightness" : -6.3999999999999932,
-        "chroma" : 16.89999999999997
+        "chroma" : 16.89999999999997,
+        "_properties_as_sinks" : []
       },
       "builder_id" : "gegl:hue-chroma",
-      "width" : 159,
-      "height" : 156,
+      "width" : 167,
+      "height" : 214,
       "expanded" : false,
-      "position_x" : 552,
-      "position_y" : 41
+      "position_x" : 789,
+      "position_y" : 32
     },
     {
       "model" : {
-        "scale" : 1.8000000000000007
+        "scale" : 1.8000000000000007,
+        "_properties_as_sinks" : []
       },
       "builder_id" : "gegl:saturation",
-      "width" : 146,
-      "height" : 156,
+      "width" : 154,
+      "height" : 214,
       "expanded" : false,
-      "position_x" : 807,
-      "position_y" : 24
+      "position_x" : 1151,
+      "position_y" : 29
     },
     {
       "model" : {
-        "path" : "/home/activey/Pictures/cosmic-space-galaxy-stockcake.jpg"
+        "path" : "/home/activey/Pictures/cosmic-space-galaxy-stockcake.jpg",
+        "_properties_as_sinks" : []
       },
       "builder_id" : "gegl:load",
-      "width" : 208,
-      "height" : 127,
-      "expanded" : false,
-      "position_x" : 109,
-      "position_y" : 786
-    },
-    {
-      "model" : {      },
-      "builder_id" : "svg:dst-over",
-      "width" : 135,
+      "width" : 216,
       "height" : 185,
       "expanded" : false,
-      "position_x" : 1299,
-      "position_y" : 190
+      "position_x" : 191,
+      "position_y" : 742
+    },
+    {
+      "model" : {
+        "_properties_as_sinks" : []
+      },
+      "builder_id" : "svg:dst-over",
+      "width" : 145,
+      "height" : 243,
+      "expanded" : false,
+      "position_x" : 1693,
+      "position_y" : 99
     },
     {
       "model" : {
         "width" : 800.0,
-        "height" : 800.0
+        "height" : 800.0,
+        "_properties_as_sinks" : []
       },
       "builder_id" : "gegl:crop",
-      "width" : 114,
-      "height" : 185,
-      "expanded" : false,
-      "position_x" : 1036,
-      "position_y" : 376
+      "width" : 424,
+      "height" : 576,
+      "expanded" : true,
+      "position_x" : 1233,
+      "position_y" : 408
     },
     {
       "model" : {
         "width" : 600.0,
         "height" : 750.0,
-        "x" : 100.0
+        "x" : 100.0,
+        "_properties_as_sinks" : []
       },
       "builder_id" : "gegl:crop",
-      "width" : 114,
-      "height" : 185,
+      "width" : 145,
+      "height" : 243,
       "expanded" : false,
-      "position_x" : 1534,
-      "position_y" : 192
+      "position_x" : 1932,
+      "position_y" : 121
     },
     {
       "model" : {
         "size-x" : 4,
-        "size-y" : 4
+        "size-y" : 4,
+        "_properties_as_sinks" : []
       },
       "builder_id" : "gegl:pixelize",
-      "width" : 131,
-      "height" : 156,
-      "expanded" : false,
-      "position_x" : 1941,
-      "position_y" : 214
+      "width" : 320,
+      "height" : 320,
+      "expanded" : true,
+      "position_x" : 2691,
+      "position_y" : 324
     },
     {
       "model" : {
         "pos-x" : 0.30000000000000004,
-        "pos-y" : 0.20000000000000004
+        "pos-y" : 0.20000000000000004,
+        "_properties_as_sinks" : []
       },
       "builder_id" : "gegl:lens-flare",
-      "width" : 147,
-      "height" : 156,
-      "expanded" : false,
-      "position_x" : 1713,
-      "position_y" : 210
+      "width" : 298,
+      "height" : 410,
+      "expanded" : true,
+      "position_x" : 2298,
+      "position_y" : 130
     },
     {
       "model" : {
         "y" : 2.0,
-        "x" : 2.0
+        "x" : 2.0,
+        "_properties_as_sinks" : []
       },
       "builder_id" : "gegl:scale-ratio",
-      "width" : 148,
-      "height" : 156,
+      "width" : 156,
+      "height" : 214,
       "expanded" : false,
-      "position_x" : 545,
-      "position_y" : 322
+      "position_x" : 653,
+      "position_y" : 662
+    },
+    {
+      "model" : {      },
+      "builder_id" : "image:display",
+      "width" : 160,
+      "height" : 185,
+      "expanded" : false,
+      "position_x" : 386,
+      "position_y" : 410,
+      "external-window" : {
+        "active" : false
+      }
     }
   ],
+  "property_nodes" : [],
   "links" : [
     {
       "node_index" : 0,
@@ -169,6 +194,10 @@
       "sinks" : [
         {
           "node_index" : 0,
+          "sink_name" : "Input"
+        },
+        {
+          "node_index" : 12,
           "sink_name" : "Input"
         }
       ]

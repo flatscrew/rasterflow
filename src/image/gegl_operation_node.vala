@@ -137,8 +137,11 @@ namespace Image {
             get;
             private set;
         }
+        
         private Gee.Map<string, GLib.Type> changed_properties = new Gee.HashMap<string, GLib.Type>();
-
+        private Gee.List<string> properties_as_sinks = new Gee.ArrayList<string>();
+        private Gee.List<string> deserialized_properties_as_sinks = new Gee.ArrayList<string>();
+        
         ~GeglOperationNode() {
             remove_from_graph();
         }
@@ -225,6 +228,30 @@ namespace Image {
         private void gegl_node_property_changed(ParamSpec property_spec) {
             changed_properties.set(property_spec.name, property_spec.value_type);
         }
+        
+        public void add_property_sink(Data.PropertyControlContract property_control_contract) {
+            var property_sink = new CanvasNodePropertySink(property_control_contract);
+            var property_name = property_control_contract.param_spec.name;
+            
+            property_sink.contract_renewed.connect(() => {
+                add_sink(property_sink);
+                properties_as_sinks.add(property_name);
+            });
+            property_sink.contract_released.connect(() => {
+                remove_sink(property_sink);
+                properties_as_sinks.remove(property_name);
+            });
+            
+            add_sink(property_sink);
+            properties_as_sinks.add(property_name);
+        }
+        
+        public void for_each_deserialized_property_as_sink(GLib.Func<string> callback) {
+            deserialized_properties_as_sinks.foreach(prop => {
+                callback(prop);
+                return true;   
+            });
+        }
 
         protected override void serialize(Serialize.SerializedObject serializer) {
             base.serialize(serializer);
@@ -234,11 +261,25 @@ namespace Image {
                 gegl_node.gegl_operation.get_property(changed_property.key, ref value);
                 serializer.set_value(changed_property.key, value);
             }
+            
+            var sinks_properties = serializer.new_array("_properties_as_sinks");
+            foreach (var property_sink in this.properties_as_sinks) {
+                sinks_properties.add_string(property_sink);
+            }
         }
 
         protected override void deserialize(Serialize.DeserializedObject deserializer) {
-            deserializer.for_each_property((name, value) => {
+            deserializer.for_each_property_with_context_object((name, value) => {
+                if (name.has_prefix("_")) return;
                 gegl_node.set_property(name, value);
+            }, gegl_node.gegl_operation);
+            
+            
+            var props = deserializer.get_array("_properties_as_sinks");
+            if (props == null) return;
+            props.for_each_node(node => {
+                var property_as_sink = node.get_value()?.get_string();
+                this.deserialized_properties_as_sinks.add(property_as_sink);  
             });
         }
 
@@ -250,6 +291,7 @@ namespace Image {
             return gegl_node.list_output_pads().length == 0
                 && gegl_node.list_input_pads().length > 0;
         }
+        
     }
 
     class OverridenTitleWidgetBuilder : CanvasNodeTitleWidgetBuilder, Object {
