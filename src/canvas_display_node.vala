@@ -286,7 +286,7 @@ public class CanvasDisplayNode : GtkFlow.Node {
     }
 
     private void node_expanded() {
-        //  changes_recorder.record(new History.ToggleExpanderAction(this.node_expander, this, get_width(), get_height()));
+        changes_recorder.record(new History.ToggleExpanderAction(this.node_expander, this, get_width(), get_height()));
         
         if (!this.node_expander.expanded) {
             this.previous_node_size = Graphene.Size(){

@@ -46,7 +46,7 @@
 .badge {
     background: alpha(@error_bg_color, 0.85);
     color: @error_fg_color;
-    border-radius: 9999px;
+    border-radius: 10px;
     padding: 0 4px;
     font-size: 8pt;
     font-weight: bold;
