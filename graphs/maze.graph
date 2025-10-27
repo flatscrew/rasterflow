@@ -44,23 +44,23 @@
       "height" : 185,
       "expanded" : false,
       "position_x" : 52,
-      "position_y" : 39
+      "position_y" : 78
     },
     {
       "model" : {
         "y" : 0.0,
-        "width" : 1000.0,
-        "height" : 1000.0,
+        "width" : 4000.0,
+        "height" : 4000.0,
         "x" : 0.0,
         "_properties_as_sinks" : []
       },
       "builder_id" : "gegl:crop",
-      "width" : 374,
-      "height" : 347,
+      "width" : 285,
+      "height" : 421,
       "expanded" : true,
       "color" : "rgb(97,53,131)",
       "position_x" : 329,
-      "position_y" : 49
+      "position_y" : 88
     },
     {
       "model" : {
@@ -82,17 +82,40 @@
       "width" : 320,
       "height" : 587,
       "expanded" : true,
-      "position_x" : 1076,
-      "position_y" : 64
+      "position_x" : 948,
+      "position_y" : 108
+    },
+    {
+      "model" : {
+        "_properties_as_sinks" : []
+      },
+      "builder_id" : "gegl:sepia",
+      "width" : 145,
+      "height" : 214,
+      "expanded" : false,
+      "position_x" : 1433,
+      "position_y" : 275
+    },
+    {
+      "model" : {
+        "path" : "/tmp/test2.jpg",
+        "_properties_as_sinks" : []
+      },
+      "builder_id" : "gegl:jpg-save",
+      "width" : 402,
+      "height" : 441,
+      "expanded" : true,
+      "position_x" : 1643,
+      "position_y" : 19
     },
     {
       "model" : {      },
       "builder_id" : "image:display",
-      "width" : 357,
-      "height" : 454,
+      "width" : 316,
+      "height" : 385,
       "expanded" : true,
-      "position_x" : 1507,
-      "position_y" : 167,
+      "position_x" : 1593,
+      "position_y" : 522,
       "external-window" : {
         "active" : false
       }
@@ -103,15 +126,15 @@
       "property_name" : "size",
       "width" : 112,
       "height" : 93,
-      "position_x" : 741,
-      "position_y" : 144
+      "position_x" : 672,
+      "position_y" : 234
     },
     {
       "property_name" : "color",
       "width" : 151,
       "height" : 93,
-      "position_x" : 610,
-      "position_y" : 460
+      "position_x" : 753,
+      "position_y" : 388
     }
   ],
   "links" : [
@@ -146,7 +169,21 @@
       ]
     },
     {
-      "node_index" : 4,
+      "node_index" : 3,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 4,
+          "sink_name" : "Input"
+        },
+        {
+          "node_index" : 5,
+          "sink_name" : "Input"
+        }
+      ]
+    },
+    {
+      "node_index" : 6,
       "source_name" : "size",
       "sinks" : [
         {
@@ -160,7 +197,7 @@
       ]
     },
     {
-      "node_index" : 5,
+      "node_index" : 7,
       "source_name" : "color",
       "sinks" : [
         {

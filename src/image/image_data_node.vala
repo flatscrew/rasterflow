@@ -41,6 +41,7 @@ namespace Image {
         private Gtk.Box? external_window_info_section;
 
         private Gdk.Pixbuf? current_image;
+        private CanvasNodeTask current_task;
 
         public ImageDataDisplayNode(string builder_id, ImageDataNode data_node) {
             base (builder_id, data_node, new GtkFlow.NodeDockLabelWidgetFactory(data_node));
@@ -228,12 +229,14 @@ namespace Image {
 
         private void listen_data_node_changes(ImageDataNode data_node) {
             data_node.image_changed.connect(this.image_changed);
-            data_node.processing_started.connect(() => {
-                make_busy(true);
-            });
-            data_node.processing_finished.connect(() => {
-                make_busy(false);
-            });
+            data_node.processing_started.connect(this.processing_started);
+        }
+        
+        private void processing_started(CanvasOperationProcessor operation_processor) {
+            this.current_task = base.begin_long_running_task();
+            
+            operation_processor.processing_progress.connect(current_task.set_progress);
+            operation_processor.finished.connect(current_task.finish);
         }
         
         private void create_image_viewer() {
@@ -383,8 +386,6 @@ namespace Image {
     class ImageDataNode : CanvasNode, GeglProcessor {
 
         internal signal void image_changed(Gdk.Pixbuf pixbuf);
-        internal signal void processing_started();
-        internal signal void processing_finished();
         
         private ImageProcessingRealtimeGuard realtime_guard;
         private bool realtime_processing;
@@ -427,7 +428,15 @@ namespace Image {
                 return;
             } 
         
-            save_as_pixbuf_node.process();
+            var operation_processor = new CanvasOperationProcessor();
+            processing_started(operation_processor);
+            
+            var processor = save_as_pixbuf_node.new_processor(bbox);
+            double frac = 0.0;
+            while (processor.work(out frac)) {
+                operation_processor.update_progress(frac);
+            }
+            operation_processor.finish();
         
             var oper = save_as_pixbuf_node.get_gegl_operation();
             var value = Value(typeof(Gdk.Pixbuf));

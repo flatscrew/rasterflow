@@ -17,8 +17,6 @@ namespace Data {
             this.action_bar = new Gtk.CenterBox();
             action_bar.set_parent(this);   
             action_bar.hexpand = true;
-
-            action_bar.get_style_context().add_class("rounded_top");
         }
 
         public TitleBar(Gtk.Widget title_widget) {

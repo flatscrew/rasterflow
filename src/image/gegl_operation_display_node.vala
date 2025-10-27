@@ -6,6 +6,7 @@ namespace Image {
         private Data.DataDisplayView data_display_view;
         private Data.DataPropertiesEditor properties_editor;
         private History.HistoryOfChangesRecorder changes_recorder;
+        private CanvasNodeTask current_task;
 
         public GeglOperationDisplayNode(string builder_id, GeglOperationNode node) {
             base(builder_id, node, new GeglNodePropertyBridgeSinkLabelFactory(node));
@@ -14,8 +15,9 @@ namespace Image {
             this.data_display_view = new Data.DataDisplayView();
             this.gegl_operation_node = node;
             this.gegl_operation_node.sink_added.connect_after(this.sink_added);
+            this.gegl_operation_node.processing_started.connect(this.processing_started);
+            
             this.operation_overrides_callback = GeglOperationOverrides.find_operation_overrides(builder_id);
-
             if (operation_overrides_callback != null) {
                 var title_widget = operation_overrides_callback.build_title(gegl_operation_node.get_gegl_operation());
                 build_title(new OverridenTitleWidgetBuilder(title_widget));
@@ -38,13 +40,34 @@ namespace Image {
             }
         }
         
-        private void renew_properties_contracts() {
-            gegl_operation_node.for_each_deserialized_property_as_sink(properties_editor.renew_contract);
+        private void processing_started(CanvasOperationProcessor operation_processor) {
+            this.current_task = base.begin_long_running_task();
+            make_busy(true);
+            
+            var finished = false;
+            Timeout.add(25, () => {
+                if (finished ) {
+                    return Source.REMOVE;
+                }
+                current_task.pulse();
+                return Source.CONTINUE;
+            });
+            
+            //  operation_processor.processing_progress.connect(current_task.set_progress);
+            operation_processor.finished.connect(() => {
+                finished = true;
+                current_task.finish();
+                make_busy(false);
+            });
         }
-
+        
+        private void process_gegl() {
+            gegl_operation_node.process_gegl();
+        }
+        
         private void create_process_gegl_button() {
             var render_button = new Gtk.Button.from_icon_name("media-playback-start");
-            render_button.clicked.connect(gegl_operation_node.process_gegl);
+            render_button.clicked.connect(this.process_gegl);
             render_button.set_tooltip_text("Process");
             add_action_bar_child_start(render_button);
         }
@@ -86,6 +109,10 @@ namespace Image {
                 n.resizable = false;
                 base.can_expand = false;
             }
+        }
+        
+        private void property_changed(string property_name, GLib.Value? property_value) {
+            process_gegl();
         }
 
         private bool check_supported_pad_data_type(GLib.ParamSpec param_spec) {
@@ -130,11 +157,6 @@ namespace Image {
             gegl_operation_node.get_gegl_operation().set_property(name, value);
         }
 
-        private void property_changed(string property_name, GLib.Value? property_value) {
-            unowned var node = n as GeglOperationNode;
-            node.process_gegl();
-        }
-
         private void export_graph_as_xml () {
             var file_dialog = new Gtk.FileDialog ();
             var filter = new Gtk.FileFilter ();
@@ -170,5 +192,8 @@ namespace Image {
             renew_properties_contracts();
         }
         
+        private void renew_properties_contracts() {
+            gegl_operation_node.for_each_deserialized_property_as_sink(properties_editor.renew_contract);
+        }
     }
 }

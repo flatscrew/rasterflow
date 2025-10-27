@@ -6,7 +6,7 @@ public class CanvasSignals : Object {
   public signal void after_file_load(string? file_name);
 }
 
-class CanvasApplication : Gtk.Application {
+class CanvasApplication : Adw.Application {
 
   private AppSettings settings;
   private History.HistoryOfChangesRecorder changes_recorder;

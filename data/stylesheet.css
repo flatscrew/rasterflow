@@ -5,6 +5,11 @@
     background-size: 64px 64px;
 }
 
+.canvas_property_node {
+    outline: 2px dashed @theme_fg_color;
+    outline-offset: 3px;
+}
+
 .canvas_overlay { 
     margin: 10px;
  }
