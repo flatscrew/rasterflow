@@ -109,16 +109,16 @@
       }
     },
     {
-      "model" : {      },
-      "builder_id" : "image:display",
-      "width" : 160,
-      "height" : 185,
-      "expanded" : false,
-      "position_x" : 1650,
-      "position_y" : 474,
-      "external-window" : {
-        "active" : false
-      }
+      "model" : {
+        "path" : "/home/activey/Desktop/aaaaa.jpg",
+        "_properties_as_sinks" : []
+      },
+      "builder_id" : "gegl:jpg-save",
+      "width" : 436,
+      "height" : 350,
+      "expanded" : true,
+      "position_x" : 1686,
+      "position_y" : 454
     }
   ],
   "property_nodes" : [
@@ -177,13 +177,13 @@
           "sink_name" : "Input"
         },
         {
-          "node_index" : 5,
+          "node_index" : 7,
           "sink_name" : "Input"
         }
       ]
     },
     {
-      "node_index" : 6,
+      "node_index" : 5,
       "source_name" : "size",
       "sinks" : [
         {
@@ -197,7 +197,7 @@
       ]
     },
     {
-      "node_index" : 7,
+      "node_index" : 6,
       "source_name" : "color",
       "sinks" : [
         {

@@ -112,7 +112,7 @@ namespace Image {
         }
         
         private void property_changed(string property_name, GLib.Value? property_value) {
-            process_gegl();
+            gegl_operation_node.gegl_property_changed();
         }
 
         private bool check_supported_pad_data_type(GLib.ParamSpec param_spec) {
