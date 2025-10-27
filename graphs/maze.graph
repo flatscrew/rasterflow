@@ -93,20 +93,8 @@
       "width" : 145,
       "height" : 214,
       "expanded" : false,
-      "position_x" : 1433,
-      "position_y" : 275
-    },
-    {
-      "model" : {
-        "path" : "/tmp/test2.jpg",
-        "_properties_as_sinks" : []
-      },
-      "builder_id" : "gegl:jpg-save",
-      "width" : 402,
-      "height" : 441,
-      "expanded" : true,
-      "position_x" : 1643,
-      "position_y" : 19
+      "position_x" : 1363,
+      "position_y" : 146
     },
     {
       "model" : {      },
@@ -114,8 +102,20 @@
       "width" : 316,
       "height" : 385,
       "expanded" : true,
-      "position_x" : 1593,
-      "position_y" : 522,
+      "position_x" : 1690,
+      "position_y" : 0,
+      "external-window" : {
+        "active" : false
+      }
+    },
+    {
+      "model" : {      },
+      "builder_id" : "image:display",
+      "width" : 160,
+      "height" : 185,
+      "expanded" : false,
+      "position_x" : 1650,
+      "position_y" : 474,
       "external-window" : {
         "active" : false
       }

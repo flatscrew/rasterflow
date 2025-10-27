@@ -126,14 +126,14 @@ namespace Serialize {
 
     public class SerializationContext : Object {
 
-        private CanvasGraph canvas_nodes;
+        private CanvasGraph canvas_graph;
 
-        public SerializationContext(CanvasGraph canvas_nodes) {
-            this.canvas_nodes = canvas_nodes;
+        public SerializationContext(CanvasGraph canvas_graph) {
+            this.canvas_graph = canvas_graph;
         }
 
         public int node_index(CanvasNode node) {
-            return canvas_nodes.node_index(node);
+            return canvas_graph.node_index(node);
         }
     }
 

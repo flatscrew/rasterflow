@@ -7,8 +7,8 @@ public class CanvasGraph : Object {
     public signal void property_node_added(CanvasPropertyDisplayNode node);
     
     private CanvasNodeFactory node_factory;
-    private List<GtkFlow.Node> all_nodes = new List<GtkFlow.Node>();
-    private List<CanvasDisplayNode> canvas_nodes = new List<CanvasDisplayNode>();
+    private Gee.List<GtkFlow.Node> all_nodes = new Gee.ArrayList<GtkFlow.Node>();
+    private Gee.List<CanvasDisplayNode> canvas_nodes = new Gee.ArrayList<CanvasDisplayNode>();
     private Gee.Map<string, CanvasGraphProperty> all_properties = new Gee.HashMap<string, CanvasGraphProperty>();
     private List<CanvasPropertyDisplayNode> all_property_nodes = new List<CanvasPropertyDisplayNode>();
 
@@ -17,8 +17,8 @@ public class CanvasGraph : Object {
     }
 
     public void add_node(CanvasDisplayNode node) {
-        canvas_nodes.append(node);
-        all_nodes.append(node);
+        canvas_nodes.add(node);
+        all_nodes.add(node);
         node.removed.connect(this.node_removed);
 
         node_added(node);
@@ -28,8 +28,8 @@ public class CanvasGraph : Object {
         foreach (var node in all_nodes) {
             node.remove();
         }
-        all_nodes = new List<CanvasDisplayNode>();
-        canvas_nodes = new List<CanvasDisplayNode>();
+        all_nodes.clear();
+        canvas_nodes.clear();
         all_property_nodes = new List<CanvasPropertyDisplayNode>();
     }
 
@@ -52,7 +52,7 @@ public class CanvasGraph : Object {
     
     public void add_property_node(CanvasPropertyDisplayNode node) {
         all_property_nodes.append(node);
-        all_nodes.append(node);
+        all_nodes.add(node);
         node.removed.connect(this.property_node_removed);
         
         property_node_added(node);
@@ -149,7 +149,7 @@ public class CanvasGraph : Object {
             var source_name = link_object.get_string("source_name");
             var sinks = link_object.get_array("sinks");
 
-            var source_display_node = all_nodes.nth_data(link_object.get_int("node_index"));
+            var source_display_node = all_nodes.get(link_object.get_int("node_index"));
             var source_node = source_display_node.n as CanvasNode; 
 
             foreach (var source in source_node.get_sources()) {
@@ -157,7 +157,7 @@ public class CanvasGraph : Object {
 
                     sinks.for_each(sink_object => {
 
-                        var sink_node = all_nodes.nth_data(sink_object.get_int("node_index"));
+                        var sink_node = all_nodes.get(sink_object.get_int("node_index"));
                         try {
                             foreach (var sink in sink_node.n.get_sinks()) {
                                 if (sink.name == sink_object.get_string("sink_name")) {
