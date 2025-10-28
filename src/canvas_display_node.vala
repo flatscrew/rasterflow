@@ -279,7 +279,6 @@ public class CanvasDisplayNode : GtkFlow.Node {
 
     public Gtk.Box add_action_bar_child_start(Gtk.Widget child) {
         var wrapper = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 0);
-        wrapper.margin_start = 5;
         wrapper.append(child);
         action_bar.add_action_start(wrapper);
         return wrapper;
@@ -477,8 +476,6 @@ public class CanvasDisplayNode : GtkFlow.Node {
     }
     
     public CanvasNodeTask begin_long_running_task() {
-        message("showing progress bar");
-        
         progress_bar.set_fraction(0.0);
         return new CanvasNodeTask(progress_bar);
     }

@@ -75,7 +75,6 @@ public string initialize_image_plugin(Plugin.PluginContribution plugin_contribut
     });
 
     plugin_contribution.contribute_canvas_node_factory(node_factory => {
-        node_factory.register(new Image.ImageDataDisplayNodeBuilder());
         node_factory.register(new Image.GeglXmlDisplayNodeBuilder());
 
         Image.GeglOperationsFactory.register_gegl_operations(node_factory);
@@ -114,13 +113,16 @@ public string initialize_image_plugin(Plugin.PluginContribution plugin_contribut
             return new Data.FileLocationProperty.with_file_filters(param_spec as ParamSpecString, filters);
         });
     });
-    //  Image.GeglOperationOverrides.override_operation("gegl:save-pixbuf", overrides => {
-    //      overrides.override_whole(gegl_operation => {
+    Image.GeglOperationOverrides.override_operation("gegl:save-pixbuf", overrides => {
+        overrides.override_content((display_node, node) => {
+            var image_view = new Image.ImageDataView(display_node, node);
             
-    //      });
-    //  });
+            display_node.add_action_bar_child_start(image_view.create_save_button());
+            display_node.add_action_bar_child_end(image_view.create_zoom_control());
+            return image_view;
+        });
+    });
     
-
     // TODO make it in plugin contribution instead?
     // custom data types for property editor
     Data.DataPropertyFactory.instance.register(typeof(Gegl.Color), param_spec => {

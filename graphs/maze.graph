@@ -18,7 +18,7 @@
       "type" : "GeglColor",
       "value" : {
         "type" : "GeglColor",
-        "color" : "rgb(0.000, 0.000, 0.000)"
+        "color" : "rgb(0.384, 0.627, 0.918)"
       }
     },
     {
@@ -72,7 +72,7 @@
         "tileable" : true,
         "fg-color" : {
           "type" : "GeglColor",
-          "color" : "rgb(0.000, 0.000, 0.000)"
+          "color" : "rgb(0.384, 0.627, 0.918)"
         },
         "x" : 20,
         "_properties_as_sinks" : [
@@ -101,19 +101,6 @@
       "position_y" : 116
     },
     {
-      "_type" : "canvas_node",
-      "model" : {      },
-      "builder_id" : "image:display",
-      "width" : 316,
-      "height" : 385,
-      "expanded" : true,
-      "position_x" : 1643,
-      "position_y" : 57,
-      "external-window" : {
-        "active" : false
-      }
-    },
-    {
       "_type" : "property_node",
       "property_name" : "size",
       "width" : 112,
@@ -140,6 +127,28 @@
       "expanded" : false,
       "position_x" : 1140,
       "position_y" : 532
+    },
+    {
+      "_type" : "canvas_node",
+      "model" : {
+        "_properties_as_sinks" : []
+      },
+      "builder_id" : "gegl:save-pixbuf",
+      "width" : 386,
+      "height" : 522,
+      "expanded" : true,
+      "position_x" : 1561,
+      "position_y" : 66,
+      "external-window" : {
+        "active" : true,
+        "title" : "Image window",
+        "dimensions" : {
+          "x" : -20,
+          "y" : -20,
+          "width" : 1320,
+          "height" : 1480
+        }
+      }
     }
   ],
   "property_nodes" : [],
@@ -179,13 +188,13 @@
       "source_name" : "Output",
       "sinks" : [
         {
-          "node_index" : 4,
+          "node_index" : 7,
           "sink_name" : "Input"
         }
       ]
     },
     {
-      "node_index" : 5,
+      "node_index" : 4,
       "source_name" : "size",
       "sinks" : [
         {
@@ -199,7 +208,7 @@
       ]
     },
     {
-      "node_index" : 6,
+      "node_index" : 5,
       "source_name" : "color",
       "sinks" : [
         {
