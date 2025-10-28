@@ -131,6 +131,8 @@ namespace Image {
 
     public class GeglOperationNode : CanvasNode, GeglProcessor {
         
+        private static GLib.Mutex gegl_global_mutex;
+        
         private string gegl_operation;
         private ImageProcessingRealtimeGuard realtime_guard;
         private bool realtime_processing;
@@ -213,26 +215,8 @@ namespace Image {
                 }
         
                 var operation_processor = new CanvasOperationProcessor();
+                start_processing_thread(gegl_node.new_processor(bbox), operation_processor);
                 processing_started(operation_processor);
-        
-                new Thread<void>("gegl-process", () => {
-                    var processor = gegl_node.new_processor(bbox);
-                    double frac = 0.0;
-    
-                    while (processor.work(out frac)) {
-                        double progress_copy = frac;
-                        Idle.add(() => {
-                            operation_processor.update_progress(progress_copy);
-                            return false;
-                        });
-                    }
-    
-                    Idle.add(() => {
-                        operation_processor.finish();
-                        return false;
-                    });
-                    return;
-                });
                 return;
             }
         
@@ -248,6 +232,31 @@ namespace Image {
                     target_node.process_gegl();
                 }
             }
+        }
+        
+        private void start_processing_thread(Gegl.Processor gegl_processor, CanvasOperationProcessor operation_processor) {
+            new Thread<void>("gegl-process", () => {
+                gegl_global_mutex.lock();
+                try {
+                    double frac = 0.0;
+                    while (gegl_processor.work(out frac)) {
+                        double progress_copy = frac;
+                        Idle.add(() => {
+                            operation_processor.update_progress(progress_copy);
+                            return false;
+                        });
+                    }
+                } finally {
+                    gegl_global_mutex.unlock();
+                }
+        
+                Idle.add(() => {
+                    operation_processor.finish();
+                    return false;
+                });
+        
+                return;
+            });
         }
         
         private void remove_from_graph() {

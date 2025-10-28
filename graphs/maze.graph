@@ -97,8 +97,8 @@
       "width" : 145,
       "height" : 214,
       "expanded" : false,
-      "position_x" : 1336,
-      "position_y" : 116
+      "position_x" : 1313,
+      "position_y" : 219
     },
     {
       "_type" : "property_node",
@@ -134,20 +134,28 @@
         "_properties_as_sinks" : []
       },
       "builder_id" : "gegl:save-pixbuf",
-      "width" : 386,
-      "height" : 522,
+      "width" : 371,
+      "height" : 339,
       "expanded" : true,
       "position_x" : 1561,
       "position_y" : 66,
       "external-window" : {
-        "active" : true,
-        "title" : "Image window",
-        "dimensions" : {
-          "x" : -20,
-          "y" : -20,
-          "width" : 1320,
-          "height" : 1480
-        }
+        "active" : false
+      }
+    },
+    {
+      "_type" : "canvas_node",
+      "model" : {
+        "_properties_as_sinks" : []
+      },
+      "builder_id" : "gegl:save-pixbuf",
+      "width" : 393,
+      "height" : 375,
+      "expanded" : true,
+      "position_x" : 1550,
+      "position_y" : 469,
+      "external-window" : {
+        "active" : false
       }
     }
   ],
@@ -189,6 +197,10 @@
       "sinks" : [
         {
           "node_index" : 7,
+          "sink_name" : "Input"
+        },
+        {
+          "node_index" : 8,
           "sink_name" : "Input"
         }
       ]
