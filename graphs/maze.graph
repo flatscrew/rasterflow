@@ -61,8 +61,8 @@
       "height" : 421,
       "expanded" : true,
       "color" : "rgb(97,53,131)",
-      "position_x" : 329,
-      "position_y" : 88
+      "position_x" : 363,
+      "position_y" : 114
     },
     {
       "_type" : "canvas_node",
@@ -135,10 +135,10 @@
       },
       "builder_id" : "gegl:save-pixbuf",
       "width" : 371,
-      "height" : 339,
+      "height" : 463,
       "expanded" : true,
-      "position_x" : 1561,
-      "position_y" : 66,
+      "position_x" : 1542,
+      "position_y" : 31,
       "external-window" : {
         "active" : false
       }
@@ -149,11 +149,11 @@
         "_properties_as_sinks" : []
       },
       "builder_id" : "gegl:save-pixbuf",
-      "width" : 393,
-      "height" : 375,
-      "expanded" : true,
-      "position_x" : 1550,
-      "position_y" : 469,
+      "width" : 300,
+      "height" : 185,
+      "expanded" : false,
+      "position_x" : 1578,
+      "position_y" : 616,
       "external-window" : {
         "active" : false
       }

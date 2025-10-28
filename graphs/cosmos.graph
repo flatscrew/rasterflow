@@ -40,22 +40,17 @@
     },
     {
       "_type" : "canvas_node",
-      "model" : {      },
-      "builder_id" : "image:display",
+      "model" : {
+        "_properties_as_sinks" : []
+      },
+      "builder_id" : "gegl:save-pixbuf",
       "width" : 408,
       "height" : 487,
       "expanded" : true,
       "position_x" : 3090,
       "position_y" : 151,
       "external-window" : {
-        "active" : true,
-        "title" : "Image window",
-        "dimensions" : {
-          "x" : -20,
-          "y" : -20,
-          "width" : 1320,
-          "height" : 1480
-        }
+        "active" : false
       }
     },
     {
@@ -96,8 +91,8 @@
       "width" : 216,
       "height" : 185,
       "expanded" : false,
-      "position_x" : 191,
-      "position_y" : 742
+      "position_x" : 266,
+      "position_y" : 449
     },
     {
       "_type" : "canvas_node",
@@ -114,16 +109,17 @@
     {
       "_type" : "canvas_node",
       "model" : {
+        "y" : -1.0,
         "width" : 800.0,
         "height" : 800.0,
         "_properties_as_sinks" : []
       },
       "builder_id" : "gegl:crop",
-      "width" : 424,
-      "height" : 576,
+      "width" : 331,
+      "height" : 443,
       "expanded" : true,
-      "position_x" : 1233,
-      "position_y" : 408
+      "position_x" : 1168,
+      "position_y" : 346
     },
     {
       "_type" : "canvas_node",
@@ -179,21 +175,8 @@
       "width" : 156,
       "height" : 214,
       "expanded" : false,
-      "position_x" : 653,
-      "position_y" : 662
-    },
-    {
-      "_type" : "canvas_node",
-      "model" : {      },
-      "builder_id" : "image:display",
-      "width" : 160,
-      "height" : 185,
-      "expanded" : false,
-      "position_x" : 386,
-      "position_y" : 410,
-      "external-window" : {
-        "active" : false
-      }
+      "position_x" : 707,
+      "position_y" : 445
     }
   ],
   "property_nodes" : [],
@@ -214,10 +197,6 @@
       "sinks" : [
         {
           "node_index" : 0,
-          "sink_name" : "Input"
-        },
-        {
-          "node_index" : 12,
           "sink_name" : "Input"
         }
       ]

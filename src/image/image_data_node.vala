@@ -208,7 +208,6 @@ namespace Image {
             }
             replace_image(value as Gdk.Pixbuf);
         }
-
         
         private void node_removed() {
             if (external_window != null) {

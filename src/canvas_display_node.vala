@@ -253,6 +253,7 @@ public class CanvasDisplayNode : GtkFlow.Node {
         details_view.set_child(node_box);
         
         this.progress_bar = new Gtk.ProgressBar();
+        progress_bar.set_pulse_step(0.3f);
         progress_bar.add_css_class("osd");
         progress_bar.halign = Gtk.Align.FILL;
         progress_bar.valign = Gtk.Align.END;
@@ -476,7 +477,12 @@ public class CanvasDisplayNode : GtkFlow.Node {
     }
     
     public CanvasNodeTask begin_long_running_task() {
+        var task = new CanvasNodeTask(progress_bar);
+        task.on_finished.connect(() => {
+            message("DONE!");
+        });
+        
         progress_bar.set_fraction(0.0);
-        return new CanvasNodeTask(progress_bar);
+        return task;
     }
 }

@@ -133,15 +133,23 @@ public class CanvasGraph : Object {
             var source_name = link_object.get_string("source_name");
             var sinks = link_object.get_array("sinks");
 
-            var source_display_node = all_nodes.get(link_object.get_int("node_index"));
+            var node_index = link_object.get_int("node_index");
+            if (node_index < 0 || node_index >= all_nodes.size) {
+                return;
+            }
+            
+            var source_display_node = all_nodes.get(node_index);
             var source_node = source_display_node.n as CanvasNode; 
 
             foreach (var source in source_node.get_sources()) {
                 if (source.name == source_name) {
 
                     sinks.for_each(sink_object => {
-
-                        var sink_node = all_nodes.get(sink_object.get_int("node_index"));
+                        var index = sink_object.get_int("node_index");
+                        if (index < 0 || index >= all_nodes.size) {
+                            return;
+                        }
+                        var sink_node = all_nodes.get(index);
                         try {
                             foreach (var sink in sink_node.n.get_sinks()) {
                                 if (sink.name == sink_object.get_string("sink_name")) {

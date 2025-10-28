@@ -70,7 +70,6 @@ namespace Image {
         }
 
         public static Gegl.Node root_node() {
-         
             if (GeglContext.instance == null) {
                 GeglContext.instance = new GeglContext();
             }
@@ -134,6 +133,7 @@ namespace Image {
         private static GLib.Mutex gegl_global_mutex;
         
         private string gegl_operation;
+        private CanvasLog log;
         private ImageProcessingRealtimeGuard realtime_guard;
         private bool realtime_processing;
         internal Gegl.Node gegl_node {
@@ -152,6 +152,7 @@ namespace Image {
         public GeglOperationNode(string node_name, string gegl_operation) {
             base(node_name);
             this.gegl_operation = gegl_operation;
+            this.log = CanvasLog.get_log();
             this.realtime_guard = ImageProcessingRealtimeGuard.instance;
             this.realtime_processing = realtime_guard.enabled;
             this.realtime_guard.mode_changed.connect(this.realtime_mode_changed);
@@ -178,7 +179,7 @@ namespace Image {
             foreach (string padname in gegl_node.list_input_pads()) {
                 var sink = new PadSink(gegl_node, padname);
                 sink.name = padname[0].to_string().up().concat(padname.substring(1));
-                // TODO is it necessary?
+                // TODO is this below necessary?
                 // sink.updated.connect(this.process_gegl);
                 this.add_sink(sink);
             }
@@ -209,11 +210,19 @@ namespace Image {
         
             if (!has_connected_sinks && is_output_node()) {
                 var bbox = Rasterflow.node_get_bounding_box(gegl_node);
-                if (bbox.is_infinite_plane() || bbox.is_empty()) {
+                
+                if (bbox.is_infinite_plane()) {
+                    log.add_warning(this, "Infinite plane! Use gegl:crop to define dimensions.");
                     warning("⚠️ Skipping invalid bbox");
                     return;
                 }
-        
+                
+                if (bbox.is_empty()) {
+                    log.add_warning(this, "Empty plane, nothing to process.");
+                    warning("⚠️ Skipping invalid bbox");
+                    return;
+                }
+                
                 var operation_processor = new CanvasOperationProcessor();
                 start_processing_thread(gegl_node.new_processor(bbox), operation_processor);
                 processing_started(operation_processor);

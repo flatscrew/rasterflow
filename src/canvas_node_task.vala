@@ -1,4 +1,6 @@
 public class CanvasNodeTask : Object {
+    public signal void on_finished();
+    
     private Gtk.ProgressBar bar;
     private bool finished = false;
 
@@ -8,8 +10,6 @@ public class CanvasNodeTask : Object {
 
     public void set_progress(double fraction) {
         if (finished) return;
-    
-        message("updating progress: %f", fraction);
         bar.set_fraction(fraction.clamp(0.0, 1.0));
     }
 
@@ -22,11 +22,7 @@ public class CanvasNodeTask : Object {
         if (finished) return;
         finished = true;
         bar.set_fraction(0);
-    }
-
-    public void fail() {
-        if (finished) return;
-        finished = true;
-        bar.add_css_class("error");
+        
+        on_finished();
     }
 }
