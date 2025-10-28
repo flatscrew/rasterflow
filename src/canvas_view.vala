@@ -2,6 +2,9 @@ delegate void LongOperationDelegate();
 
 public class CanvasView : Gtk.Widget {
 
+    public signal void before_file_load();
+    public signal void after_file_load(string? file_name);
+    
     private History.HistoryOfChangesRecorder changes_recorder;
 
     private Gtk.Overlay node_view_overlay;
@@ -19,7 +22,6 @@ public class CanvasView : Gtk.Widget {
     private CanvasNodeFactory node_factory;
     private CanvasGraph canvas_graph;
     private CanvasGraphPropertiesEditor properties_editor;
-    private CanvasSignals canvas_signals;
     private Gtk.Button save_button;
 
     private Serialize.CustomSerializers serializers;
@@ -38,7 +40,6 @@ public class CanvasView : Gtk.Widget {
     }
 
     public CanvasView(
-            CanvasSignals canvas_signals,
             CanvasNodeFactory node_factory, 
             Data.FileOriginNodeFactory file_data_node_factory, 
             Serialize.CustomSerializers serializers,
@@ -49,7 +50,6 @@ public class CanvasView : Gtk.Widget {
         this.file_origin_popover = new Gtk.Popover();
         file_origin_popover.set_parent(this);
 
-        this.canvas_signals = canvas_signals;
         this.node_factory = node_factory;
         this.serializers = serializers;
         this.deserializers = deserializers;
@@ -297,7 +297,7 @@ public class CanvasView : Gtk.Widget {
     }
 
     void load_graph_sync (GLib.File selected_file) {
-        canvas_signals.before_file_load();
+        before_file_load();
 
         canvas_graph.remove_all_properties();
         canvas_graph.remove_all_nodes();
@@ -309,7 +309,7 @@ public class CanvasView : Gtk.Widget {
             return false;
         });
 
-        canvas_signals.after_file_load(selected_file.get_basename());
+        after_file_load(selected_file.get_basename());
     }
 
     private void export_to_png() {

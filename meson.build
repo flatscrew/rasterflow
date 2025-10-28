@@ -84,6 +84,7 @@ vala_sources = [
     'src/canvas_view.vala',
     'src/canvas_node.vala',
     'src/canvas_display_node.vala',
+    'src/canvas_node_task.vala',
     'src/canvas_node_action_bar.vala',
     'src/canvas_graph_property.vala',
     'src/canvas_graph_property_list.vala',

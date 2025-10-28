@@ -6,8 +6,6 @@ namespace Plugin {
 
     public delegate void CanvasSerializerContribution(Serialize.CustomSerializers serializers, Serialize.CustomDeserializers deserializers);
 
-    public delegate void CanvasSignalsDelegate(CanvasSignals signals);
-
     public delegate void CanvasHeaderbarContribution(CanvasHeaderbarWidgets header_widgets);
 
     public delegate void CanvasAppWindowContribution(Gtk.Window app_window);
@@ -15,7 +13,6 @@ namespace Plugin {
     public class PluginContribution {
 
         private Gtk.Window app_window;
-        private CanvasSignals canvas_signals;
         private CanvasNodeFactory node_factory;
         private CanvasHeaderbarWidgets header_widgets;
         private Data.FileOriginNodeFactory file_data_node_factory;
@@ -23,14 +20,12 @@ namespace Plugin {
         private Serialize.CustomDeserializers deserializers;
 
         public PluginContribution(
-            CanvasSignals canvas_signals,
             CanvasNodeFactory node_factory,
             CanvasHeaderbarWidgets header_widgets,
             Gtk.Window app_window,
             Data.FileOriginNodeFactory file_data_node_factory, 
             Serialize.CustomSerializers serializers, 
             Serialize.CustomDeserializers deserializers) {
-                this.canvas_signals = canvas_signals;
                 this.node_factory = node_factory;
                 this.header_widgets = header_widgets;
                 this.app_window = app_window;
@@ -58,10 +53,5 @@ namespace Plugin {
         public void contribute_app_window(CanvasAppWindowContribution contribution) {
             contribution(app_window);
         }
-
-        public void listen_canvas_signals(CanvasSignalsDelegate signals_delegate) {
-            signals_delegate(canvas_signals);
-        }
     }
-
 }

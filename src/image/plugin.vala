@@ -75,7 +75,6 @@ public string initialize_image_plugin(Plugin.PluginContribution plugin_contribut
     });
 
     plugin_contribution.contribute_canvas_node_factory(node_factory => {
-        node_factory.register(new Image.ImageDataDisplayNodeBuilder());
         node_factory.register(new Image.GeglXmlDisplayNodeBuilder());
 
         Image.GeglOperationsFactory.register_gegl_operations(node_factory);
@@ -110,11 +109,20 @@ public string initialize_image_plugin(Plugin.PluginContribution plugin_contribut
     Image.GeglOperationOverrides.override_operation("gegl:load", overrides => {
         overrides.override_title(gegl_load_title_override);
         overrides.override_property("path", (param_spec) => {
-                var filters = build_pixbuf_filters();
-                return new Data.FileLocationProperty.with_file_filters(param_spec as ParamSpecString, filters);
-            });
+            var filters = build_pixbuf_filters();
+            return new Data.FileLocationProperty.with_file_filters(param_spec as ParamSpecString, filters);
+        });
     });
-
+    Image.GeglOperationOverrides.override_operation("gegl:save-pixbuf", overrides => {
+        overrides.override_content((display_node, node) => {
+            var image_view = new Image.ImageDataView(display_node, node);
+            
+            display_node.add_action_bar_child_start(image_view.create_save_button());
+            display_node.add_action_bar_child_end(image_view.create_zoom_control());
+            return image_view;
+        });
+    });
+    
     // TODO make it in plugin contribution instead?
     // custom data types for property editor
     Data.DataPropertyFactory.instance.register(typeof(Gegl.Color), param_spec => {

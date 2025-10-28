@@ -18,7 +18,7 @@
       "type" : "GeglColor",
       "value" : {
         "type" : "GeglColor",
-        "color" : "rgb(0.110, 0.443, 0.847)"
+        "color" : "rgb(0.384, 0.627, 0.918)"
       }
     },
     {
@@ -36,6 +36,7 @@
   ],
   "nodes" : [
     {
+      "_type" : "canvas_node",
       "model" : {
         "_properties_as_sinks" : []
       },
@@ -44,32 +45,34 @@
       "height" : 185,
       "expanded" : false,
       "position_x" : 52,
-      "position_y" : 39
+      "position_y" : 78
     },
     {
+      "_type" : "canvas_node",
       "model" : {
         "y" : 0.0,
-        "width" : 1000.0,
-        "height" : 1000.0,
+        "width" : 4000.0,
+        "height" : 4000.0,
         "x" : 0.0,
         "_properties_as_sinks" : []
       },
       "builder_id" : "gegl:crop",
-      "width" : 374,
-      "height" : 347,
+      "width" : 285,
+      "height" : 421,
       "expanded" : true,
       "color" : "rgb(97,53,131)",
-      "position_x" : 329,
-      "position_y" : 49
+      "position_x" : 363,
+      "position_y" : 114
     },
     {
+      "_type" : "canvas_node",
       "model" : {
         "y" : 20,
         "algorithm-type" : 0,
         "tileable" : true,
         "fg-color" : {
           "type" : "GeglColor",
-          "color" : "rgb(0.110, 0.443, 0.847)"
+          "color" : "rgb(0.384, 0.627, 0.918)"
         },
         "x" : 20,
         "_properties_as_sinks" : [
@@ -79,41 +82,86 @@
         ]
       },
       "builder_id" : "gegl:maze",
-      "width" : 320,
-      "height" : 587,
-      "expanded" : true,
-      "position_x" : 1076,
-      "position_y" : 64
+      "width" : 271,
+      "height" : 331,
+      "expanded" : false,
+      "position_x" : 963,
+      "position_y" : 74
     },
     {
-      "model" : {      },
-      "builder_id" : "image:display",
-      "width" : 357,
-      "height" : 454,
-      "expanded" : true,
-      "position_x" : 1507,
-      "position_y" : 167,
+      "_type" : "canvas_node",
+      "model" : {
+        "_properties_as_sinks" : []
+      },
+      "builder_id" : "gegl:sepia",
+      "width" : 145,
+      "height" : 214,
+      "expanded" : false,
+      "color" : "rgb(152,106,68)",
+      "position_x" : 1313,
+      "position_y" : 219
+    },
+    {
+      "_type" : "property_node",
+      "property_name" : "size",
+      "width" : 112,
+      "height" : 93,
+      "position_x" : 711,
+      "position_y" : 252
+    },
+    {
+      "_type" : "property_node",
+      "property_name" : "color",
+      "width" : 151,
+      "height" : 93,
+      "position_x" : 753,
+      "position_y" : 388
+    },
+    {
+      "_type" : "canvas_node",
+      "model" : {
+        "_properties_as_sinks" : []
+      },
+      "builder_id" : "gegl:saturation",
+      "width" : 154,
+      "height" : 214,
+      "expanded" : false,
+      "color" : "rgb(94,92,100)",
+      "position_x" : 1140,
+      "position_y" : 532
+    },
+    {
+      "_type" : "canvas_node",
+      "model" : {
+        "_properties_as_sinks" : []
+      },
+      "builder_id" : "gegl:save-pixbuf",
+      "width" : 300,
+      "height" : 185,
+      "expanded" : false,
+      "position_x" : 1542,
+      "position_y" : 31,
+      "external-window" : {
+        "active" : false
+      }
+    },
+    {
+      "_type" : "canvas_node",
+      "model" : {
+        "_properties_as_sinks" : []
+      },
+      "builder_id" : "gegl:save-pixbuf",
+      "width" : 300,
+      "height" : 185,
+      "expanded" : false,
+      "position_x" : 1578,
+      "position_y" : 616,
       "external-window" : {
         "active" : false
       }
     }
   ],
-  "property_nodes" : [
-    {
-      "property_name" : "size",
-      "width" : 112,
-      "height" : 93,
-      "position_x" : 741,
-      "position_y" : 144
-    },
-    {
-      "property_name" : "color",
-      "width" : 151,
-      "height" : 93,
-      "position_x" : 610,
-      "position_y" : 460
-    }
-  ],
+  "property_nodes" : [],
   "links" : [
     {
       "node_index" : 0,
@@ -141,6 +189,20 @@
       "sinks" : [
         {
           "node_index" : 3,
+          "sink_name" : "Input"
+        }
+      ]
+    },
+    {
+      "node_index" : 3,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 7,
+          "sink_name" : "Input"
+        },
+        {
+          "node_index" : 8,
           "sink_name" : "Input"
         }
       ]

@@ -1,5 +1,4 @@
 public class CanvasActionBar : Gtk.Widget {
-    private Adw.Clamp clamp;
     private Gtk.Box container;
     private Gtk.Box start_box;
     private Gtk.Box end_box;
@@ -7,10 +6,8 @@ public class CanvasActionBar : Gtk.Widget {
     construct {
         set_layout_manager(new Gtk.BinLayout());
 
-        clamp = new Adw.Clamp();
-        clamp.add_css_class("toolbar");
-
         container = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 0);
+        container.add_css_class("toolbar");
         container.hexpand = true;
         container.vexpand = false;
 
@@ -24,13 +21,12 @@ public class CanvasActionBar : Gtk.Widget {
 
         container.append(start_box);
         container.append(end_box);
-        clamp.set_child(container);
 
-        clamp.set_parent(this);
+        container.set_parent(this);
     }
 
     ~CanvasActionBar() {
-        clamp.unparent();
+        container.unparent();
     }
 
     public Gtk.Box add_action_start(Gtk.Widget child) {

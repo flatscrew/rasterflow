@@ -1,0 +1,53 @@
+{
+  "properties" : [],
+  "nodes" : [
+    {
+      "_type" : "canvas_node",
+      "model" : {
+        "_properties_as_sinks" : []
+      },
+      "builder_id" : "gegl:save-pixbuf",
+      "width" : 468,
+      "height" : 455,
+      "expanded" : true,
+      "position_x" : 666,
+      "position_y" : 117,
+      "external-window" : {
+        "active" : true,
+        "title" : "Image window",
+        "dimensions" : {
+          "x" : 1340,
+          "y" : 545,
+          "width" : 1257,
+          "height" : 930
+        }
+      }
+    },
+    {
+      "_type" : "canvas_node",
+      "model" : {
+        "path" : "/home/activey/Pictures/cosmos.png",
+        "_properties_as_sinks" : []
+      },
+      "builder_id" : "gegl:load",
+      "width" : 216,
+      "height" : 185,
+      "expanded" : false,
+      "position_x" : 217,
+      "position_y" : 474
+    }
+  ],
+  "property_nodes" : [],
+  "links" : [
+    {
+      "node_index" : 1,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 0,
+          "sink_name" : "Input"
+        }
+      ]
+    }
+  ]
+}

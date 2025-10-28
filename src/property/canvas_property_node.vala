@@ -84,7 +84,7 @@ public class CanvasPropertyDisplayNode : GtkFlow.Node {
     private CanvasNodePropertySource? node_source;
     
     public CanvasPropertyDisplayNode(CanvasPropertyNode property_node, double x_initial = 0, double y_initial = 0) {
-        base.with_margin(property_node, 10, new PropertyNodeSourceLabelFactory(property_node));
+        base.with_margin(property_node, 0, new PropertyNodeSourceLabelFactory(property_node));
         this.x_initial = x_initial;
         this.y_initial = y_initial;
         
@@ -143,22 +143,10 @@ public class CanvasPropertyDisplayNode : GtkFlow.Node {
     }
     
     private void apply_css_provider() {
-        var custom_backround_css = new Gtk.CssProvider();
-        var css = "
-        .gtkflow_node {
-            background-color: @theme_bg_color;
-            box-shadow: none;
-            border-radius: 10px;
-            outline: 1px dashed @theme_fg_color;
-            outline-offset: 3px;
-        }
-
-        .dark {
-            color: white;
-        }
-        ";
-        custom_backround_css.load_from_data(css.data);
-        this.get_style_context().add_provider(custom_backround_css, Gtk.STYLE_PROVIDER_PRIORITY_USER);
+        remove_css_class("gtkflow_node");
+        add_css_class("card");
+        add_css_class("view");
+        add_css_class("canvas_property_node");
     }
     
     private Gdk.RGBA edge_color(GtkFlow.Dock dock, Value? value) {
@@ -184,6 +172,8 @@ public class CanvasPropertyDisplayNode : GtkFlow.Node {
         delete_button.add_css_class("destructive-action");
         delete_button.add_css_class("circular");
         delete_button.set_icon_name("window-close-symbolic");
+        delete_button.add_css_class("flat");
+        
         delete_button.set_focusable(false);
         delete_button.set_focus_on_click(false);
         delete_button.clicked.connect(this.remove_node);

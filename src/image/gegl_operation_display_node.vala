@@ -1,11 +1,19 @@
 namespace Image {
     
+    public interface GeglOperationNodeDisplayOverride : Object {
+        public abstract void serialize(Serialize.SerializedObject serializer);
+        public abstract void deserialize(Serialize.DeserializedObject deserializer);
+        public abstract void undo_remove();
+    }
+    
     public class GeglOperationDisplayNode : CanvasDisplayNode {
         private GeglOperationNode gegl_operation_node;
+        private GeglOperationNodeDisplayOverride? display_override;
         private GeglOperationOverridesCallback? operation_overrides_callback;
         private Data.DataDisplayView data_display_view;
         private Data.DataPropertiesEditor properties_editor;
         private History.HistoryOfChangesRecorder changes_recorder;
+        private CanvasNodeTask current_task;
 
         public GeglOperationDisplayNode(string builder_id, GeglOperationNode node) {
             base(builder_id, node, new GeglNodePropertyBridgeSinkLabelFactory(node));
@@ -14,14 +22,29 @@ namespace Image {
             this.data_display_view = new Data.DataDisplayView();
             this.gegl_operation_node = node;
             this.gegl_operation_node.sink_added.connect_after(this.sink_added);
+            this.gegl_operation_node.processing_started.connect(this.processing_started);
+            
+            if (gegl_operation_node.is_output_node()) {
+                create_process_gegl_button();
+            } else {
+                create_gegl_export_button();
+            }
+            
             this.operation_overrides_callback = GeglOperationOverrides.find_operation_overrides(builder_id);
-
             if (operation_overrides_callback != null) {
                 var title_widget = operation_overrides_callback.build_title(gegl_operation_node.get_gegl_operation());
-                build_title(new OverridenTitleWidgetBuilder(title_widget));
-
-                var overriden_widget = operation_overrides_callback.build_operation(gegl_operation_node.get_gegl_operation());
+                if (title_widget == null) {
+                    build_default_title();
+                } else {
+                    build_title(new OverridenTitleWidgetBuilder(title_widget));
+                }
+                
+                var overriden_widget = operation_overrides_callback.build_operation(this, gegl_operation_node);
                 if (overriden_widget != null) {
+                    if (overriden_widget is GeglOperationNodeDisplayOverride) {
+                        this.display_override = overriden_widget as GeglOperationNodeDisplayOverride;
+                    }
+                    
                     add_child(overriden_widget);
                 } else {
                     add_default_content(gegl_operation_node.get_gegl_operation());
@@ -30,21 +53,36 @@ namespace Image {
                 build_default_title();
                 add_default_content(gegl_operation_node.get_gegl_operation());
             }
-
-            if (node.is_output_node()) {
-                create_process_gegl_button();
-            } else {
-                create_gegl_export_button();
-            }
         }
         
-        private void renew_properties_contracts() {
-            gegl_operation_node.for_each_deserialized_property_as_sink(properties_editor.renew_contract);
+        private void processing_started(CanvasOperationProcessor operation_processor) {
+            this.current_task = base.begin_long_running_task();
+            make_busy(true);
+            
+            var finished = false;
+            Timeout.add(25, () => {
+                if (finished ) {
+                    return Source.REMOVE;
+                }
+                current_task.pulse();
+                return Source.CONTINUE;
+            });
+            
+            //  operation_processor.processing_progress.connect(current_task.set_progress);
+            operation_processor.finished.connect(() => {
+                finished = true;
+                current_task.finish();
+                make_busy(false);
+            });
         }
-
+        
+        private void process_gegl() {
+            gegl_operation_node.process_gegl();
+        }
+        
         private void create_process_gegl_button() {
             var render_button = new Gtk.Button.from_icon_name("media-playback-start");
-            render_button.clicked.connect(gegl_operation_node.process_gegl);
+            render_button.clicked.connect(this.process_gegl);
             render_button.set_tooltip_text("Process");
             add_action_bar_child_start(render_button);
         }
@@ -86,6 +124,10 @@ namespace Image {
                 n.resizable = false;
                 base.can_expand = false;
             }
+        }
+        
+        private void property_changed(string property_name, GLib.Value? property_value) {
+            gegl_operation_node.gegl_property_changed();
         }
 
         private bool check_supported_pad_data_type(GLib.ParamSpec param_spec) {
@@ -130,11 +172,6 @@ namespace Image {
             gegl_operation_node.get_gegl_operation().set_property(name, value);
         }
 
-        private void property_changed(string property_name, GLib.Value? property_value) {
-            unowned var node = n as GeglOperationNode;
-            node.process_gegl();
-        }
-
         private void export_graph_as_xml () {
             var file_dialog = new Gtk.FileDialog ();
             var filter = new Gtk.FileFilter ();
@@ -166,9 +203,26 @@ namespace Image {
         
         public override void deserialize(Serialize.DeserializedObject deserializer) {
             base.deserialize(deserializer);
-            
             renew_properties_contracts();
+            
+            if (display_override == null) return;
+            display_override.deserialize(deserializer);
         }
         
+        public override void serialize(Serialize.SerializedObject serializer) {
+            base.serialize(serializer);
+            
+            if (display_override == null) return;
+            display_override.serialize(serializer);
+        }
+        
+        private void renew_properties_contracts() {
+            gegl_operation_node.for_each_deserialized_property_as_sink(properties_editor.renew_contract);
+        }
+        
+        public override void undo_remove() {
+            if (display_override == null) return;
+            display_override.undo_remove();
+        }
     }
 }

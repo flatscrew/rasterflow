@@ -2,10 +2,23 @@ public class CanvasNodeSink : GFlow.SimpleSink {
 
     private History.HistoryOfChangesRecorder changes_recorder;
 
-    public CanvasNodeSink (GLib.Value value) {
+    public CanvasNodeSink(GLib.Value value) {
         base(value);
-    }
+        
+        this.changes_recorder = History.HistoryOfChangesRecorder.instance;
 
+        base.linked.connect(this.connected);
+        base.unlinked.connect(this.disconnected);
+    }
+    
+    public CanvasNodeSink.with_type (GLib.Type type) {
+        base.with_type(type);
+        this.changes_recorder = History.HistoryOfChangesRecorder.instance;
+
+        base.linked.connect(this.connected);
+        base.unlinked.connect(this.disconnected);
+    }
+    
     private void disconnected(GFlow.Dock target) {
         changes_recorder.record(new History.UnlinkDocksAction(this, target));
     }
@@ -19,13 +32,6 @@ public class CanvasNodeSink : GFlow.SimpleSink {
         }
     }
 
-    public CanvasNodeSink.with_type (GLib.Type type) {
-        base.with_type(type);
-        this.changes_recorder = History.HistoryOfChangesRecorder.instance;
-
-        base.linked.connect(this.connected);
-        base.unlinked.connect(this.disconnected);
-    }
 
     public virtual bool can_serialize() {
         return true;
@@ -63,8 +69,23 @@ public class CanvasNodeSource : GFlow.SimpleSource {
     }
 }
 
+public class CanvasOperationProcessor : Object {
+    public signal void processing_progress(double progress);
+    public signal void finished();
+    
+    public void update_progress(double progress) {
+        processing_progress(progress);
+    }
+    
+    public void finish() {
+        finished();
+    }
+}
+
 public class CanvasNode : GFlow.SimpleNode {
 
+    public signal void processing_started(CanvasOperationProcessor operation_processor);
+    
     private CanvasLog log;
 
     ~CanvasNode() {
@@ -88,13 +109,6 @@ public class CanvasNode : GFlow.SimpleNode {
         source.name = source_name;
         add_source(source);
         return source;
-    }
-
-    public CanvasNodeSink new_sink_with_value(string sink_name, GLib.Value value) {
-        var sink = new CanvasNodeSink(value);
-        sink.name = sink_name;
-        add_sink(sink);
-        return sink;
     }
 
     public CanvasNodeSink new_sink_with_type(string sink_name, GLib.Type type) {

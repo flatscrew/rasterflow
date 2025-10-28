@@ -70,7 +70,6 @@ namespace Image {
         }
 
         public static Gegl.Node root_node() {
-         
             if (GeglContext.instance == null) {
                 GeglContext.instance = new GeglContext();
             }
@@ -130,7 +129,11 @@ namespace Image {
     }
 
     public class GeglOperationNode : CanvasNode, GeglProcessor {
+        
+        private static GLib.Mutex gegl_global_mutex;
+        
         private string gegl_operation;
+        private CanvasLog log;
         private ImageProcessingRealtimeGuard realtime_guard;
         private bool realtime_processing;
         internal Gegl.Node gegl_node {
@@ -149,6 +152,7 @@ namespace Image {
         public GeglOperationNode(string node_name, string gegl_operation) {
             base(node_name);
             this.gegl_operation = gegl_operation;
+            this.log = CanvasLog.get_log();
             this.realtime_guard = ImageProcessingRealtimeGuard.instance;
             this.realtime_processing = realtime_guard.enabled;
             this.realtime_guard.mode_changed.connect(this.realtime_mode_changed);
@@ -175,7 +179,8 @@ namespace Image {
             foreach (string padname in gegl_node.list_input_pads()) {
                 var sink = new PadSink(gegl_node, padname);
                 sink.name = padname[0].to_string().up().concat(padname.substring(1));
-                sink.updated.connect(this.process_gegl);
+                // TODO is this below necessary?
+                // sink.updated.connect(this.process_gegl);
                 this.add_sink(sink);
             }
         }
@@ -188,6 +193,12 @@ namespace Image {
             }
         }
 
+        public void gegl_property_changed() {
+            if (!realtime_processing) return;
+            
+            process_gegl();
+        }
+        
         internal void process_gegl() {
             var has_connected_sinks = false;
             foreach (var source in get_sources()) {
@@ -196,22 +207,34 @@ namespace Image {
                     break;
                 }
             }
-            if (!has_connected_sinks) {
-                if (get_sources().length() == 0) {
-                    gegl_node.process();
-                } else {
-                    debug("no connected sinks for node %s!\n", name);
+        
+            if (!has_connected_sinks && is_output_node()) {
+                var bbox = Rasterflow.node_get_bounding_box(gegl_node);
+                
+                if (bbox.is_infinite_plane()) {
+                    log.add_warning(this, "Infinite plane! Use gegl:crop to define dimensions.");
+                    warning("⚠️ Skipping invalid bbox");
+                    return;
                 }
+                
+                if (bbox.is_empty()) {
+                    log.add_warning(this, "Empty plane, nothing to process.");
+                    warning("⚠️ Skipping invalid bbox");
+                    return;
+                }
+                
+                var operation_processor = new CanvasOperationProcessor();
+                start_processing_thread(gegl_node.new_processor(bbox), operation_processor);
+                processing_started(operation_processor);
                 return;
             }
-
-            // sending notification to all other connected nodes
-            if (!realtime_processing) return;
-
+        
+            if (!realtime_processing)
+                return;
+        
             foreach (var source in get_sources()) {
-                if (!(source is PadSource)) {
+                if (!(source is PadSource))
                     continue;
-                }
                 var pad_source = source as PadSource;
                 foreach (var sink in pad_source.sinks) {
                     var target_node = sink.node as GeglProcessor;
@@ -219,7 +242,32 @@ namespace Image {
                 }
             }
         }
-
+        
+        private void start_processing_thread(Gegl.Processor gegl_processor, CanvasOperationProcessor operation_processor) {
+            new Thread<void>("gegl-process", () => {
+                gegl_global_mutex.lock();
+                try {
+                    double frac = 0.0;
+                    while (gegl_processor.work(out frac)) {
+                        double progress_copy = frac;
+                        Idle.add(() => {
+                            operation_processor.update_progress(progress_copy);
+                            return false;
+                        });
+                    }
+                } finally {
+                    gegl_global_mutex.unlock();
+                }
+        
+                Idle.add(() => {
+                    operation_processor.finish();
+                    return false;
+                });
+        
+                return;
+            });
+        }
+        
         private void remove_from_graph() {
             var context = GeglContext.root_node(); 
             context.remove_child(this.gegl_node);
@@ -288,8 +336,7 @@ namespace Image {
         }
 
         public bool is_output_node() {
-            return gegl_node.list_output_pads().length == 0
-                && gegl_node.list_input_pads().length > 0;
+            return get_sources().is_empty();
         }
         
     }

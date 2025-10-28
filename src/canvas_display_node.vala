@@ -139,12 +139,15 @@ public class CanvasDisplayNode : GtkFlow.Node {
 
     private History.HistoryOfChangesRecorder changes_recorder;
     private Graphene.Size previous_node_size = {width: 100, height: 200};
+    private Gtk.CssProvider? custom_backround_css;
+    
     private CanvasNodeDetailsView details_view;
     private Gtk.Box node_box;
     private CanvasActionBar action_bar;
     private Gtk.Button delete_button;
     private Gtk.ColorDialogButton color_chooser_button;
-    private Gtk.CssProvider? custom_backround_css;
+    
+    private Gtk.ProgressBar progress_bar;
 
     private string builder_id;
     private Gdk.RGBA? node_color;
@@ -187,7 +190,7 @@ public class CanvasDisplayNode : GtkFlow.Node {
         this.builder_id = builder_id;
         this.position_changed.connect(record_position_changed);
         this.size_changed.connect(record_size_changed);
-
+        
         create_node_content();
         create_action_bar();
     }
@@ -248,7 +251,18 @@ public class CanvasDisplayNode : GtkFlow.Node {
         this.node_box = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
         node_box.hexpand = node_box.vexpand = true;
         details_view.set_child(node_box);
-        base.add_child(details_view);
+        
+        this.progress_bar = new Gtk.ProgressBar();
+        progress_bar.set_pulse_step(0.3f);
+        progress_bar.add_css_class("osd");
+        progress_bar.halign = Gtk.Align.FILL;
+        progress_bar.valign = Gtk.Align.END;
+        
+        var overlay = new Gtk.Overlay();
+        overlay.set_child(details_view);
+        overlay.add_overlay(progress_bar);
+        
+        base.add_child(overlay);
     }
 
     private void node_resized(int old_width, int old_height, int new_width, int new_height) {
@@ -263,11 +277,9 @@ public class CanvasDisplayNode : GtkFlow.Node {
         this.action_bar = new CanvasActionBar();
         base.add_child(action_bar);
     }
-    
 
     public Gtk.Box add_action_bar_child_start(Gtk.Widget child) {
         var wrapper = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 0);
-        wrapper.margin_start = 5;
         wrapper.append(child);
         action_bar.add_action_start(wrapper);
         return wrapper;
@@ -317,6 +329,7 @@ public class CanvasDisplayNode : GtkFlow.Node {
         delete_button.add_css_class("destructive-action");
         delete_button.add_css_class("circular");
         delete_button.set_icon_name("window-close-symbolic");
+        delete_button.add_css_class("flat");
         delete_button.set_focusable(false);
         delete_button.set_focus_on_click(false);
         delete_button.clicked.connect(this.remove_node);
@@ -364,7 +377,6 @@ public class CanvasDisplayNode : GtkFlow.Node {
         });
         color_chooser_button.add_controller(gesture);
     }
-    
 
     public new void add_child(Gtk.Widget child) {
         node_box.append(child);
@@ -417,6 +429,7 @@ public class CanvasDisplayNode : GtkFlow.Node {
 
     private void change_background_color(Gdk.RGBA? new_color) {
         this.node_color = new_color;
+        base.highlight_color = new_color;
         
         if (node_color == null) {
             reset_background_color();
@@ -461,5 +474,15 @@ public class CanvasDisplayNode : GtkFlow.Node {
 
     public virtual void undo_remove() {
         
+    }
+    
+    public CanvasNodeTask begin_long_running_task() {
+        var task = new CanvasNodeTask(progress_bar);
+        task.on_finished.connect(() => {
+            message("DONE!");
+        });
+        
+        progress_bar.set_fraction(0.0);
+        return task;
     }
 }

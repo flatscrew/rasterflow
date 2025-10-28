@@ -1,35 +1,23 @@
 namespace Image {
-
-    public class ImageDataDisplayNodeBuilder : CanvasNodeBuilder, Object {
-
-        public CanvasDisplayNode create() throws Error{
-            return new ImageDataDisplayNode(id(), new ImageDataNode());
-        }
-
-        public string name() {
-            return "Display image";
-        }
-
-        public string id() {
-            return "image:display";
-        }
-        
-        public override string? description() {
-            return "Displays the image data at this point in the graph. Useful for inspecting intermediate results or debugging node connections.";
-        }
+    
+    public struct ExternalWindowSate {
+        public bool active;
+        public string? title;
+        public Gdk.Rectangle? dimensions;
     }
 
-    class ImageDataDisplayNode : CanvasDisplayNode {
+    public delegate ExternalWindowSate? ExternalWindowStateDelegate(); 
+
+    public class ImageDataView : Gtk.Widget, GeglOperationNodeDisplayOverride {
+        
+        private GeglOperationNode node;
         private Data.DataDisplayView data_display_view;
         private ImageViewerPanningArea? panning_area;
         private ImageViewer? image_viewer;
         private Gtk.Label? temporary_label; 
 
         private Gtk.Box zoom_control;
-        private Gtk.Box reset_zoom_control;
-        private Gtk.Box save_button_control;
-        private Gtk.Box render_button_control;
-        private Gtk.Button reset_zoom_button;
+        private Gtk.Button save_button;
 
         private Gtk.Switch window_switch;
         private bool window_switch_listen_events;
@@ -41,44 +29,40 @@ namespace Image {
         private Gtk.Box? external_window_info_section;
 
         private Gdk.Pixbuf? current_image;
-
-        public ImageDataDisplayNode(string builder_id, ImageDataNode data_node) {
-            base (builder_id, data_node, new GtkFlow.NodeDockLabelWidgetFactory(data_node));
-            base.removed.connect(this.image_node_removed);
-            build_default_title();
-
+        
+        construct {
+            set_layout_manager(new Gtk.BinLayout());
+            vexpand = hexpand = true;
+        }
+        
+        ~ImageDataView() {
+            data_display_view.unparent();
+        }
+        
+        public ImageDataView(GeglOperationDisplayNode display_node, GeglOperationNode node) {
+            this.node = node;
             this.data_display_view = new Data.DataDisplayView();
-            this.action_bar_visible = true;
-            add_child(data_display_view);
+            data_display_view.set_parent(this);
 
             create_temporary_label();
             create_external_window_active_info();
             create_image_viewer();
             create_window_display_section();
-            create_render_button();
 
-            listen_data_node_changes(data_node);
+            node.processing_started.connect(listen_data_node_changes);
+            display_node.removed.connect(this.node_removed);
         }
-
-        private void image_node_removed(CanvasDisplayNode _) {
-            if (external_window != null) {
-                external_window.destroy();
-                external_window = null;
-            }
+        
+        private void listen_data_node_changes(CanvasOperationProcessor processor) {
+            processor.finished.connect(() => {
+                var oper = node.get_gegl_operation();
+                var value = Value(typeof(Gdk.Pixbuf));
+                oper.get_property("pixbuf", ref value);
+                
+                image_changed(value as Gdk.Pixbuf);
+            });
         }
-
-        public override void undo_remove() {
-            if (!external_window_active) return;
-
-            disable_local_image_viewer();
-            if (external_window == null) {
-                external_window = create_external_image_window();
-            }
-
-            if (current_image != null)
-                    external_window.display_pixbuf(current_image);
-        }
-
+        
         private void create_temporary_label() {
             this.temporary_label = new Gtk.Label("No data yet");
             temporary_label.vexpand = true;
@@ -98,6 +82,14 @@ namespace Image {
             data_display_view.add_child(external_window_info_section);
         }
 
+        private void create_image_viewer() {
+            this.image_viewer = new ImageViewer.with_max_zoom(10);
+            this.panning_area = new ImageViewerPanningArea(image_viewer);
+            this.panning_area.visible = false;
+
+            data_display_view.add_child(panning_area);
+        }
+        
         private void create_window_display_section() {
             var window_label = new Gtk.Label("Show in window");
             window_label.valign = Gtk.Align.CENTER;
@@ -128,11 +120,11 @@ namespace Image {
 
             data_display_view.add_child(window_display_section);
         }
-
+        
         private void set_margin(Gtk.Widget widget, int margin) {
             widget.margin_start = widget.margin_end = widget.margin_top = widget.margin_bottom = margin;
         }
-
+        
         private void create_window_switch() {
             this.window_switch = new Gtk.Switch();
             window_switch.valign = Gtk.Align.CENTER;
@@ -170,10 +162,6 @@ namespace Image {
             this.temporary_label.visible = false;
             this.panning_area.visible = false;
             this.external_window_info_section.visible = true;
-
-            remove_from_actionbar(this.zoom_control);
-            remove_from_actionbar(this.reset_zoom_control);
-            remove_from_actionbar(this.save_button_control);
         }
 
         private void enable_local_image_viewer() {
@@ -181,7 +169,6 @@ namespace Image {
             if (current_image == null) {
                 this.temporary_label.visible = true;
             } else {
-                create_zoom_control();
                 create_save_button();
                 image_viewer.replace_image(current_image);
                 panning_area.visible = true;
@@ -206,44 +193,7 @@ namespace Image {
             return false;
         }
 
-        private void create_zoom_control() {
-            var scale = image_viewer.create_scale_widget();
-            this.zoom_control = add_action_bar_child_end(scale);
-
-            this.reset_zoom_button = image_viewer.create_reset_scale_button();
-            this.reset_zoom_control = add_action_bar_child_end(reset_zoom_button);
-           
-            image_viewer.zoom_changed.connect(zoom_value => {
-                reset_zoom_button.sensitive = zoom_value != 1; 
-            });
-        }
-
-        private void create_render_button() {
-            var render_button = new Gtk.Button();
-            render_button.clicked.connect(render_image);
-            render_button.set_tooltip_text("Render image");
-            render_button.set_icon_name("media-playback-start-symbolic");
-            this.render_button_control = add_action_bar_child_start(render_button);
-        }
-
-        private void listen_data_node_changes(ImageDataNode data_node) {
-            data_node.image_changed.connect(this.image_changed);
-            data_node.processing_started.connect(() => {
-                make_busy(true);
-            });
-            data_node.processing_finished.connect(() => {
-                make_busy(false);
-            });
-        }
         
-        private void create_image_viewer() {
-            this.image_viewer = new ImageViewer.with_max_zoom(10);
-            this.panning_area = new ImageViewerPanningArea(image_viewer);
-            this.panning_area.visible = false;
-
-            data_display_view.add_child(panning_area);
-        }
-
         private void image_changed(Gdk.Pixbuf value) {
             if (value == null) {
                 if (current_image != null) {
@@ -258,17 +208,15 @@ namespace Image {
             }
             replace_image(value as Gdk.Pixbuf);
         }
-
-        private void image_removed() {
-            this.current_image = null;
-            this.action_bar_visible = false;
+        
+        private void node_removed() {
+            if (external_window != null) {
+                external_window.destroy();
+                external_window = null;
+            }
             
-            this.panning_area.visible = false;
-            this.temporary_label.visible = true;
-
-            remove_from_actionbar(this.zoom_control);
-            remove_from_actionbar(this.reset_zoom_control);
-            remove_from_actionbar(this.save_button_control);
+            this.save_button.visible = false;
+            this.zoom_control.visible = false;
         }
         
         private void image_added(Gdk.Pixbuf added_image) {
@@ -277,9 +225,17 @@ namespace Image {
             
             this.temporary_label.visible = false;
             this.panning_area.visible = true;
-
-            create_zoom_control();
-            create_save_button();
+            this.save_button.visible = true;
+            this.zoom_control.visible = true;
+        }
+        
+        private void image_removed() {
+            this.current_image = null;
+            
+            this.save_button.visible = false;
+            this.zoom_control.visible = false;
+            this.panning_area.visible = false;
+            this.temporary_label.visible = true;
         }
         
         private void replace_image(Gdk.Pixbuf replaced_image) {
@@ -294,15 +250,11 @@ namespace Image {
             panning_area.refresh();
         }
 
-        private void render_image() {
-            var image_data_node = n as ImageDataNode;
-            image_data_node.trigger_process_gegl();
-        }
-
-        private void create_save_button() {
-             var save_button = image_viewer.create_save_image_button();
+        public Gtk.Button create_save_button() {
+             this.save_button = image_viewer.create_save_image_button();
+             save_button.visible = false;
              save_button.set_icon_name("document-save-symbolic");
-             this.save_button_control = add_action_bar_child_start(save_button);
+             return save_button;
         }
 
         private ExternalWindowSate? read_external_window_state() {
@@ -312,10 +264,22 @@ namespace Image {
                 dimensions = external_window?.get_dimensions()
             };
         }
-
-        public override void serialize(Serialize.SerializedObject serializer) {
-            base.serialize(serializer);
-
+        
+        public Gtk.Box create_zoom_control() {
+            var scale = image_viewer.create_scale_widget();
+            var reset_zoom_button = image_viewer.create_reset_scale_button();
+            image_viewer.zoom_changed.connect(zoom_value => {
+                reset_zoom_button.sensitive = zoom_value != 1; 
+            });
+            
+            this.zoom_control = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 4);
+            zoom_control.append(scale);
+            zoom_control.append(reset_zoom_button);
+            zoom_control.visible = false;
+            return this.zoom_control;
+        }
+        
+        public void serialize(Serialize.SerializedObject serializer) {
             var state = read_external_window_state();
 
             var external_window_settings = serializer.new_object("external-window");
@@ -334,9 +298,7 @@ namespace Image {
             window_dimensions.set_int("height", (int) dimensions.height);
         }
 
-        public override void deserialize(Serialize.DeserializedObject deserializer) {
-            base.deserialize(deserializer);
-
+        public void deserialize(Serialize.DeserializedObject deserializer) {
             this.window_switch_listen_events = false;
 
             var external_window_settings = deserializer.get_object("external-window");
@@ -370,82 +332,17 @@ namespace Image {
             }
             this.window_switch_listen_events = true;
         }
-    }
-
-    public struct ExternalWindowSate {
-        public bool active;
-        public string? title;
-        public Gdk.Rectangle? dimensions;
-    }
-
-    public delegate ExternalWindowSate? ExternalWindowStateDelegate(); 
-
-    class ImageDataNode : CanvasNode, GeglProcessor {
-
-        internal signal void image_changed(Gdk.Pixbuf pixbuf);
-        internal signal void processing_started();
-        internal signal void processing_finished();
         
-        private ImageProcessingRealtimeGuard realtime_guard;
-        private bool realtime_processing;
+        public void undo_remove() {
+            if (!external_window_active) return;
 
-        private PadSink gegl_node_sink;
-        private Gegl.Node save_as_pixbuf_node;
-
-        ~ImageDataNode() {
-            GeglContext.root_node().remove_child(this.save_as_pixbuf_node);
-        }
-
-        public ImageDataNode() {
-            base("Image data");
-            this.realtime_guard = ImageProcessingRealtimeGuard.instance;
-            this.realtime_processing = realtime_guard.enabled;
-            this.realtime_guard.mode_changed.connect(this.realtime_mode_changed);
-            
-            this.save_as_pixbuf_node = GeglContext.root_node().create_child("gegl:save-pixbuf");
-            
-            this.gegl_node_sink = new PadSink(save_as_pixbuf_node, "input");
-            gegl_node_sink.linked.connect(this.process_gegl);
-            gegl_node_sink.unlinked.connect(this.process_gegl);
-            gegl_node_sink.name = "Input";
-            add_sink(gegl_node_sink);
-        }
-
-        private void realtime_mode_changed(bool is_realtime) {
-            this.realtime_processing = is_realtime;
-        }
-
-        public void trigger_process_gegl() {
-            var bbox = Rasterflow.node_get_bounding_box(save_as_pixbuf_node);
-            if (bbox.is_infinite_plane()) {
-                log_error("Infinite plane, use crop before.");
-                warning("⚠️ Infinite bbox — skipping process()");
-                return;
-            } else if (bbox.is_empty()) {
-                log_warning("Empty plane, nothing to consume.");
-                warning("⚠️ Empty bbox — skipping process()");
-                return;
-            } 
-        
-            save_as_pixbuf_node.process();
-        
-            var oper = save_as_pixbuf_node.get_gegl_operation();
-            var value = Value(typeof(Gdk.Pixbuf));
-            oper.get_property("pixbuf", ref value);
-            change_image(value);
-        }
-
-        internal void process_gegl() {
-            if (!realtime_processing) return;
-
-            trigger_process_gegl();
-        }
-
-        private void change_image(GLib.Value? value) {
-            if (value == null) {
-                return;
+            disable_local_image_viewer();
+            if (external_window == null) {
+                external_window = create_external_image_window();
             }
-            image_changed(value as Gdk.Pixbuf);
+
+            if (current_image != null)
+                    external_window.display_pixbuf(current_image);
         }
     }
 }

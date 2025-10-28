@@ -1,12 +1,7 @@
 using Gtk;
 using Adw;
 
-public class CanvasSignals : Object {
-  public signal void before_file_load();
-  public signal void after_file_load(string? file_name);
-}
-
-class CanvasApplication : Gtk.Application {
+class CanvasApplication : Adw.Application {
 
   private AppSettings settings;
   private History.HistoryOfChangesRecorder changes_recorder;
@@ -28,7 +23,6 @@ class CanvasApplication : Gtk.Application {
     var file_origin_node_factory = new Data.FileOriginNodeFactory();
     var serializers = new Serialize.CustomSerializers();
     var deserializers = new Serialize.CustomDeserializers();
-    var canvas_signals = new CanvasSignals();
 
     activate.connect (() => {
       this.window = new Adw.ApplicationWindow(this);
@@ -38,7 +32,6 @@ class CanvasApplication : Gtk.Application {
       load_css();
       
       var plugin_contribution = new Plugin.PluginContribution(
-        canvas_signals,
         data_node_factory,
         header_widgets,
         window,
@@ -51,16 +44,14 @@ class CanvasApplication : Gtk.Application {
       initialize_image_plugin(plugin_contribution, args);
 
       this.canvas_view = new CanvasView(
-        canvas_signals,
         data_node_factory,
         file_origin_node_factory,
         serializers,
         deserializers
       );
+      canvas_view.before_file_load.connect_after(this.before_file_load);
+      canvas_view.after_file_load.connect_after(this.after_file_load);
       canvas_view.show_properties_sidebar(settings.is_sidebar_visible());
-
-      canvas_signals.before_file_load.connect_after(this.before_file_load);
-      canvas_signals.after_file_load.connect_after(this.after_file_load);
 
       var toolbar_view = build_toolbar_view(header_widgets);
 
