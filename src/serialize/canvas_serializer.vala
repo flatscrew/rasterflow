@@ -156,7 +156,10 @@ namespace Serialize {
         }
         
         public void serialize_node(CanvasDisplayNode node, SerializationContext context) {
-            node.serialize(new SerializedObject(nodes_array.new_object(), custom_serializers));
+            var node_object = nodes_array.new_object();
+            node_object.set_string("_type", "canvas_node");
+            
+            node.serialize(new SerializedObject(node_object, custom_serializers));
 
             unowned var sources = node.n.get_sources();
             foreach (var source in sources) {
@@ -174,7 +177,9 @@ namespace Serialize {
         }
 
         public void serialize_property_node(CanvasPropertyDisplayNode node, SerializationContext context) {
-            node.serialize(new SerializedObject(property_nodes_array.new_object(), custom_serializers));
+            var node_object = nodes_array.new_object();
+            node_object.set_string("_type", "property_node");
+            node.serialize(new SerializedObject(node_object, custom_serializers));
         
             unowned var sources = node.n.get_sources();
             foreach (var source in sources) {

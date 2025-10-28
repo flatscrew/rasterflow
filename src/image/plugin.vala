@@ -110,10 +110,16 @@ public string initialize_image_plugin(Plugin.PluginContribution plugin_contribut
     Image.GeglOperationOverrides.override_operation("gegl:load", overrides => {
         overrides.override_title(gegl_load_title_override);
         overrides.override_property("path", (param_spec) => {
-                var filters = build_pixbuf_filters();
-                return new Data.FileLocationProperty.with_file_filters(param_spec as ParamSpecString, filters);
-            });
+            var filters = build_pixbuf_filters();
+            return new Data.FileLocationProperty.with_file_filters(param_spec as ParamSpecString, filters);
+        });
     });
+    //  Image.GeglOperationOverrides.override_operation("gegl:save-pixbuf", overrides => {
+    //      overrides.override_whole(gegl_operation => {
+            
+    //      });
+    //  });
+    
 
     // TODO make it in plugin contribution instead?
     // custom data types for property editor

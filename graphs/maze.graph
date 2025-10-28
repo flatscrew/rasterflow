@@ -18,7 +18,7 @@
       "type" : "GeglColor",
       "value" : {
         "type" : "GeglColor",
-        "color" : "rgb(0.110, 0.443, 0.847)"
+        "color" : "rgb(0.000, 0.000, 0.000)"
       }
     },
     {
@@ -36,6 +36,7 @@
   ],
   "nodes" : [
     {
+      "_type" : "canvas_node",
       "model" : {
         "_properties_as_sinks" : []
       },
@@ -47,6 +48,7 @@
       "position_y" : 78
     },
     {
+      "_type" : "canvas_node",
       "model" : {
         "y" : 0.0,
         "width" : 4000.0,
@@ -63,13 +65,14 @@
       "position_y" : 88
     },
     {
+      "_type" : "canvas_node",
       "model" : {
         "y" : 20,
         "algorithm-type" : 0,
         "tileable" : true,
         "fg-color" : {
           "type" : "GeglColor",
-          "color" : "rgb(0.110, 0.443, 0.847)"
+          "color" : "rgb(0.000, 0.000, 0.000)"
         },
         "x" : 20,
         "_properties_as_sinks" : [
@@ -79,13 +82,14 @@
         ]
       },
       "builder_id" : "gegl:maze",
-      "width" : 320,
-      "height" : 587,
-      "expanded" : true,
+      "width" : 271,
+      "height" : 331,
+      "expanded" : false,
       "position_x" : 948,
       "position_y" : 108
     },
     {
+      "_type" : "canvas_node",
       "model" : {
         "_properties_as_sinks" : []
       },
@@ -93,50 +97,52 @@
       "width" : 145,
       "height" : 214,
       "expanded" : false,
-      "position_x" : 1363,
-      "position_y" : 146
+      "position_x" : 1336,
+      "position_y" : 116
     },
     {
+      "_type" : "canvas_node",
       "model" : {      },
       "builder_id" : "image:display",
       "width" : 316,
       "height" : 385,
       "expanded" : true,
-      "position_x" : 1690,
-      "position_y" : 0,
+      "position_x" : 1643,
+      "position_y" : 57,
       "external-window" : {
         "active" : false
       }
     },
     {
-      "model" : {
-        "path" : "/home/activey/Desktop/aaaaa.jpg",
-        "_properties_as_sinks" : []
-      },
-      "builder_id" : "gegl:jpg-save",
-      "width" : 436,
-      "height" : 350,
-      "expanded" : true,
-      "position_x" : 1686,
-      "position_y" : 454
-    }
-  ],
-  "property_nodes" : [
-    {
+      "_type" : "property_node",
       "property_name" : "size",
       "width" : 112,
       "height" : 93,
-      "position_x" : 672,
-      "position_y" : 234
+      "position_x" : 711,
+      "position_y" : 252
     },
     {
+      "_type" : "property_node",
       "property_name" : "color",
       "width" : 151,
       "height" : 93,
       "position_x" : 753,
       "position_y" : 388
+    },
+    {
+      "_type" : "canvas_node",
+      "model" : {
+        "_properties_as_sinks" : []
+      },
+      "builder_id" : "gegl:saturation",
+      "width" : 154,
+      "height" : 214,
+      "expanded" : false,
+      "position_x" : 1140,
+      "position_y" : 532
     }
   ],
+  "property_nodes" : [],
   "links" : [
     {
       "node_index" : 0,
@@ -174,10 +180,6 @@
       "sinks" : [
         {
           "node_index" : 4,
-          "sink_name" : "Input"
-        },
-        {
-          "node_index" : 7,
           "sink_name" : "Input"
         }
       ]

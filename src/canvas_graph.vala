@@ -8,16 +8,13 @@ public class CanvasGraph : Object {
     
     private CanvasNodeFactory node_factory;
     private Gee.List<GtkFlow.Node> all_nodes = new Gee.ArrayList<GtkFlow.Node>();
-    private Gee.List<CanvasDisplayNode> canvas_nodes = new Gee.ArrayList<CanvasDisplayNode>();
     private Gee.Map<string, CanvasGraphProperty> all_properties = new Gee.HashMap<string, CanvasGraphProperty>();
-    private List<CanvasPropertyDisplayNode> all_property_nodes = new List<CanvasPropertyDisplayNode>();
 
     public CanvasGraph(CanvasNodeFactory node_factory) {
         this.node_factory = node_factory;
     }
 
     public void add_node(CanvasDisplayNode node) {
-        canvas_nodes.add(node);
         all_nodes.add(node);
         node.removed.connect(this.node_removed);
 
@@ -29,13 +26,10 @@ public class CanvasGraph : Object {
             node.remove();
         }
         all_nodes.clear();
-        canvas_nodes.clear();
-        all_property_nodes = new List<CanvasPropertyDisplayNode>();
     }
 
     private void node_removed(CanvasDisplayNode removed_node) {
         all_nodes.remove(removed_node);
-        canvas_nodes.remove(removed_node);
     }
  
     public void add_property(CanvasGraphProperty property) {
@@ -51,7 +45,6 @@ public class CanvasGraph : Object {
     }
     
     public void add_property_node(CanvasPropertyDisplayNode node) {
-        all_property_nodes.append(node);
         all_nodes.add(node);
         node.removed.connect(this.property_node_removed);
         
@@ -60,7 +53,6 @@ public class CanvasGraph : Object {
     
     private void property_node_removed(CanvasPropertyDisplayNode removed_node) {
         all_nodes.remove(removed_node);
-        all_property_nodes.remove(removed_node);
     }
     
     public bool has_any_property() {
@@ -92,11 +84,15 @@ public class CanvasGraph : Object {
         foreach (var property in all_properties.values) {
             serialized_graph.serialize_property(property, new Serialize.SerializationContext(this));    
         }
-        foreach (var node in canvas_nodes) {
-            serialized_graph.serialize_node(node, new Serialize.SerializationContext(this));
-        }
-        foreach (var node in all_property_nodes) {
-            serialized_graph.serialize_property_node(node, new Serialize.SerializationContext(this));
+        
+        foreach (var node in all_nodes) {
+            if (node is CanvasDisplayNode) {
+                var canvas_node = node as CanvasDisplayNode;
+                serialized_graph.serialize_node(canvas_node, new Serialize.SerializationContext(this));
+            } else if (node is CanvasPropertyDisplayNode) {
+                var property_node = node as CanvasPropertyDisplayNode;
+                serialized_graph.serialize_property_node(property_node, new Serialize.SerializationContext(this));
+            }
         }
         return serialized_graph.to_json();
     }
@@ -121,30 +117,18 @@ public class CanvasGraph : Object {
         });
         
         deserialized_graph.foreach_node(node_object => {
-            var builder_id = node_object.get_string("builder_id");
-            var builder = node_factory.find_builder(builder_id);
-            if (builder == null) {
-                warning("Unable to find builder: %s\n", builder_id);
+            var node_type = node_object.get_string("_type");
+            if (node_type == null || node_type.length == 0) {
+                node_type = "canvas_node";
             }
-            try {
-                var built_node = builder.create();
-                add_node(built_node);
-                built_node.deserialize(node_object);
-            } catch (Error e) {
-                warning(e.message);
+            
+            if (node_type == "canvas_node") {
+                deserialize_canvas_node(node_object);
+            } else if (node_type == "property_node") {
+                deserialize_property_node(node_object);
             }
         });
 
-        deserialized_graph.foreach_property_node(node_object => {
-            var graph_property = all_properties.get(node_object.get_string("property_name"));
-            
-            var property_node = new CanvasPropertyNode(graph_property);
-            var display_node = new CanvasPropertyDisplayNode(property_node);
-            add_property_node(display_node);
-            
-            display_node.deserialize(node_object);
-        });
-        
         deserialized_graph.foreach_link(link_object => {
             var source_name = link_object.get_string("source_name");
             var sinks = link_object.get_array("sinks");
@@ -171,6 +155,31 @@ public class CanvasGraph : Object {
                 }
             }
         });
+    }
+    
+    private void deserialize_canvas_node(Serialize.DeserializedObject node_object) {
+        var builder_id = node_object.get_string("builder_id");
+        var builder = node_factory.find_builder(builder_id);
+        if (builder == null) {
+            warning("Unable to find builder: %s\n", builder_id);
+        }
+        try {
+            var built_node = builder.create();
+            add_node(built_node);
+            built_node.deserialize(node_object);
+        } catch (Error e) {
+            warning(e.message);
+        }
+    }
+    
+    private void deserialize_property_node(Serialize.DeserializedObject node_object) {
+        var graph_property = all_properties.get(node_object.get_string("property_name"));
+        
+        var property_node = new CanvasPropertyNode(graph_property);
+        var display_node = new CanvasPropertyDisplayNode(property_node);
+        add_property_node(display_node);
+        
+        display_node.deserialize(node_object);
     }
 
     public int node_index(CanvasNode node) {
