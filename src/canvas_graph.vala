@@ -1,6 +1,7 @@
 public class CanvasGraph : Object {
 
     public signal void node_added(CanvasDisplayNode node);
+    public signal void node_removed(CanvasDisplayNode node);
     public signal void property_added(CanvasGraphProperty property);
     public signal void property_removed(CanvasGraphProperty property);
     public signal void properties_removed();
@@ -16,7 +17,7 @@ public class CanvasGraph : Object {
 
     public void add_node(CanvasDisplayNode node) {
         all_nodes.add(node);
-        node.removed.connect(this.node_removed);
+        node.removed.connect(this.remove_node);
 
         node_added(node);
     }
@@ -28,8 +29,9 @@ public class CanvasGraph : Object {
         all_nodes.clear();
     }
 
-    private void node_removed(CanvasDisplayNode removed_node) {
+    private void remove_node(CanvasDisplayNode removed_node) {
         all_nodes.remove(removed_node);
+        node_removed(removed_node);
     }
  
     public void add_property(CanvasGraphProperty property) {

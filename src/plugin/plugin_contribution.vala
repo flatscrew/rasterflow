@@ -10,6 +10,8 @@ namespace Plugin {
 
     public delegate void CanvasAppWindowContribution(Gtk.Window app_window);
 
+    public delegate void AboutContribution(About.AboutRegistry registry);
+    
     public class PluginContribution {
 
         private Gtk.Window app_window;
@@ -18,6 +20,7 @@ namespace Plugin {
         private Data.FileOriginNodeFactory file_data_node_factory;
         private Serialize.CustomSerializers serializers;
         private Serialize.CustomDeserializers deserializers;
+        private About.AboutRegistry about_registry;
 
         public PluginContribution(
             CanvasNodeFactory node_factory,
@@ -25,13 +28,16 @@ namespace Plugin {
             Gtk.Window app_window,
             Data.FileOriginNodeFactory file_data_node_factory, 
             Serialize.CustomSerializers serializers, 
-            Serialize.CustomDeserializers deserializers) {
-                this.node_factory = node_factory;
-                this.header_widgets = header_widgets;
-                this.app_window = app_window;
-                this.file_data_node_factory = file_data_node_factory;
-                this.serializers = serializers;
-                this.deserializers = deserializers;
+            Serialize.CustomDeserializers deserializers,
+            About.AboutRegistry about_registry
+        ) {
+            this.node_factory = node_factory;
+            this.header_widgets = header_widgets;
+            this.app_window = app_window;
+            this.file_data_node_factory = file_data_node_factory;
+            this.serializers = serializers;
+            this.deserializers = deserializers;
+            this.about_registry = about_registry;
         }
 
         public void contribute_file_data_node_factory(FileDataNodeFactoryContribution contribution) {
@@ -52,6 +58,10 @@ namespace Plugin {
 
         public void contribute_app_window(CanvasAppWindowContribution contribution) {
             contribution(app_window);
+        }
+        
+        public void contribute_about_dialog(AboutContribution contribution) {
+            contribution(about_registry);
         }
     }
 }

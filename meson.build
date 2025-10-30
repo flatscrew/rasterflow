@@ -38,8 +38,8 @@ if host_machine.system() == 'linux'
 endif
 
 # generating runtime binary
-resource_files = files('rasterflow.gresource.xml')
-gresources = gnome.compile_resources('rasterflow-resources', resource_files, source_dir : ['data'])
+resource_files = files('data/rasterflow.gresource.xml')
+gresources = gnome.compile_resources('rasterflow-resources', resource_files, source_dir : 'data')
 
 vala_args = [
   '--vapidir', meson.current_source_dir() + '/vapi',
@@ -163,6 +163,9 @@ vala_sources = [
     'src/history/action/change_property_action.vala',
     'src/history/action/link_nodes_action.vala',
     'src/history/action/unlink_nodes_action.vala',
+    
+    # about
+    'src/about/about_dialog.vala',
 ]
 
 if host_machine.system() == 'linux'
