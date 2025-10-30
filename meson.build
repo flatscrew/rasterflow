@@ -98,6 +98,7 @@ vala_sources = [
     'src/canvas_graph_property.vala',
     'src/canvas_graph_property_list.vala',
     'src/canvas_graph.vala',
+    'src/canvas_graph_modification_guard.vala',
     'src/canvas_logs.vala',
     'src/canvas_log_button.vala',
     'src/canvas_log_window.vala',

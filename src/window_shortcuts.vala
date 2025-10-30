@@ -11,7 +11,7 @@ public static void add_shortcuts(Gtk.ApplicationWindow app_window) {
 private static Gtk.Shortcut create_undo_shortcut(History.HistoryOfChangesRecorder changes_recorder) {
     return new Gtk.Shortcut(
         new Gtk.KeyvalTrigger(Gdk.Key.z, Gdk.ModifierType.CONTROL_MASK),
-        new Gtk.CallbackAction((widget, _) => {
+        new Gtk.CallbackAction((_, __) => {
             if (changes_recorder.can_undo)
                 changes_recorder.undo_last();
             return true;

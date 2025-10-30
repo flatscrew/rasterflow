@@ -1,75 +1,68 @@
 {
+  "properties" : [],
   "nodes" : [
     {
-      "model" : {      },
-      "builder_id" : "image:display",
-      "width" : 266,
-      "height" : 475,
-      "expanded" : true,
-      "position_x" : 1613,
-      "position_y" : 64,
-      "external-window" : {
-        "active" : true,
-        "title" : "Image window",
-        "dimensions" : {
-          "x" : 0,
-          "y" : 32,
-          "width" : 1280,
-          "height" : 1408
-        }
-      }
-    },
-    {
+      "_type" : "canvas_node",
       "model" : {
+        "shape" : 1.0,
         "scale" : 13.599999999999969,
         "rank" : 1,
-        "shape" : 1.0,
         "seed" : 19,
-        "iterations" : 3
+        "iterations" : 3,
+        "_properties_as_sinks" : []
       },
       "builder_id" : "gegl:cell-noise",
-      "width" : 238,
+      "width" : 307,
       "height" : 639,
       "expanded" : true,
       "position_x" : 73,
       "position_y" : 141
     },
     {
+      "_type" : "canvas_node",
       "model" : {
         "width" : 100.0,
-        "height" : 100.0
+        "height" : 100.0,
+        "_properties_as_sinks" : []
       },
       "builder_id" : "gegl:crop",
-      "width" : 201,
+      "width" : 285,
       "height" : 323,
       "expanded" : true,
-      "position_x" : 425,
-      "position_y" : 112
+      "position_x" : 445,
+      "position_y" : 230
     },
     {
-      "model" : {      },
+      "_type" : "canvas_node",
+      "model" : {
+        "_properties_as_sinks" : []
+      },
       "builder_id" : "gegl:perlin-noise",
-      "width" : 218,
+      "width" : 302,
       "height" : 265,
       "expanded" : true,
       "position_x" : 1042,
       "position_y" : 537
     },
     {
+      "_type" : "canvas_node",
       "model" : {
         "high" : 0.79999999999999993,
-        "value" : 0.40000000000000002
+        "value" : 0.40000000000000002,
+        "_properties_as_sinks" : []
       },
       "builder_id" : "gegl:threshold",
-      "width" : 193,
+      "width" : 282,
       "height" : 323,
       "expanded" : true,
       "position_x" : 804,
       "position_y" : 110
     },
     {
+      "_type" : "canvas_node",
       "model" : {
-        "path" : "/tmp/test.png"
+        "path" : "/tmp/test.png",
+        "_properties_as_sinks" : []
       },
       "builder_id" : "gegl:save",
       "width" : 280,
@@ -79,37 +72,14 @@
       "position_y" : 254
     }
   ],
+  "property_nodes" : [],
   "links" : [
-    {
-      "node_index" : 1,
-      "source_name" : "Output",
-      "sinks" : [
-        {
-          "node_index" : 2,
-          "sink_name" : "Input"
-        }
-      ]
-    },
     {
       "node_index" : 2,
       "source_name" : "Output",
       "sinks" : [
         {
           "node_index" : 4,
-          "sink_name" : "Input"
-        }
-      ]
-    },
-    {
-      "node_index" : 4,
-      "source_name" : "Output",
-      "sinks" : [
-        {
-          "node_index" : 0,
-          "sink_name" : "Input"
-        },
-        {
-          "node_index" : 5,
           "sink_name" : "Input"
         }
       ]

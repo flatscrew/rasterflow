@@ -61,8 +61,8 @@
       "height" : 421,
       "expanded" : true,
       "color" : "rgb(97,53,131)",
-      "position_x" : 363,
-      "position_y" : 75
+      "position_x" : 356,
+      "position_y" : 175
     },
     {
       "_type" : "canvas_node",
