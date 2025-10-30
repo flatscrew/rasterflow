@@ -6,7 +6,8 @@ public class CanvasView : Gtk.Widget {
     public signal void after_file_load(string? file_name);
     
     private History.HistoryOfChangesRecorder changes_recorder;
-
+    private CanvasGraphModificationGuard modification_guard;
+    
     private Gtk.Overlay node_view_overlay;
     private Gtk.Box node_view_box;
     private Adw.OverlaySplitView main_view;
@@ -45,7 +46,9 @@ public class CanvasView : Gtk.Widget {
             Serialize.CustomSerializers serializers,
             Serialize.CustomDeserializers deserializers) {
         this.changes_recorder = History.HistoryOfChangesRecorder.instance;
-
+        this.modification_guard = CanvasGraphModificationGuard.instance;
+        modification_guard.dirty_state_changed.connect(this.graph_dirty_state_changed);
+        
         this.file_origin_node_factory = file_data_node_factory;
         this.file_origin_popover = new Gtk.Popover();
         file_origin_popover.set_parent(this);
@@ -74,6 +77,10 @@ public class CanvasView : Gtk.Widget {
         this.property_drop_handler = new PropertyDropHandler();
         property_drop_handler.property_dropped.connect(this.property_dropped);
         node_view.add_controller(property_drop_handler.data_drop_target);
+    }
+    
+    private void graph_dirty_state_changed(bool is_dirty) {
+        this.save_button.sensitive = is_dirty;
     }
 
     private void create_main_view() {
@@ -248,6 +255,8 @@ public class CanvasView : Gtk.Widget {
         try {
             var serialized_graph = canvas_graph.serialize_graph(serializers);
             FileUtils.set_contents_full(current_graph_file, serialized_graph, serialized_graph.length, GLib.FileSetContentsFlags.CONSISTENT);
+        
+            modification_guard.reset();
         } catch (FileError e) {
             warning(e.message);                        
         }
@@ -266,8 +275,6 @@ public class CanvasView : Gtk.Widget {
                 var file = file_dialog.save.end(res);
                 if (file != null) {
                     current_graph_file = file.get_path();
-                    save_button.set_sensitive(true);
-
                     var serialized_graph = canvas_graph.serialize_graph(serializers);
                     FileUtils.set_contents_full(
                         current_graph_file,
@@ -294,8 +301,7 @@ public class CanvasView : Gtk.Widget {
                 var file = file_dialog.open.end(res);
                 if (file != null) {
                     current_graph_file = file.get_path();
-                    save_button.set_sensitive(true);
-                    load_graph_sync(file);
+                    load_graph_async.begin(file);
                 }
             } catch (Error e) {
                 warning("File dialog cancelled or failed: %s", e.message);
@@ -303,13 +309,34 @@ public class CanvasView : Gtk.Widget {
         });
     }
 
-    void load_graph_sync (GLib.File selected_file) {
+    async void load_graph_async(GLib.File selected_file) {
+        if (!(yield modification_guard.confirm_discard_if_dirty(this)))
+            return;
+    
+        before_file_load();
+    
+        canvas_graph.remove_all_properties();
+        canvas_graph.remove_all_nodes();
+        canvas_graph.deserialize_graph(selected_file, deserializers);
+    
+        Idle.add(() => {
+            node_view.queue_resize();
+            node_view.queue_allocate();
+            return false;
+        });
+    
+        after_file_load(selected_file.get_basename());
+        modification_guard.reset();
+    }
+    
+    
+    private void perform_file_load(GLib.File selected_file) {
         before_file_load();
 
         canvas_graph.remove_all_properties();
         canvas_graph.remove_all_nodes();
         canvas_graph.deserialize_graph(selected_file, deserializers);
-        
+
         Idle.add(() => {
             node_view.queue_resize();
             node_view.queue_allocate();
@@ -317,6 +344,7 @@ public class CanvasView : Gtk.Widget {
         });
 
         after_file_load(selected_file.get_basename());
+        modification_guard.reset();
     }
 
     private void export_to_png() {
@@ -392,6 +420,5 @@ public class CanvasView : Gtk.Widget {
         export_button.clicked.connect(this.export_to_png);
         return export_button;
     }
-    
     
 }

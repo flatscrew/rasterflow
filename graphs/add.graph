@@ -1,48 +1,58 @@
 {
+  "properties" : [],
   "nodes" : [
     {
+      "_type" : "canvas_node",
       "model" : {
         "value" : {
           "type" : "GeglColor",
           "color" : "rgb(1.000, 0.000, 0.000)"
-        }
+        },
+        "_properties_as_sinks" : []
       },
       "builder_id" : "gegl:color",
-      "width" : 117,
-      "height" : 115,
+      "width" : 145,
+      "height" : 185,
       "expanded" : false,
       "color" : "rgb(165,29,45)",
       "position_x" : 37,
       "position_y" : 39
     },
     {
+      "_type" : "canvas_node",
       "model" : {
         "value" : {
           "type" : "GeglColor",
           "color" : "rgb(0.000, 1.000, 0.000)"
-        }
+        },
+        "_properties_as_sinks" : []
       },
       "builder_id" : "gegl:color",
-      "width" : 117,
-      "height" : 115,
+      "width" : 145,
+      "height" : 185,
       "expanded" : false,
       "color" : "rgb(38,162,105)",
       "position_x" : 55,
       "position_y" : 376
     },
     {
-      "model" : {      },
+      "_type" : "canvas_node",
+      "model" : {
+        "_properties_as_sinks" : []
+      },
       "builder_id" : "gegl:add",
-      "width" : 112,
-      "height" : 173,
+      "width" : 145,
+      "height" : 243,
       "expanded" : false,
-      "position_x" : 402,
-      "position_y" : 68
+      "position_x" : 394,
+      "position_y" : 173
     },
     {
+      "_type" : "canvas_node",
       "model" : {
         "width" : 200.0,
-        "height" : 200.0
+        "height" : 200.0,
+        "_properties_as_sinks" : []
       },
       "builder_id" : "gegl:crop",
       "width" : 398,
@@ -50,20 +60,9 @@
       "expanded" : true,
       "position_x" : 631,
       "position_y" : 52
-    },
-    {
-      "model" : {      },
-      "builder_id" : "image:display",
-      "width" : 507,
-      "height" : 492,
-      "expanded" : true,
-      "position_x" : 1182,
-      "position_y" : 55,
-      "external-window" : {
-        "active" : false
-      }
     }
   ],
+  "property_nodes" : [],
   "links" : [
     {
       "node_index" : 0,
@@ -91,16 +90,6 @@
       "sinks" : [
         {
           "node_index" : 3,
-          "sink_name" : "Input"
-        }
-      ]
-    },
-    {
-      "node_index" : 3,
-      "source_name" : "Output",
-      "sinks" : [
-        {
-          "node_index" : 4,
           "sink_name" : "Input"
         }
       ]

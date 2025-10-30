@@ -7,6 +7,9 @@ class CanvasApplication : Adw.Application {
   private History.HistoryOfChangesRecorder changes_recorder;
   private CanvasView canvas_view;
   private Adw.ApplicationWindow? window;
+  private CanvasGraphModificationGuard modification_guard;
+  private bool window_close_confirmed;
+  private string? current_file;
   
   private About.AboutDialog about_dialog;
   private About.AboutRegistry about_registry;
@@ -39,6 +42,9 @@ class CanvasApplication : Adw.Application {
       window.set_title("RasterFlow");
       window.set_icon_name("io.canvas.Canvas");
       window.close_request.connect(this.window_closed);
+      
+      this.modification_guard = CanvasGraphModificationGuard.instance;
+      this.modification_guard.dirty_state_changed.connect(this.dirty_changed);
       
       var plugin_contribution = new Plugin.PluginContribution(
         data_node_factory,
@@ -77,11 +83,29 @@ class CanvasApplication : Adw.Application {
     });
   }
   
-  private bool window_closed() {
+  private void dirty_changed(bool dirty) {
+    update_title(dirty);
+  }
+  
+  private async void run_async_window_closed() {
+    if (!(yield modification_guard.confirm_discard_if_dirty(window))) {
+        return;
+    }
+    
+    this.window_close_confirmed = true;
     var dimensions = WindowGeometryManager.get_geometry(this.window);
     this.settings.write_window_dimensions(dimensions);
     this.settings.write_sidebar_visible(canvas_view.is_properties_sidebar_shown());
-    return false;
+    window.close();
+  }
+  
+  private bool window_closed() {
+    if (window_close_confirmed) {
+      return false;
+    }
+    
+    run_async_window_closed.begin();
+    return !window_close_confirmed;
   }
 
   private void before_file_load() {
@@ -93,13 +117,27 @@ class CanvasApplication : Adw.Application {
 
   private void after_file_load(string? file_name) {
     unmark_busy();
-    
     window.set_cursor_from_name(null);
     window.set_sensitive(true);
-    window.set_title("RasterFlow - %s".printf(file_name));
+    
+    this.current_file = file_name;
+    update_title();
     
     changes_recorder.clear();
     changes_recorder.resume();
+  }
+  
+  private void update_title(bool dirty = false) {
+    var title = "RasterFlow";
+    if (current_file != null) {
+      title = "RasterFlow - %s".printf(current_file);
+    }
+    
+    if (dirty) {
+      title += " *";
+    }
+    
+    window.set_title(title);
   }
 
   private void load_css() {
@@ -162,7 +200,6 @@ class CanvasApplication : Adw.Application {
 
     return menu_button;
   }
-
 }
 
 int main (string[] args) {

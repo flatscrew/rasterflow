@@ -1,5 +1,5 @@
 [CCode (cheader_filename = "windows_window_size.h", cname = "rf_get_window_rect")]
-public extern void rf_get_window_rect (Gdk.Surface surface,
+public extern void rf_get_window_rect(Gdk.Surface surface,
                                        out int x,
                                        out int y,
                                        out int w,

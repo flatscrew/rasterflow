@@ -1,292 +1,85 @@
 {
-  "properties" : [
-    {
-      "name" : "pixel-size",
-      "label" : "Pixel size",
-      "type" : "gint"
-    }
-  ],
+  "properties" : [],
   "nodes" : [
     {
       "_type" : "canvas_node",
       "model" : {
-        "transparency-threshold" : 0.20000000000000004,
-        "opacity-threshold" : 0.30000000000000016,
-        "color" : {
-          "type" : "GeglColor",
-          "color" : "rgb(0.102, 0.373, 0.706)"
-        },
+        "shape" : 1.0,
+        "scale" : 13.599999999999969,
+        "rank" : 1,
+        "seed" : 19,
+        "iterations" : 3,
         "_properties_as_sinks" : []
       },
-      "builder_id" : "gegl:color-to-alpha",
-      "width" : 174,
-      "height" : 214,
-      "expanded" : false,
-      "position_x" : 420,
-      "position_y" : 44
-    },
-    {
-      "_type" : "canvas_node",
-      "model" : {
-        "path" : "/home/activey/Pictures/ja.jpeg",
-        "_properties_as_sinks" : []
-      },
-      "builder_id" : "gegl:load",
-      "width" : 216,
-      "height" : 185,
-      "expanded" : false,
-      "position_x" : 37,
-      "position_y" : 66
-    },
-    {
-      "_type" : "canvas_node",
-      "model" : {
-        "_properties_as_sinks" : []
-      },
-      "builder_id" : "gegl:save-pixbuf",
-      "width" : 408,
-      "height" : 487,
+      "builder_id" : "gegl:cell-noise",
+      "width" : 307,
+      "height" : 639,
       "expanded" : true,
-      "position_x" : 3090,
-      "position_y" : 151,
-      "external-window" : {
-        "active" : false
-      }
+      "position_x" : 73,
+      "position_y" : 141
     },
     {
       "_type" : "canvas_node",
       "model" : {
-        "hue" : 6.5999999999999925,
-        "lightness" : -6.3999999999999932,
-        "chroma" : 16.89999999999997,
-        "_properties_as_sinks" : []
-      },
-      "builder_id" : "gegl:hue-chroma",
-      "width" : 167,
-      "height" : 214,
-      "expanded" : false,
-      "position_x" : 789,
-      "position_y" : 32
-    },
-    {
-      "_type" : "canvas_node",
-      "model" : {
-        "scale" : 1.8000000000000007,
-        "_properties_as_sinks" : []
-      },
-      "builder_id" : "gegl:saturation",
-      "width" : 154,
-      "height" : 214,
-      "expanded" : false,
-      "position_x" : 1151,
-      "position_y" : 29
-    },
-    {
-      "_type" : "canvas_node",
-      "model" : {
-        "path" : "/home/activey/Pictures/cosmic-space-galaxy-stockcake.jpg",
-        "_properties_as_sinks" : []
-      },
-      "builder_id" : "gegl:load",
-      "width" : 216,
-      "height" : 185,
-      "expanded" : false,
-      "position_x" : 266,
-      "position_y" : 449
-    },
-    {
-      "_type" : "canvas_node",
-      "model" : {
-        "_properties_as_sinks" : []
-      },
-      "builder_id" : "svg:dst-over",
-      "width" : 145,
-      "height" : 243,
-      "expanded" : false,
-      "position_x" : 1693,
-      "position_y" : 99
-    },
-    {
-      "_type" : "canvas_node",
-      "model" : {
-        "y" : -1.0,
-        "width" : 800.0,
-        "height" : 800.0,
+        "width" : 100.0,
+        "height" : 100.0,
         "_properties_as_sinks" : []
       },
       "builder_id" : "gegl:crop",
-      "width" : 331,
-      "height" : 443,
+      "width" : 285,
+      "height" : 323,
       "expanded" : true,
-      "position_x" : 1168,
-      "position_y" : 346
+      "position_x" : 426,
+      "position_y" : 379
     },
     {
       "_type" : "canvas_node",
       "model" : {
-        "width" : 600.0,
-        "height" : 750.0,
-        "x" : 100.0,
         "_properties_as_sinks" : []
       },
-      "builder_id" : "gegl:crop",
-      "width" : 145,
-      "height" : 243,
-      "expanded" : false,
-      "position_x" : 1932,
-      "position_y" : 121
-    },
-    {
-      "_type" : "canvas_node",
-      "model" : {
-        "size-x" : 4,
-        "size-y" : 4,
-        "_properties_as_sinks" : []
-      },
-      "builder_id" : "gegl:pixelize",
-      "width" : 320,
-      "height" : 320,
+      "builder_id" : "gegl:perlin-noise",
+      "width" : 302,
+      "height" : 265,
       "expanded" : true,
-      "position_x" : 2691,
-      "position_y" : 324
+      "position_x" : 1042,
+      "position_y" : 537
     },
     {
       "_type" : "canvas_node",
       "model" : {
-        "pos-x" : 0.30000000000000004,
-        "pos-y" : 0.20000000000000004,
+        "high" : 0.79999999999999993,
+        "value" : 0.40000000000000002,
         "_properties_as_sinks" : []
       },
-      "builder_id" : "gegl:lens-flare",
-      "width" : 298,
-      "height" : 410,
+      "builder_id" : "gegl:threshold",
+      "width" : 282,
+      "height" : 323,
       "expanded" : true,
-      "position_x" : 2298,
-      "position_y" : 130
+      "position_x" : 804,
+      "position_y" : 110
     },
     {
       "_type" : "canvas_node",
       "model" : {
-        "y" : 2.0,
-        "x" : 2.0,
+        "path" : "/tmp/test.png",
         "_properties_as_sinks" : []
       },
-      "builder_id" : "gegl:scale-ratio",
-      "width" : 156,
-      "height" : 214,
-      "expanded" : false,
-      "position_x" : 707,
-      "position_y" : 445
+      "builder_id" : "gegl:save",
+      "width" : 280,
+      "height" : 265,
+      "expanded" : true,
+      "position_x" : 1161,
+      "position_y" : 254
     }
   ],
   "property_nodes" : [],
   "links" : [
     {
-      "node_index" : 0,
-      "source_name" : "Output",
-      "sinks" : [
-        {
-          "node_index" : 3,
-          "sink_name" : "Input"
-        }
-      ]
-    },
-    {
-      "node_index" : 1,
-      "source_name" : "Output",
-      "sinks" : [
-        {
-          "node_index" : 0,
-          "sink_name" : "Input"
-        }
-      ]
-    },
-    {
-      "node_index" : 3,
+      "node_index" : 2,
       "source_name" : "Output",
       "sinks" : [
         {
           "node_index" : 4,
-          "sink_name" : "Input"
-        }
-      ]
-    },
-    {
-      "node_index" : 4,
-      "source_name" : "Output",
-      "sinks" : [
-        {
-          "node_index" : 6,
-          "sink_name" : "Input"
-        }
-      ]
-    },
-    {
-      "node_index" : 5,
-      "source_name" : "Output",
-      "sinks" : [
-        {
-          "node_index" : 11,
-          "sink_name" : "Input"
-        }
-      ]
-    },
-    {
-      "node_index" : 6,
-      "source_name" : "Output",
-      "sinks" : [
-        {
-          "node_index" : 8,
-          "sink_name" : "Input"
-        }
-      ]
-    },
-    {
-      "node_index" : 7,
-      "source_name" : "Output",
-      "sinks" : [
-        {
-          "node_index" : 6,
-          "sink_name" : "Aux"
-        }
-      ]
-    },
-    {
-      "node_index" : 8,
-      "source_name" : "Output",
-      "sinks" : [
-        {
-          "node_index" : 10,
-          "sink_name" : "Input"
-        }
-      ]
-    },
-    {
-      "node_index" : 9,
-      "source_name" : "Output",
-      "sinks" : [
-        {
-          "node_index" : 2,
-          "sink_name" : "Input"
-        }
-      ]
-    },
-    {
-      "node_index" : 10,
-      "source_name" : "Output",
-      "sinks" : [
-        {
-          "node_index" : 9,
-          "sink_name" : "Input"
-        }
-      ]
-    },
-    {
-      "node_index" : 11,
-      "source_name" : "Output",
-      "sinks" : [
-        {
-          "node_index" : 7,
           "sink_name" : "Input"
         }
       ]
