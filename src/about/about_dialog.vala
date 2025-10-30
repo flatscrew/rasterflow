@@ -25,10 +25,10 @@ namespace About {
         public AboutDialog(AboutRegistry registry) {
             add_css_class("about");
     
-            var tv = new Adw.ToolbarView();
-            var hb = new Adw.HeaderBar();
-            hb.show_end_title_buttons = true;
-            tv.add_top_bar(hb);
+            var toolbar_view = new Adw.ToolbarView();
+            var headerbar = new Adw.HeaderBar();
+            headerbar.show_end_title_buttons = true;
+            toolbar_view.add_top_bar(headerbar);
     
             var scroller = new Gtk.ScrolledWindow();
             scroller.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC);
@@ -51,15 +51,15 @@ namespace About {
             author.add_css_class("dim-label");
             author.halign = Gtk.Align.CENTER;
     
-            var version_btn = new Gtk.Button.with_label(BuildConfig.APP_VERSION);
-            version_btn.add_css_class("text-button");
-            version_btn.add_css_class("app-version");
-            version_btn.halign = Gtk.Align.CENTER;
+            var version_button = new Gtk.Button.with_label(BuildConfig.APP_VERSION);
+            version_button.add_css_class("text-button");
+            version_button.add_css_class("app-version");
+            version_button.halign = Gtk.Align.CENTER;
     
             box.append(logo);
             box.append(title);
             box.append(author);
-            box.append(version_btn);
+            box.append(version_button);
     
             if (registry.get_entries().size > 0) {
                 var group = new Adw.PreferencesGroup();
@@ -88,8 +88,8 @@ namespace About {
     
             clamp.set_child(box);
             scroller.set_child(clamp);
-            tv.set_content(scroller);
-            set_child(tv);
+            toolbar_view.set_content(scroller);
+            set_child(toolbar_view);
     
             set_content_width(400);
             set_content_height(450);
