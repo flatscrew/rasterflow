@@ -99,7 +99,7 @@ public class CanvasPropertyDisplayNode : GtkFlow.Node {
             warning(e.message);
         }
         property_node.source_added.connect(this.source_added);
-        property_node.property.removed.connect(this.remove);
+        property_node.property.removed.connect(this.remove_node);
         property_node.property.value_changed.connect(this.property_changed);
     }
     

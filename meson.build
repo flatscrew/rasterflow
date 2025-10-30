@@ -6,6 +6,14 @@ app_version = get_option('version')
 conf = configuration_data()
 conf.set('version', app_version)
 
+config_vala = configure_file(
+  input: 'config.vala.in',
+  output: 'config.vala',
+  configuration: {
+    'APP_VERSION': app_version
+  }
+)
+
 if host_machine.system() == 'windows'
   add_project_arguments('--define=WIN32', language : 'vala')
 elif host_machine.system() == 'linux'
@@ -38,8 +46,8 @@ if host_machine.system() == 'linux'
 endif
 
 # generating runtime binary
-resource_files = files('rasterflow.gresource.xml')
-gresources = gnome.compile_resources('rasterflow-resources', resource_files, source_dir : ['data'])
+resource_files = files('data/rasterflow.gresource.xml')
+gresources = gnome.compile_resources('rasterflow-resources', resource_files, source_dir : 'data')
 
 vala_args = [
   '--vapidir', meson.current_source_dir() + '/vapi',
@@ -75,6 +83,7 @@ endif
 
 # vala sources
 vala_sources = [
+    config_vala,
     'src/main.vala',
     'src/application_settings.vala',
     'src/minimap.vala',
@@ -163,6 +172,9 @@ vala_sources = [
     'src/history/action/change_property_action.vala',
     'src/history/action/link_nodes_action.vala',
     'src/history/action/unlink_nodes_action.vala',
+    
+    # about
+    'src/about/about_dialog.vala',
 ]
 
 if host_machine.system() == 'linux'

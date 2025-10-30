@@ -324,7 +324,7 @@ public class CanvasDisplayNode : GtkFlow.Node {
         return title_bar;
     }
 
-    private void add_delete_button (Data.TitleBar title_bar) {
+    private void add_delete_button(Data.TitleBar title_bar) {
         this.delete_button = new Gtk.Button();
         delete_button.add_css_class("destructive-action");
         delete_button.add_css_class("circular");
@@ -339,13 +339,8 @@ public class CanvasDisplayNode : GtkFlow.Node {
     private void remove_node() {
         stop_sinks_history_recording();
         {
-            int x, y;
-            get_position(out x, out y);
-            var parent = this.parent as GtkFlow.NodeView;
-            changes_recorder.record(new History.RemoveNodeAction(parent, this, x, y), true);
-            
-            this.remove();
             removed(this);
+            this.remove();
         }
     }
 
@@ -454,11 +449,7 @@ public class CanvasDisplayNode : GtkFlow.Node {
     }
 
     protected void make_busy(bool busy) {
-        if (busy) {
-            set_sensitive(false);
-        } else {
-            set_sensitive(true);
-        }
+        set_sensitive(!busy);
     }
 
     private void stop_sinks_history_recording() {

@@ -98,6 +98,12 @@ public string initialize_image_plugin(Plugin.PluginContribution plugin_contribut
     plugin_contribution.contribute_canvas_headerbar(headerbar_widgets => {
         headerbar_widgets.add_widget(new Image.ImageProcessingRealtimeModeSwitch());
     });
+    
+    plugin_contribution.contribute_about_dialog(about => {
+        int major, minor, micro;
+        Gegl.get_version(out major, out minor, out micro);
+        about.add_entry("GEGL Version", "%d.%d.%d".printf(major, minor, micro));    
+    });
 
 #if LINUX
     plugin_contribution.contribute_app_window(app_window => {

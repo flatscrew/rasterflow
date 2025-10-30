@@ -1,0 +1,5 @@
+// generated file - all changes will be overwritten
+
+namespace BuildConfig {
+    public const string APP_VERSION = "@APP_VERSION@";
+}
