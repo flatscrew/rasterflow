@@ -78,3 +78,17 @@ opacity: 0.9;
 overlay-split-view > .sidebar-pane {
     box-shadow: 4px 0 8px rgba(0, 0, 0, 0.25);
 }
+
+button.coffee {
+    background: #8B5A2B;
+    color: white;
+    transition: background-color 100ms, transform 50ms;
+}
+
+button.coffee:hover {
+    background-color: #A96E3A;
+}
+
+button.coffee:active {
+    background-color: #704220;
+}

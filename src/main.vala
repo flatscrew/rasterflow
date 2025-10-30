@@ -31,6 +31,8 @@ class CanvasApplication : Adw.Application {
   
   public CanvasApplication(string[] args) {
     this.about_registry = new About.AboutRegistry();
+    init_about_registry();
+    
     var header_widgets = new CanvasHeaderbarWidgets();
     var data_node_factory = new CanvasNodeFactory();
     var file_origin_node_factory = new Data.FileOriginNodeFactory();
@@ -81,6 +83,14 @@ class CanvasApplication : Adw.Application {
       var window_dimensions = settings.read_window_dimensions();
       WindowGeometryManager.set_geometry(window, window_dimensions);
     });
+  }
+  
+  private void init_about_registry() {
+    about_registry.add_entry("GTK Version", "%u.%u.%u".printf(
+      Gtk.get_major_version(),
+      Gtk.get_minor_version(),
+      Gtk.get_micro_version()  
+    ));
   }
   
   private void dirty_changed(bool dirty) {
