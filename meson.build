@@ -6,6 +6,14 @@ app_version = get_option('version')
 conf = configuration_data()
 conf.set('version', app_version)
 
+config_vala = configure_file(
+  input: 'config.vala.in',
+  output: 'config.vala',
+  configuration: {
+    'APP_VERSION': app_version
+  }
+)
+
 if host_machine.system() == 'windows'
   add_project_arguments('--define=WIN32', language : 'vala')
 elif host_machine.system() == 'linux'
@@ -75,6 +83,7 @@ endif
 
 # vala sources
 vala_sources = [
+    config_vala,
     'src/main.vala',
     'src/application_settings.vala',
     'src/minimap.vala',

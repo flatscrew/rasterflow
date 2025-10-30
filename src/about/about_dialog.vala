@@ -51,7 +51,7 @@ namespace About {
             author.add_css_class("dim-label");
             author.halign = Gtk.Align.CENTER;
     
-            var version_btn = new Gtk.Button.with_label("0.1.0");
+            var version_btn = new Gtk.Button.with_label(BuildConfig.APP_VERSION);
             version_btn.add_css_class("text-button");
             version_btn.add_css_class("app-version");
             version_btn.halign = Gtk.Align.CENTER;
