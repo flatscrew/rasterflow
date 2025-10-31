@@ -429,6 +429,12 @@ public class CanvasDisplayNode : GtkFlow.Node {
     }
 
     private void change_background_color(Gdk.RGBA? new_color) {
+        var old_color = node_color;
+        set_background_color(new_color);
+        changes_recorder.record(new History.ChangeNodeColorAction(this, old_color, new_color));
+    }
+    
+    public void set_background_color(Gdk.RGBA? new_color) {
         this.node_color = new_color;
         base.highlight_color = new_color;
         

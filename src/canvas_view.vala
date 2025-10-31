@@ -162,7 +162,7 @@ public class CanvasView : Gtk.Widget {
 
     private void node_added(CanvasDisplayNode node) {
         node_view.add(node);
-        node.set_position((int) scrolled_window.get_hadjustment().get_value(), (int) scrolled_window.get_vadjustment().get_value());
+        node.set_position(10, 10);
 
         changes_recorder.record(new History.AddNodeAction(node_view, node));
     }
@@ -170,9 +170,6 @@ public class CanvasView : Gtk.Widget {
     private void node_removed(CanvasDisplayNode node) {
         int x, y;
         node.get_position(out x, out y);
-        
-        message("%d ---- %d", x, y);
-        
         
         changes_recorder.record(new History.RemoveNodeAction(canvas_graph, node, x, y), true);
     }
@@ -199,8 +196,6 @@ public class CanvasView : Gtk.Widget {
     private void property_node_removed(CanvasPropertyDisplayNode property_node) {
         int x, y;
         property_node.get_position(out x, out y);
-        
-        message("%d ---- %d", x, y);
         
         changes_recorder.record(new History.RemovePropertyNodeAction(canvas_graph, property_node, x, y), true);
     }
