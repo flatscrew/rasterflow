@@ -4,9 +4,9 @@
     {
       "_type" : "canvas_node",
       "model" : {
+        "rank" : 1,
         "shape" : 1.0,
         "scale" : 13.599999999999969,
-        "rank" : 1,
         "seed" : 19,
         "iterations" : 3,
         "_properties_as_sinks" : []
@@ -29,8 +29,8 @@
       "width" : 285,
       "height" : 323,
       "expanded" : true,
-      "position_x" : 445,
-      "position_y" : 230
+      "position_x" : 421,
+      "position_y" : 123
     },
     {
       "_type" : "canvas_node",

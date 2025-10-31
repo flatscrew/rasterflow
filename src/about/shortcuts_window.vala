@@ -1,8 +1,25 @@
-public class AppShortcutsWindow : Object {
+public class AppShortcutsWindowInstance : Object {
+    
+    private string xml;
+    
+    public AppShortcutsWindowInstance(string xml) {
+        this.xml = xml;
+    }
+    
+    public Gtk.ShortcutsWindow use_with(Gtk.Window parent) {
+        var builder = new Gtk.Builder();
+        builder.add_from_string(xml, -1);
+        var window = builder.get_object("shortcuts_window") as Gtk.ShortcutsWindow;
+        window.set_transient_for(parent);
+        return window;
+    }
+}
+
+public class AppShortcutsWindowBuilder : Object {
     private Gtk.Window parent;
     private Gee.ArrayList<Section> sections = new Gee.ArrayList<Section>();
 
-    public AppShortcutsWindow(Gtk.Window parent) {
+    public AppShortcutsWindowBuilder(Gtk.Window parent) {
         this.parent = parent;
     }
 
@@ -12,12 +29,8 @@ public class AppShortcutsWindow : Object {
         return section;
     }
 
-    public Gtk.ShortcutsWindow build() throws Error {
-        var builder = new Gtk.Builder();
-        builder.add_from_string(to_xml(), -1);
-        var window = builder.get_object("shortcuts_window") as Gtk.ShortcutsWindow;
-        window.set_transient_for(parent);
-        return window;
+    public AppShortcutsWindowInstance build() throws Error {
+        return new AppShortcutsWindowInstance(to_xml());
     }
     
     private string to_xml() {
@@ -40,11 +53,11 @@ public class AppShortcutsWindow : Object {
     }
 
     public class Section {
-        private AppShortcutsWindow owner;
+        private AppShortcutsWindowBuilder owner;
         public string title;
         private Gee.ArrayList<Group> groups = new Gee.ArrayList<Group>();
 
-        public Section(AppShortcutsWindow owner, string title) {
+        public Section(AppShortcutsWindowBuilder owner, string title) {
             this.owner = owner;
             this.title = title;
         }
@@ -55,7 +68,7 @@ public class AppShortcutsWindow : Object {
             return group;
         }
 
-        public AppShortcutsWindow end_section() {
+        public AppShortcutsWindowBuilder end_section() {
             return owner;
         }
 
