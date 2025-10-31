@@ -75,3 +75,33 @@ public Gdk.RGBA adjust_saturation(Gdk.RGBA color, float factor) {
     new_color.alpha = color.alpha; // Preserve the original alpha
     return new_color;
 }
+
+public Gdk.RGBA get_contrasting_text_color(Gdk.RGBA bg) {
+    double luminance = 0.2126 * bg.red + 0.7152 * bg.green + 0.0722 * bg.blue;
+    return (luminance > 0.5)
+        ? Gdk.RGBA() { red = 0, green = 0, blue = 0, alpha = 1 }
+        : Gdk.RGBA() { red = 1, green = 1, blue = 1, alpha = 1 };  
+}
+
+
+public Gdk.RGBA adjust_for_contrast(Gdk.RGBA color) {
+    float h, s, l;
+    rgb_to_hsl(color.red, color.green, color.blue, out h, out s, out l);
+
+    bool light_bg = l > 0.5f;
+
+    if (light_bg) {
+        // dla jasnego tła – ciemniejszy, bardziej nasycony
+        l = (l * 0.35f < 0.0f) ? 0.0f : (l * 0.35f);
+        s = (s * 1.4f > 1.0f) ? 1.0f : (s * 1.4f);
+    } else {
+        // dla ciemnego tła – jaśniejszy, mniej nasycony
+        l = (l + 0.45f > 1.0f) ? 1.0f : (l + 0.45f);
+        s = (s * 0.8f < 0.0f) ? 0.0f : (s * 0.8f);
+    }
+
+    float r, g, b;
+    hsl_to_rgb(h, s, l, out r, out g, out b);
+    return Gdk.RGBA() { red = r, green = g, blue = b, alpha = 1.0f };
+}
+

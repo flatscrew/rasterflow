@@ -214,7 +214,38 @@ public class CanvasDisplayNode : GtkFlow.Node {
             color: white;
         }
         ";
+        custom_backround_css.load_from_bytes(new GLib.Bytes(css.data));
+    }
+    
+    private void change_background_color(Gdk.RGBA? new_color) {
+        var old_color = node_color;
+        set_background_color(new_color);
+        changes_recorder.record(new History.ChangeNodeColorAction(this, old_color, new_color));
+    }
+    
+    public void set_background_color(Gdk.RGBA? new_color) {
+        this.node_color = new_color;
+        base.highlight_color = new_color;
+        
+        if (node_color == null) {
+            reset_background_color();
+            return;
+        }
+    
+        var text_color = adjust_for_contrast(new_color);
+        
+        var css = "
+        .canvas_node {
+            background-color: %s;
+            color: %s;
+        }
+        ".printf(
+            new_color.to_string(),
+            text_color.to_string()
+        );
+
         custom_backround_css.load_from_data(css.data);
+    
     }
     
     private void record_position_changed(int old_x, int old_y, int new_x, int new_y) {
@@ -426,38 +457,6 @@ public class CanvasDisplayNode : GtkFlow.Node {
     private bool is_color_light(Gdk.RGBA color) {
         double luminance = 0.299 * color.red + 0.587 * color.green + 0.114 * color.blue;
         return luminance > 0.5;
-    }
-
-    private void change_background_color(Gdk.RGBA? new_color) {
-        var old_color = node_color;
-        set_background_color(new_color);
-        changes_recorder.record(new History.ChangeNodeColorAction(this, old_color, new_color));
-    }
-    
-    public void set_background_color(Gdk.RGBA? new_color) {
-        this.node_color = new_color;
-        base.highlight_color = new_color;
-        
-        if (node_color == null) {
-            reset_background_color();
-            return;
-        }
-        
-        var css = "
-        .canvas_node {
-            background-color: %s;
-        }
-
-        .dark {
-            color: %s;
-        }
-        ".printf(new_color.to_string(), adjust_saturation(new_color, 2.3f).to_string());
-
-        if (!is_color_light(new_color)) {
-            get_style_context().add_class("dark");
-        }
-
-        custom_backround_css.load_from_data(css.data);
     }
 
     protected void make_busy(bool busy) {
