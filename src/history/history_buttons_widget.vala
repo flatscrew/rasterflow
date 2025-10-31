@@ -22,8 +22,11 @@ namespace History {
             box.set_parent(this);
 
             undo_button = new Gtk.Button.from_icon_name("edit-undo-symbolic");
+            undo_button.action_name = "app.undo";
+            
             redo_button = new Gtk.Button.from_icon_name("edit-redo-symbolic");
-
+            redo_button.action_name = "app.redo";
+            
             undo_button.clicked.connect(history.undo_last);
             redo_button.clicked.connect(history.redo_last);
 

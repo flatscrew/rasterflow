@@ -31,6 +31,7 @@ public class CanvasView : Gtk.Widget {
     private DataDropHandler data_drop_handler;
     private PropertyDropHandler property_drop_handler;
     private string current_graph_file;
+    private SimpleAction save_action;
 
     construct {
         set_layout_manager(new Gtk.BinLayout());
@@ -328,24 +329,6 @@ public class CanvasView : Gtk.Widget {
         after_file_load(selected_file.get_basename());
         modification_guard.reset();
     }
-    
-    
-    private void perform_file_load(GLib.File selected_file) {
-        before_file_load();
-
-        canvas_graph.remove_all_properties();
-        canvas_graph.remove_all_nodes();
-        canvas_graph.deserialize_graph(selected_file, deserializers);
-
-        Idle.add(() => {
-            node_view.queue_resize();
-            node_view.queue_allocate();
-            return false;
-        });
-
-        after_file_load(selected_file.get_basename());
-        modification_guard.reset();
-    }
 
     private void export_to_png() {
         var surface = new Cairo.ImageSurface(Cairo.Format.ARGB32, node_view.get_width(), node_view.get_height());
@@ -421,4 +404,15 @@ public class CanvasView : Gtk.Widget {
         return export_button;
     }
     
+    public GLib.Action create_save_action() {
+        if (this.save_action != null) {
+            return this.save_action;
+        } 
+        
+        this.save_action = new SimpleAction("save", null);
+        save_action.activate.connect(() => {
+            save_graph();
+        });
+        return save_action;
+    }
 }

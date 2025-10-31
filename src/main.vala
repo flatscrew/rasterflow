@@ -11,6 +11,8 @@ class CanvasApplication : Adw.Application {
   private bool window_close_confirmed;
   private string? current_file;
   
+  private AppMenu menu;
+  private Gtk.ShortcutsWindow shortcuts_window;
   private About.AboutDialog about_dialog;
   private About.AboutRegistry about_registry;
 
@@ -19,7 +21,10 @@ class CanvasApplication : Adw.Application {
     base.flags = ApplicationFlags.FLAGS_NONE;
     this.settings = new AppSettings(this.application_id);
     this.changes_recorder = History.HistoryOfChangesRecorder.instance;
-
+    
+    this.about_registry = new About.AboutRegistry();
+    init_about_registry();
+    
     Adw.init();
     Data.register_standard_types();
     load_css();
@@ -30,9 +35,6 @@ class CanvasApplication : Adw.Application {
   }
   
   public CanvasApplication(string[] args) {
-    this.about_registry = new About.AboutRegistry();
-    init_about_registry();
-    
     var header_widgets = new CanvasHeaderbarWidgets();
     var data_node_factory = new CanvasNodeFactory();
     var file_origin_node_factory = new Data.FileOriginNodeFactory();
@@ -44,6 +46,8 @@ class CanvasApplication : Adw.Application {
       window.set_title("RasterFlow");
       window.set_icon_name("io.canvas.Canvas");
       window.close_request.connect(this.window_closed);
+      
+      this.about_dialog = new About.AboutDialog(this.about_registry);
       
       this.modification_guard = CanvasGraphModificationGuard.instance;
       this.modification_guard.dirty_state_changed.connect(this.dirty_changed);
@@ -70,19 +74,37 @@ class CanvasApplication : Adw.Application {
       canvas_view.after_file_load.connect_after(this.after_file_load);
       canvas_view.show_properties_sidebar(settings.is_sidebar_visible());
 
-      this.about_dialog = new About.AboutDialog(this.about_registry);
-      
       var toolbar_view = build_toolbar_view(header_widgets);
-
-      add_shortcuts(window);
-      
       window.set_default_size(800, 600);
       window.set_content(toolbar_view);
       window.present();
       
+      add_actions_and_shortcuts();
+      
       var window_dimensions = settings.read_window_dimensions();
       WindowGeometryManager.set_geometry(window, window_dimensions);
     });
+  }
+  
+  private void add_actions_and_shortcuts() throws Error {
+    var actions = new SimpleActionGroup();
+    
+    actions.add_action(create_undo_action());
+    actions.add_action(create_redo_action());
+    actions.add_action(canvas_view.create_save_action());
+    window.insert_action_group("app", actions);
+    
+    set_accels_for_action("app.undo", { "<Control>z" });
+    set_accels_for_action("app.redo", { "<Control><Shift>z" });
+    set_accels_for_action("app.save", { "<Control>s" });
+    
+    
+    this.shortcuts_window = new AppShortcutsWindow(this.window)
+      .new_group("General")
+      .add("Undo last operation", "<Ctrl>z")
+      .add("Redo last operation", "<Ctrl><Shift>z")
+      .add("Save current graph", "<Ctrl>s")
+      .build();
   }
   
   private void init_about_registry() {
@@ -195,20 +217,10 @@ class CanvasApplication : Adw.Application {
   }
   
   private Gtk.MenuButton build_menu_button() {
-    var menu_button = new Gtk.MenuButton();
-    var popover = new Gtk.Popover();
-    var box = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
-    var about_button = new Gtk.Button.with_label("About");
-    about_button.clicked.connect(() => {
-        popover.popdown();
-        about_dialog.present(window);
-    });
-    box.append(about_button);
-
-    popover.set_child(box);
-    menu_button.set_popover(popover);
-
-    return menu_button;
+    this.menu = new AppMenu();
+    menu.about_selected.connect(() => about_dialog.present(window));
+    menu.shortcuts_selected.connect(() => shortcuts_window.present());
+    return menu.button;
   }
 }
 

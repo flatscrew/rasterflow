@@ -77,13 +77,20 @@ namespace About {
             set_child(toolbar_view);
     
             set_content_width(400);
-            set_content_height(450);
+            set_content_height(440);
         }
         
         private void append_author(Gtk.Box box) {
-            var author = new Gtk.Label("by activey");
+            var author = new Gtk.Label(null);
+            author.use_markup = true;
+            author.set_markup(
+                "Non-destructive image compositor brought to you by " +
+                "<a href='mailto:activey@rasterflow.io'>activey</a>"
+            );            
+            
             author.add_css_class("dim-label");
             author.halign = Gtk.Align.CENTER;
+            author.selectable = false;
             box.append(author);
         }
         
@@ -91,6 +98,7 @@ namespace About {
             var logo = new Gtk.Image.from_icon_name("io.canvas.Canvas");
             logo.pixel_size = 256;
             logo.halign = Gtk.Align.CENTER;
+            logo.margin_bottom = 8;
             box.append(logo);
         }
         
