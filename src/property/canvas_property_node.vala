@@ -129,6 +129,7 @@ public class CanvasPropertyDisplayNode : GtkFlow.Node {
         // edge coloring
         var canvas_view = get_parent() as GtkFlow.NodeView;
         if (canvas_view == null) {
+            message("AAAAAAA!!!");
             return;
         }
 

@@ -121,16 +121,16 @@
       "property_name" : "color",
       "width" : 131,
       "height" : 73,
-      "position_x" : 707,
-      "position_y" : 283
+      "position_x" : 693,
+      "position_y" : 426
     },
     {
       "_type" : "property_node",
       "property_name" : "size",
       "width" : 92,
       "height" : 73,
-      "position_x" : 724,
-      "position_y" : 177
+      "position_x" : 704,
+      "position_y" : 279
     },
     {
       "_type" : "canvas_node",

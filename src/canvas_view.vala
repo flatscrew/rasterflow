@@ -187,7 +187,7 @@ public class CanvasView : Gtk.Widget {
     
     private void property_node_added(CanvasPropertyDisplayNode property_node) {
         node_view.add(property_node);
-        //  property_node.init_property_source();
+        property_node.init_property_source();
         property_node.init_position();
         
         changes_recorder.record(new History.AddPropertyNodeAction(node_view, property_node));

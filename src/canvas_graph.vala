@@ -54,8 +54,6 @@ public class CanvasGraph : Object {
     public void add_property_node(CanvasPropertyDisplayNode node) {
         all_nodes.add(node);
         node.removed.connect(this.remove_property_node);
-        node.init_property_source();
-        
         property_node_added(node);
     }
     
