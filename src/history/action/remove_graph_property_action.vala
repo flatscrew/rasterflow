@@ -2,7 +2,7 @@ namespace History {
 
     public class RemoveGraphPropertyAction : Object, IAction {
         private weak CanvasGraph canvas_graph;
-        private weak CanvasGraphProperty property;
+        private CanvasGraphProperty property;
         
         // TODO record position of property in graph properties
         public RemoveGraphPropertyAction(CanvasGraph canvas_graph, CanvasGraphProperty new_property) {

@@ -55,7 +55,7 @@ namespace History {
 
             graph.add_node(node);
             node.set_position(pos_x, pos_y);
-            node.set_size_request(width, height);
+            //  node.set_size_request(width, height);
 
             foreach (var link in saved_links) {
                 link.sink.link(link.source);

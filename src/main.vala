@@ -47,8 +47,6 @@ class CanvasApplication : Adw.Application {
       window.set_icon_name("io.canvas.Canvas");
       window.close_request.connect(this.window_closed);
       
-      this.about_dialog = new About.AboutDialog(this.about_registry);
-      
       this.modification_guard = CanvasGraphModificationGuard.instance;
       this.modification_guard.dirty_state_changed.connect(this.dirty_changed);
       
@@ -64,6 +62,7 @@ class CanvasApplication : Adw.Application {
 
       initialize_image_plugin(plugin_contribution, args);
 
+      this.about_dialog = new About.AboutDialog(this.about_registry);
       this.canvas_view = new CanvasView(
         data_node_factory,
         file_origin_node_factory,

@@ -6,6 +6,7 @@ public class CanvasGraph : Object {
     public signal void property_removed(CanvasGraphProperty property);
     public signal void properties_removed();
     public signal void property_node_added(CanvasPropertyDisplayNode node);
+    public signal void property_node_removed(CanvasPropertyDisplayNode node);
     
     private CanvasNodeFactory node_factory;
     private Gee.List<GtkFlow.Node> all_nodes = new Gee.ArrayList<GtkFlow.Node>();
@@ -30,6 +31,8 @@ public class CanvasGraph : Object {
     }
 
     private void remove_node(CanvasDisplayNode removed_node) {
+        removed_node.removed.disconnect(this.remove_node);
+        
         all_nodes.remove(removed_node);
         node_removed(removed_node);
     }
@@ -42,19 +45,25 @@ public class CanvasGraph : Object {
     }
     
     public void remove_property(CanvasGraphProperty property) {
+        property.removed.disconnect(this.remove_property);
+        
         all_properties.unset(property.name);
         property_removed(property);
     }
     
     public void add_property_node(CanvasPropertyDisplayNode node) {
         all_nodes.add(node);
-        node.removed.connect(this.property_node_removed);
+        node.removed.connect(this.remove_property_node);
+        node.init_property_source();
         
         property_node_added(node);
     }
     
-    private void property_node_removed(CanvasPropertyDisplayNode removed_node) {
+    private void remove_property_node(CanvasPropertyDisplayNode removed_node) {
+        removed_node.removed.disconnect(this.remove_property_node);
+        
         all_nodes.remove(removed_node);
+        property_node_removed(removed_node);
     }
     
     public bool has_any_property() {

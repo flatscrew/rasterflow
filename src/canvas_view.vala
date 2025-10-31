@@ -62,6 +62,13 @@ public class CanvasView : Gtk.Widget {
         canvas_graph.node_added.connect_after(this.node_added);
         canvas_graph.node_removed.connect_after(this.node_removed);
         canvas_graph.property_node_added.connect_after(this.property_node_added);
+        canvas_graph.property_node_removed.connect_after(this.property_node_removed);
+        canvas_graph.property_added.connect_after(new_property => {
+            changes_recorder.record(new History.AddGraphPropertyAction(canvas_graph, new_property));
+        });
+        canvas_graph.property_removed.connect_after(property => {
+            changes_recorder.record(new History.RemoveGraphPropertyAction(canvas_graph, property));
+        });
         
         this.properties_editor = new CanvasGraphPropertiesEditor(canvas_graph);
         this.node_view_box = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
@@ -163,6 +170,10 @@ public class CanvasView : Gtk.Widget {
     private void node_removed(CanvasDisplayNode node) {
         int x, y;
         node.get_position(out x, out y);
+        
+        message("%d ---- %d", x, y);
+        
+        
         changes_recorder.record(new History.RemoveNodeAction(canvas_graph, node, x, y), true);
     }
     
@@ -179,10 +190,19 @@ public class CanvasView : Gtk.Widget {
     
     private void property_node_added(CanvasPropertyDisplayNode property_node) {
         node_view.add(property_node);
-        changes_recorder.record(new History.AddPropertyNodeAction(node_view, property_node));
-        
-        property_node.init_property_source();
+        //  property_node.init_property_source();
         property_node.init_position();
+        
+        changes_recorder.record(new History.AddPropertyNodeAction(node_view, property_node));
+    }
+    
+    private void property_node_removed(CanvasPropertyDisplayNode property_node) {
+        int x, y;
+        property_node.get_position(out x, out y);
+        
+        message("%d ---- %d", x, y);
+        
+        changes_recorder.record(new History.RemovePropertyNodeAction(canvas_graph, property_node, x, y), true);
     }
     
     private void add_file_data_node(GLib.File file, double x, double y) {

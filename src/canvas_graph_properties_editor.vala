@@ -1,6 +1,5 @@
 public class CanvasGraphPropertiesEditor : Gtk.Widget {
 
-    private History.HistoryOfChangesRecorder history_recorder;
     private CanvasGraph canvas_graph;
     private Gtk.Box editor_box;
     private CanvasGraphPropertyListView property_list_view;
@@ -14,18 +13,9 @@ public class CanvasGraphPropertiesEditor : Gtk.Widget {
     }
 
     public CanvasGraphPropertiesEditor(CanvasGraph canvas_graph) {
-        this.history_recorder = History.HistoryOfChangesRecorder.instance;
         this.canvas_graph = canvas_graph;
         this.editor_box = create_main_layout();
         editor_box.set_parent(this);
-        
-        canvas_graph.property_added.connect(new_property => {
-            history_recorder.record(new History.AddGraphPropertyAction(canvas_graph, new_property));
-        });
-        
-        canvas_graph.property_removed.connect(property => {
-            history_recorder.record(new History.RemoveGraphPropertyAction(canvas_graph, property));
-        });
     }
     
     private Gtk.Box create_main_layout() {

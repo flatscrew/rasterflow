@@ -226,6 +226,12 @@ public class CanvasDisplayNode : GtkFlow.Node {
             width = new_width, 
             height = new_height
         };
+        
+        if (new_width == 0 && new_height == 0) {
+            // TODO why is this happening?    
+            return;
+        }
+        
         changes_recorder.record_node_resized(this, old_width, old_height, new_width, new_height);
     }
 

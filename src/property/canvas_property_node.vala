@@ -63,6 +63,8 @@ public class CanvasPropertyNode : CanvasNode {
         private set;
     }
     
+    private bool has_source;
+    
     public CanvasPropertyNode(CanvasGraphProperty property) {
         base(property.readable_name);
         base.resizable = false;
@@ -70,7 +72,12 @@ public class CanvasPropertyNode : CanvasNode {
     }
     
     public void init_source() {
+        if (this.has_source) {
+            return;
+        }
+        
         add_source(new CanvasNodePropertySource(property));
+        this.has_source = true;
     }
 }
 
@@ -201,13 +208,8 @@ public class CanvasPropertyDisplayNode : GtkFlow.Node {
     private void remove_node() {
         //  stop_sinks_history_recording();
         {
-            int x, y;
-            get_position(out x, out y);
-            var parent = this.parent as GtkFlow.NodeView;
-            changes_recorder.record(new History.RemovePropertyNodeAction(parent, this, x, y), true);
-            
-            this.remove();
             removed(this);
+            this.remove();
         }
     }
 }

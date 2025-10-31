@@ -1,7 +1,7 @@
 namespace History {
 
     public class RemovePropertyNodeAction : Object, IAction {
-        private weak GtkFlow.NodeView parent_view;
+        private unowned CanvasGraph graph;
         private CanvasPropertyDisplayNode node;
         private int pos_x;
         private int pos_y;
@@ -20,8 +20,8 @@ namespace History {
             }
         }
 
-        public RemovePropertyNodeAction(GtkFlow.NodeView parent_view, CanvasPropertyDisplayNode node, int previous_x, int previous_y) {
-            this.parent_view = parent_view;
+        public RemovePropertyNodeAction(CanvasGraph graph, CanvasPropertyDisplayNode node, int previous_x, int previous_y) {
+            this.graph = graph;
             this.node = node;
             this.pos_x = previous_x;
             this.pos_y = previous_y;
@@ -50,10 +50,10 @@ namespace History {
         }
 
         public void undo() {
-            if (parent_view == null || node == null)
+            if (graph == null || node == null)
                 return;
 
-            parent_view.add(node);
+            graph.add_property_node(node);
             node.set_position(pos_x, pos_y);
             node.set_size_request(width, height);
 
@@ -64,12 +64,10 @@ namespace History {
                     warning(e.message);
                 }
             }
-
-            parent_view.queue_allocate();
         }
 
         public void redo() {
-            if (parent_view == null || node == null)
+            if (node == null)
                 return;
 
             node.remove();
