@@ -102,6 +102,7 @@ vala_sources = [
     'src/canvas_logs.vala',
     'src/canvas_log_button.vala',
     'src/canvas_log_window.vala',
+    'src/canvas_menu_button.vala',
     'src/canvas_headerbar.vala',
     'src/canvas_graph_properties_editor.vala',
     'src/add_graph_property_popover.vala',
@@ -176,6 +177,8 @@ vala_sources = [
     
     # about
     'src/about/about_dialog.vala',
+    'src/about/shortcuts_window.vala',
+    
 ]
 
 if host_machine.system() == 'linux'
