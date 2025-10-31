@@ -1,95 +1,133 @@
 public class AppShortcutsWindow : Object {
-  private class ShortcutGroup {
-      public string title;
-      public Gee.ArrayList<ShortcutItem> items = new Gee.ArrayList<ShortcutItem>();
-  }
+    private Gtk.Window parent;
+    private Gee.ArrayList<Section> sections = new Gee.ArrayList<Section>();
 
-  private class ShortcutItem {
-      public string title;
-      public string accel;
-  }
+    public AppShortcutsWindow(Gtk.Window parent) {
+        this.parent = parent;
+    }
 
-  private Gtk.Window parent;
-  private Gee.ArrayList<ShortcutGroup> groups = new Gee.ArrayList<ShortcutGroup>();
-  private ShortcutGroup? current_group = null;
-  public Gtk.ShortcutsWindow window { get; private set; }
+    public Section new_section(string title) {
+        var section = new Section(this, title);
+        sections.add(section);
+        return section;
+    }
 
-  public AppShortcutsWindow(Gtk.Window parent) {
-      this.parent = parent;
-  }
+    public Gtk.ShortcutsWindow build() throws Error {
+        var builder = new Gtk.Builder();
+        builder.add_from_string(to_xml(), -1);
+        var window = builder.get_object("shortcuts_window") as Gtk.ShortcutsWindow;
+        window.set_transient_for(parent);
+        return window;
+    }
+    
+    private string to_xml() {
+        var sb = new StringBuilder();
+        sb.append("<interface>\n");
+        sb.append("  <object class=\"GtkShortcutsWindow\" id=\"shortcuts_window\">\n");
+        sb.append("    <property name=\"modal\">true</property>\n");
+        foreach (var section in sections)
+            sb.append(section.to_xml(4));
+        sb.append("  </object>\n");
+        sb.append("</interface>\n");
+        return sb.str;
+    }
 
-  public AppShortcutsWindow new_group(string title) {
-      var g = new ShortcutGroup();
-      g.title = title;
-      groups.add(g);
-      current_group = g;
-      return this;
-  }
+    private static string pad(int n) {
+        var sb = new StringBuilder();
+        for (int i = 0; i < n; i++)
+            sb.append(" ");
+        return sb.str;
+    }
 
-  public AppShortcutsWindow add(string title, string accel) {
-      if (current_group == null)
-          error("No active group — call new_group() first.");
-      var i = new ShortcutItem();
-      i.title = title;
-      i.accel = accel
-          .replace("&", "&amp;")
-          .replace("<", "&lt;")
-          .replace(">", "&gt;");
-      current_group.items.add(i);
-      return this;
-  }
-  
-  public AppShortcutsWindow end_group() {
-      current_group = null;
-      return this;
-  }
+    public class Section {
+        private AppShortcutsWindow owner;
+        public string title;
+        private Gee.ArrayList<Group> groups = new Gee.ArrayList<Group>();
 
-  public Gtk.ShortcutsWindow build() throws Error {
-      var xml = build_xml();
-      var builder = new Gtk.Builder();
-      builder.add_from_string(xml, -1);
+        public Section(AppShortcutsWindow owner, string title) {
+            this.owner = owner;
+            this.title = title;
+        }
 
-      window = builder.get_object("shortcuts_window") as Gtk.ShortcutsWindow;
-      window.set_transient_for(parent);
-      return window;
-  }
+        public Group new_group(string title) {
+            var group = new Group(this, title);
+            groups.add(group);
+            return group;
+        }
 
-  private string build_xml() {
-      var sb = new StringBuilder();
-      sb.append("<interface>\n");
-      sb.append("  <object class=\"GtkShortcutsWindow\" id=\"shortcuts_window\">\n");
-      sb.append("    <property name=\"modal\">true</property>\n");
+        public AppShortcutsWindow end_section() {
+            return owner;
+        }
 
-      foreach (var g in groups) {
-          sb.append("    <child>\n");
-          sb.append("      <object class=\"GtkShortcutsSection\">\n");
-          sb.append("        <property name=\"title\">" + g.title + "</property>\n");
-          sb.append("        <child>\n");
-          sb.append("          <object class=\"GtkShortcutsGroup\">\n");
-          sb.append("            <property name=\"title\">" + g.title + "</property>\n");
+        public string to_xml(int indent = 0) {
+            var p = pad(indent);
+            var sb = new StringBuilder();
+            sb.append(p + "<child>\n");
+            sb.append(p + "  <object class=\"GtkShortcutsSection\">\n");
+            sb.append(p + "    <property name=\"title\">" + title + "</property>\n");
+            foreach (var g in groups)
+                sb.append(g.to_xml(indent + 4));
+            sb.append(p + "  </object>\n");
+            sb.append(p + "</child>\n");
+            return sb.str;
+        }
+    }
 
-          foreach (var i in g.items) {
-              sb.append("            <child>\n");
-              sb.append("              <object class=\"GtkShortcutsShortcut\">\n");
-              sb.append("                <property name=\"title\">" + i.title + "</property>\n");
-              sb.append("                <property name=\"accelerator\">" + i.accel + "</property>\n");
-              sb.append("              </object>\n");
-              sb.append("            </child>\n");
-          }
+    public class Group {
+        private Section owner;
+        public string title;
+        private Gee.ArrayList<Shortcut> shortcuts = new Gee.ArrayList<Shortcut>();
 
-          sb.append("          </object>\n");
-          sb.append("        </child>\n");
-          sb.append("      </object>\n");
-          sb.append("    </child>\n");
-      }
+        public Group(Section owner, string title) {
+            this.owner = owner;
+            this.title = title;
+        }
 
-      sb.append("  </object>\n");
-      sb.append("</interface>\n");
-      return sb.str;
-  }
-  
-  public void present() {
-      if (window != null)
-          window.present();
-  }
+        public Group add(string title, string accel) {
+            shortcuts.add(new Shortcut(title, accel));
+            return this;
+        }
+
+        public Section end_group() {
+            return owner;
+        }
+
+        public string to_xml(int indent = 0) {
+            var p = pad(indent);
+            var sb = new StringBuilder();
+            sb.append(p + "<child>\n");
+            sb.append(p + "  <object class=\"GtkShortcutsGroup\">\n");
+            sb.append(p + "    <property name=\"title\">" + title + "</property>\n");
+            foreach (var s in shortcuts)
+                sb.append(s.to_xml(indent + 4));
+            sb.append(p + "  </object>\n");
+            sb.append(p + "</child>\n");
+            return sb.str;
+        }
+    }
+
+    public class Shortcut {
+        public string title;
+        public string accel;
+
+        public Shortcut(string title, string accel) {
+            this.title = title;
+            this.accel = accel
+                .replace("&", "&amp;")
+                .replace("<", "&lt;")
+                .replace(">", "&gt;");
+        }
+
+        public string to_xml(int indent = 0) {
+            var p = pad(indent);
+            var sb = new StringBuilder();
+            sb.append(p + "<child>\n");
+            sb.append(p + "  <object class=\"GtkShortcutsShortcut\">\n");
+            sb.append(p + "    <property name=\"title\">" + title + "</property>\n");
+            sb.append(p + "    <property name=\"accelerator\">" + accel + "</property>\n");
+            sb.append(p + "  </object>\n");
+            sb.append(p + "</child>\n");
+            return sb.str;
+        }
+    }
 }

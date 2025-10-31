@@ -12,7 +12,7 @@ class CanvasApplication : Adw.Application {
   private string? current_file;
   
   private AppMenu menu;
-  private Gtk.ShortcutsWindow shortcuts_window;
+  private AppShortcutsWindow shortcuts_window;
   private About.AboutDialog about_dialog;
   private About.AboutRegistry about_registry;
 
@@ -100,11 +100,13 @@ class CanvasApplication : Adw.Application {
     
     
     this.shortcuts_window = new AppShortcutsWindow(this.window)
-      .new_group("General")
-      .add("Undo last operation", "<Ctrl>z")
-      .add("Redo last operation", "<Ctrl><Shift>z")
-      .add("Save current graph", "<Ctrl>s")
-      .build();
+        .new_section("General")
+            .new_group("Editing")
+                .add("Undo last operation", "<Ctrl>z")
+                .add("Redo last operation", "<Ctrl><Shift>z")
+                .add("Save current graph", "<Ctrl>s")
+            .end_group()
+        .end_section();
   }
   
   private void init_about_registry() {
@@ -219,7 +221,7 @@ class CanvasApplication : Adw.Application {
   private Gtk.MenuButton build_menu_button() {
     this.menu = new AppMenu();
     menu.about_selected.connect(() => about_dialog.present(window));
-    menu.shortcuts_selected.connect(() => shortcuts_window.present());
+    menu.shortcuts_selected.connect(() => shortcuts_window.build().present());
     return menu.button;
   }
 }
