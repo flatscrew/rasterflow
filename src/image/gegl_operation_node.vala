@@ -41,10 +41,11 @@ namespace Image {
             this.gegl_description = gegl_description;
         }
 
-        public CanvasDisplayNode create() throws Error {
+        public CanvasDisplayNode create(int x, int y) throws Error {
             return new GeglOperationDisplayNode(
                 gegl_operation, 
-                new GeglOperationNode(node_name, gegl_operation)
+                new GeglOperationNode(node_name, gegl_operation),
+                x, y
             );
         }
 

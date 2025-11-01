@@ -19,7 +19,11 @@ public class CanvasView : Gtk.Widget {
     private Data.DataNodeChooser node_chooser;
     private Data.FileOriginNodeFactory file_origin_node_factory;
     private Gtk.Popover file_origin_popover;
-
+    private Gtk.Popover connect_source_popover;
+    private int node_x; // where node will be spawned
+    private int node_y;
+    private weak GtkFlow.Dock source_dock;
+    
     private CanvasNodeFactory node_factory;
     private CanvasGraph canvas_graph;
     private CanvasGraphPropertiesEditor properties_editor;
@@ -51,9 +55,6 @@ public class CanvasView : Gtk.Widget {
         modification_guard.dirty_state_changed.connect(this.graph_dirty_state_changed);
         
         this.file_origin_node_factory = file_data_node_factory;
-        this.file_origin_popover = new Gtk.Popover();
-        file_origin_popover.set_parent(this);
-
         this.node_factory = node_factory;
         this.serializers = serializers;
         this.deserializers = deserializers;
@@ -66,9 +67,6 @@ public class CanvasView : Gtk.Widget {
         canvas_graph.property_added.connect_after(new_property => {
             changes_recorder.record(new History.AddGraphPropertyAction(canvas_graph, new_property));
         });
-        //  canvas_graph.property_removed.connect_after(property => {
-        //      changes_recorder.record(new History.RemoveGraphPropertyAction(canvas_graph, property));
-        //  });
         canvas_graph.property_removed.connect_after(this.property_removed);
         
         this.properties_editor = new CanvasGraphPropertiesEditor(canvas_graph);
@@ -86,6 +84,33 @@ public class CanvasView : Gtk.Widget {
         this.property_drop_handler = new PropertyDropHandler();
         property_drop_handler.property_dropped.connect(this.property_dropped);
         node_view.add_controller(property_drop_handler.data_drop_target);
+    }
+    
+    public void setup_popovers() {
+        this.file_origin_popover = new Gtk.Popover();
+        file_origin_popover.set_parent(node_view_box);
+        
+        this.connect_source_popover = new Gtk.Popover();
+        connect_source_popover.add_css_class("menu");
+        connect_source_popover.set_parent(node_view_box);
+        
+        var chooser_box = new Data.DataNodeChooserBox(node_factory);
+        chooser_box.builder_selected.connect(builder => {
+            try {
+                // TODO probably gegl node should decide about it
+                var new_node = builder.create(node_x, node_y);
+                new_node.link_sink("Input", source_dock);
+                
+                this.canvas_graph.add_node(new_node);
+                
+                this.source_dock = null;
+            } catch (Error e) {
+                warning(e.message);
+            }
+            connect_source_popover.hide();
+        });
+
+        connect_source_popover.set_child(chooser_box);
     }
     
     private void graph_dirty_state_changed(bool is_dirty) {
@@ -111,6 +136,8 @@ public class CanvasView : Gtk.Widget {
     
     private void create_node_view() {
         this.node_view = new GtkFlow.NodeView();
+        node_view.dock_connection_missed.connect(choose_node_and_connect_dock);
+        
         this.scrolled_window = new Gtk.ScrolledWindow();
         scrolled_window.set_kinetic_scrolling(false);
         scrolled_window.set_policy(Gtk.PolicyType.EXTERNAL, Gtk.PolicyType.EXTERNAL);
@@ -127,6 +154,18 @@ public class CanvasView : Gtk.Widget {
         scroll_panner.enable_panning(scrolled_window);
 
         create_zoom_control_overlay();
+    }
+    
+    private void choose_node_and_connect_dock(GtkFlow.Dock dock, double x, double y) {
+        this.node_x = (int) x;
+        this.node_y = (int) y;
+        this.source_dock = dock;
+        
+        connect_source_popover.set_pointing_to({
+            x: node_x,
+            y: node_y
+        });
+        connect_source_popover.popup();
     }
 
     private void create_zoom_control_overlay() {
@@ -163,7 +202,7 @@ public class CanvasView : Gtk.Widget {
 
     private void node_added(CanvasDisplayNode node) {
         node_view.add(node);
-        node.set_position(10, 10);
+        node.init_position();
 
         changes_recorder.record(new History.AddNodeAction(node_view, node));
     }
@@ -189,7 +228,7 @@ public class CanvasView : Gtk.Widget {
     
     private void property_dropped(CanvasGraphProperty property, double x, double y) {
         var property_n = new CanvasPropertyNode(property); 
-        var property_node = new CanvasPropertyDisplayNode(property_n, x, y);
+        var property_node = new CanvasPropertyDisplayNode(property_n, (int) x, (int) y);
         
         canvas_graph.add_property_node(property_node);
     }
@@ -244,7 +283,7 @@ public class CanvasView : Gtk.Widget {
                 var builder = file_node_builders[0];
                 var node_builder = builder.find_builder(node_factory);
                 try {
-                    var new_node = node_builder.create();
+                    var new_node = node_builder.create((int) x, (int) y);
                     canvas_graph.add_node(new_node);
 
                     builder.apply_file_data(new_node, file, file_info);
