@@ -277,7 +277,7 @@ namespace Image {
             changed_properties.set(property_spec.name, property_spec.value_type);
         }
         
-        public void add_property_sink(Data.PropertyControlContract property_control_contract) {
+        public CanvasNodePropertySink add_property_sink(Data.PropertyControlContract property_control_contract) {
             var property_sink = new CanvasNodePropertySink(property_control_contract);
             var property_name = property_control_contract.param_spec.name;
             
@@ -292,6 +292,8 @@ namespace Image {
             
             add_sink(property_sink);
             properties_as_sinks.add(property_name);
+            
+            return property_sink;
         }
         
         public void for_each_deserialized_property_as_sink(GLib.Func<string> callback) {
