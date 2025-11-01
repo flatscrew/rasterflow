@@ -8,16 +8,6 @@ namespace History {
         private int width;
         private int height;
 
-        private class LinkRecord {
-            public GFlow.Source source;
-            public GFlow.Sink sink;
-
-            public LinkRecord(GFlow.Source source, GFlow.Sink sink) {
-                this.source = source;
-                this.sink = sink;
-            }
-        }
-
         public RemoveNodeAction(CanvasGraph graph, CanvasDisplayNode node, int previous_x, int previous_y) {
             this.graph = graph;
             this.node = node;

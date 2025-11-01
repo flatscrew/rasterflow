@@ -135,7 +135,14 @@ namespace Image {
         }
 
         private void on_property_control_taken(Data.PropertyControlContract control_contract) {
-            gegl_operation_node.add_property_sink(control_contract);
+            var property_sink = gegl_operation_node.add_property_sink(control_contract);
+            control_contract.released.connect(() => {
+                changes_recorder.record(new PropertyControlContractReleasedAction(
+                    control_contract, 
+                    property_sink
+                ));
+            });
+            
             changes_recorder.record(new PropertyControlContractAcquiredAction(control_contract, gegl_operation_node));
         }
 

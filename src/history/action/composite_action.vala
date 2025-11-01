@@ -26,7 +26,7 @@ namespace History {
         }
     
         public void redo() {
-            // redo only first at will trigger all children again
+            // redo only first as it will trigger all children again
             children.first().redo();
         }
     

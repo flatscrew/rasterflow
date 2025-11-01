@@ -206,11 +206,8 @@ public class CanvasPropertyDisplayNode : GtkFlow.Node {
     }
     
     private void remove_node() {
-        //  stop_sinks_history_recording();
-        {
-            removed(this);
-            this.remove();
-        }
+        removed(this);
+        this.remove();
     }
 }
 
