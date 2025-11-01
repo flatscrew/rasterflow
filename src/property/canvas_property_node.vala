@@ -19,7 +19,7 @@ public class CanvasNodePropertySink : CanvasNodeSink {
         base.changed.connect(this.sink_value_changed);
     }
     
-    private void sink_value_changed(GLib.Value? value = null, string? flow_id = null) {
+    private void sink_value_changed(GLib.Value? value = null) {
         if (value == null) {
             return;
         }
@@ -129,7 +129,6 @@ public class CanvasPropertyDisplayNode : GtkFlow.Node {
         // edge coloring
         var canvas_view = get_parent() as GtkFlow.NodeView;
         if (canvas_view == null) {
-            message("AAAAAAA!!!");
             return;
         }
 

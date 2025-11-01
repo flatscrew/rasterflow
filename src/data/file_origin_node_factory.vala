@@ -25,11 +25,7 @@ namespace Data {
 
         public void register(FileOriginNodeBuilder node_builder, string[] mime_types) {
             foreach (var mime_type in mime_types) {
-                try {
-                    data_type_builders.set(mime_type, node_builder);
-                } catch (RegexError e) {
-                    warning(e.message);
-                }
+                data_type_builders.set(mime_type, node_builder);
             }
         }
 
@@ -37,8 +33,7 @@ namespace Data {
             FileOriginNodeBuilder[] builders = {};
 
             foreach (var key in data_type_builders.get_keys()) {
-                Regex regex = new Regex(key);
-                if (regex.match(content_type)) {
+                if (key == content_type) {
                     foreach (var builder in data_type_builders.get(key)) {
                         builders += builder;
                     }

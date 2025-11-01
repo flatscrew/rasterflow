@@ -175,6 +175,7 @@ vala_sources = [
     'src/history/action/link_nodes_action.vala',
     'src/history/action/unlink_nodes_action.vala',
     'src/history/action/change_node_color_action.vala',
+    'src/history/action/composite_action.vala',
     
     # about
     'src/about/about_dialog.vala',

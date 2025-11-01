@@ -1,5 +1,3 @@
-using Gee;
-
 namespace History {
 
     public class HistoryOfChangesRecorder : Object {
@@ -23,22 +21,53 @@ namespace History {
         private ActionStack redo_stack;
         private bool recording_enabled = true;
 
+        private string composite_id;
+        private CompositeAction composite_action;
+        
         private HistoryOfChangesRecorder() {
             undo_stack = new ActionStack();
             redo_stack = new ActionStack();
         }
 
-        public void record(IAction action, bool force = false) {
-            if (!recording_enabled && !force)
+        public bool begin_composite(string label, out string? id_acquired) {
+            if (composite_action != null) {
+                id_acquired = null;
+                return false;
+            }
+            
+            this.composite_id = Uuid.string_random();
+            this.composite_action = new CompositeAction(label);
+            
+            id_acquired = composite_id;
+            return true;
+        }
+        
+        public void end_composite(string composite_id) {
+            if (composite_action == null || composite_id != this.composite_id)
                 return;
+                
+            var finished_composite = composite_action;
+            this.composite_action = null;
+            this.composite_id = null;
+            
+            record(finished_composite);
+        }
 
-            message("recording action> %s\n", action.get_type().name());
-
+        public void record(IAction action) {
+            if (!recording_enabled)
+                return;
+        
+            if (composite_action != null) {
+                composite_action.add_child(action);
+                return;
+            }
+        
+            message("recording action> %s", action.get_label());
             undo_stack.push(action);
             redo_stack.clear();
             changed();
         }
-
+        
         public void record_node_moved(GtkFlow.Node moved_node, int old_x, int old_y, int new_x, int new_y) {
             this.record(new History.MoveNodeAction(moved_node, old_x, old_y, new_x, new_y));
         }
@@ -50,12 +79,18 @@ namespace History {
         public void undo_last() {
             var action = undo_stack.pop();
             if (action == null) return;
+            
             recording_enabled = false;
             action.undo();
-            recording_enabled = true;
+            message("Undoing> %s", action.get_type().name());
             redo_stack.push(action);
 
             changed();
+            
+            Idle.add(() => {
+                recording_enabled = true;
+                return false;
+            });
         }
 
         public void redo_last() {
@@ -63,10 +98,14 @@ namespace History {
             if (action == null) return;
             recording_enabled = false;
             action.redo();
-            recording_enabled = true;
             undo_stack.push(action);
 
             changed();
+            
+            Idle.add(() => {
+                recording_enabled = true;
+                return false;
+            });
         }
 
         public void clear() {

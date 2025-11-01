@@ -2,7 +2,7 @@ namespace History {
 
     public class AddGraphPropertyAction : Object, IAction {
         private weak CanvasGraph canvas_graph;
-        private weak CanvasGraphProperty new_property;
+        private CanvasGraphProperty new_property;
         
         public AddGraphPropertyAction(CanvasGraph canvas_graph, CanvasGraphProperty new_property) {
             this.canvas_graph = canvas_graph;

@@ -55,6 +55,8 @@ public class CanvasGraphPropertyRow : Adw.ActionRow {
     
     private void property_removed() {
         this.removed(this.property);
+        
+        property.removed.disconnect(this.property_removed);
     }
 }
 

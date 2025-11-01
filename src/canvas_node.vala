@@ -5,9 +5,8 @@ public class CanvasNodeSink : GFlow.SimpleSink {
 
     public CanvasNodeSink(GLib.Value value) {
         base(value);
-        this.recording_enabled = true;
-        
         this.changes_recorder = History.HistoryOfChangesRecorder.instance;
+        this.recording_enabled = true;
 
         base.linked.connect(this.connected);
         base.unlinked.connect(this.disconnected);
@@ -16,6 +15,7 @@ public class CanvasNodeSink : GFlow.SimpleSink {
     public CanvasNodeSink.with_type (GLib.Type type) {
         base.with_type(type);
         this.changes_recorder = History.HistoryOfChangesRecorder.instance;
+        this.recording_enabled = true;
 
         base.linked.connect(this.connected);
         base.unlinked.connect(this.disconnected);
@@ -38,7 +38,6 @@ public class CanvasNodeSink : GFlow.SimpleSink {
         }
     }
 
-
     public virtual bool can_serialize() {
         return true;
     }
@@ -55,7 +54,7 @@ public class CanvasNodeSource : GFlow.SimpleSource {
         private set;
     }
 
-    public CanvasNodeSource (GLib.Value value) {
+    public CanvasNodeSource(GLib.Value value) {
         base(value);
         this.value = value;
         base.changed.connect(this.value_changed);
@@ -63,6 +62,7 @@ public class CanvasNodeSource : GFlow.SimpleSource {
 
     public CanvasNodeSource.with_type (GLib.Type type) {
         base.with_type(type);
+        base.changed.connect(this.value_changed);
     }
 
     private void value_changed(GLib.Value? new_value) {

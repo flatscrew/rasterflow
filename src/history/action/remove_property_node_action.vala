@@ -8,8 +8,6 @@ namespace History {
         private int width;
         private int height;
 
-        private List<LinkRecord> saved_links = new List<LinkRecord>();
-
         private class LinkRecord {
             public GFlow.Source source;
             public GFlow.Sink sink;
@@ -27,26 +25,6 @@ namespace History {
             this.pos_y = previous_y;
             this.width = node.get_width();
             this.height = node.get_height();
-
-            save_links();
-        }
-
-        private void save_links() {
-            var model_node = node.n as CanvasNode;
-            if (model_node == null)
-                return;
-
-            foreach (var source in model_node.get_sources()) {
-                foreach (var sink in source.sinks) {
-                    saved_links.append(new LinkRecord(source, sink));
-                }
-            }
-
-            foreach (var sink in model_node.get_sinks()) {
-                foreach (var source in sink.sources) {
-                    saved_links.append(new LinkRecord(source, sink));
-                }
-            }
         }
 
         public void undo() {
@@ -55,15 +33,7 @@ namespace History {
 
             graph.add_property_node(node);
             node.set_position(pos_x, pos_y);
-            node.set_size_request(width, height);
-
-            foreach (var link in saved_links) {
-                try {
-                    link.sink.link(link.source);
-                } catch (Error e) {
-                    warning(e.message);
-                }
-            }
+            //  node.set_size_request(width, height);
         }
 
         public void redo() {

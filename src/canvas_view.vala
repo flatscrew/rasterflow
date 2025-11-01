@@ -66,9 +66,10 @@ public class CanvasView : Gtk.Widget {
         canvas_graph.property_added.connect_after(new_property => {
             changes_recorder.record(new History.AddGraphPropertyAction(canvas_graph, new_property));
         });
-        canvas_graph.property_removed.connect_after(property => {
-            changes_recorder.record(new History.RemoveGraphPropertyAction(canvas_graph, property));
-        });
+        //  canvas_graph.property_removed.connect_after(property => {
+        //      changes_recorder.record(new History.RemoveGraphPropertyAction(canvas_graph, property));
+        //  });
+        canvas_graph.property_removed.connect_after(this.property_removed);
         
         this.properties_editor = new CanvasGraphPropertiesEditor(canvas_graph);
         this.node_view_box = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
@@ -171,7 +172,15 @@ public class CanvasView : Gtk.Widget {
         int x, y;
         node.get_position(out x, out y);
         
-        changes_recorder.record(new History.RemoveNodeAction(canvas_graph, node, x, y), true);
+        string composite_id;
+        if (changes_recorder.begin_composite("Remove node", out composite_id)) {
+            Idle.add(() => {
+                changes_recorder.end_composite(composite_id);
+                return false;
+            });
+        }
+        
+        changes_recorder.record(new History.RemoveNodeAction(canvas_graph, node, x, y));
     }
     
     private void add_text_data_node(string text) {
@@ -197,7 +206,27 @@ public class CanvasView : Gtk.Widget {
         int x, y;
         property_node.get_position(out x, out y);
         
-        changes_recorder.record(new History.RemovePropertyNodeAction(canvas_graph, property_node, x, y), true);
+        string composite_id;
+        if (changes_recorder.begin_composite("Remove property node", out composite_id)) {
+            Idle.add(() => {
+                changes_recorder.end_composite(composite_id);
+                return false;
+            });
+        }
+        
+        changes_recorder.record(new History.RemovePropertyNodeAction(canvas_graph, property_node, x, y));
+    }
+    
+    private void property_removed(CanvasGraphProperty property) {
+        string composite_id;
+        if (changes_recorder.begin_composite("Remove graph property", out composite_id)) {
+            Idle.add(() => {
+                changes_recorder.end_composite(composite_id);
+                return false;
+            });
+        }
+        
+        changes_recorder.record(new History.RemoveGraphPropertyAction(canvas_graph, property));
     }
     
     private void add_file_data_node(GLib.File file, double x, double y) {
