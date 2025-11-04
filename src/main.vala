@@ -79,10 +79,15 @@ class CanvasApplication : Adw.Application {
       window.present();
       
       add_actions_and_shortcuts();
+      add_screenshot_window_resize_controller();
       
       var window_dimensions = settings.read_window_dimensions();
       WindowGeometryManager.set_geometry(window, window_dimensions);
     });
+  }
+  
+  private void add_screenshot_window_resize_controller() {
+    
   }
   
   private void add_actions_and_shortcuts() throws Error {
@@ -91,12 +96,13 @@ class CanvasApplication : Adw.Application {
     actions.add_action(create_undo_action());
     actions.add_action(create_redo_action());
     actions.add_action(canvas_view.create_save_action());
+    actions.add_action(create_window_resize_action(window));
     window.insert_action_group("app", actions);
     
     set_accels_for_action("app.undo", { "<Control>z" });
     set_accels_for_action("app.redo", { "<Control><Shift>z" });
     set_accels_for_action("app.save", { "<Control>s" });
-    
+    set_accels_for_action("app.window_resize", { "<Control><Shift><Alt>q" });
     
     this.shortcuts_window = new AppShortcutsWindowBuilder(this.window)
         .new_section("General")

@@ -4,44 +4,41 @@
     {
       "_type" : "canvas_node",
       "model" : {
-        "path" : "/home/activey/Pictures/test/vintage-tile1_albedo.png",
+        "path" : "/home/activey/Pictures/cosmos.png",
         "_properties_as_sinks" : []
       },
       "builder_id" : "gegl:load",
       "width" : 216,
       "height" : 185,
       "expanded" : false,
-      "position_x" : 46,
-      "position_y" : 83
+      "position_x" : 143,
+      "position_y" : 330
     },
     {
       "_type" : "canvas_node",
       "model" : {
+        "contrast" : 0.20000000000000001,
         "_properties_as_sinks" : []
       },
-      "builder_id" : "gegl:gray",
-      "width" : 156,
-      "height" : 214,
-      "expanded" : false,
-      "color" : "rgb(119,118,123)",
-      "position_x" : 346,
-      "position_y" : 94
-    },
-    {
-      "_type" : "canvas_node",
-      "model" : {
-        "scale" : 1.0,
-        "flip-x" : true,
-        "tileable" : false,
-        "flip-y" : true,
-        "_properties_as_sinks" : []
-      },
-      "builder_id" : "gegl:normal-map",
-      "width" : 370,
-      "height" : 612,
+      "builder_id" : "gegl:brightness-contrast",
+      "width" : 272,
+      "height" : 484,
       "expanded" : true,
-      "position_x" : 591,
-      "position_y" : 55
+      "position_x" : 472,
+      "position_y" : 117
+    },
+    {
+      "_type" : "canvas_node",
+      "model" : {
+        "orientation" : 1,
+        "_properties_as_sinks" : []
+      },
+      "builder_id" : "gegl:pack",
+      "width" : 335,
+      "height" : 575,
+      "expanded" : true,
+      "position_x" : 785,
+      "position_y" : 208
     },
     {
       "_type" : "canvas_node",
@@ -49,11 +46,11 @@
         "_properties_as_sinks" : []
       },
       "builder_id" : "gegl:save-pixbuf",
-      "width" : 451,
-      "height" : 511,
+      "width" : 337,
+      "height" : 518,
       "expanded" : true,
-      "position_x" : 1071,
-      "position_y" : 97,
+      "position_x" : 1186,
+      "position_y" : 186,
       "external-window" : {
         "active" : false
       }
@@ -68,6 +65,10 @@
         {
           "node_index" : 1,
           "sink_name" : "Input"
+        },
+        {
+          "node_index" : 2,
+          "sink_name" : "Input"
         }
       ]
     },
@@ -77,7 +78,7 @@
       "sinks" : [
         {
           "node_index" : 2,
-          "sink_name" : "Input"
+          "sink_name" : "Aux"
         }
       ]
     },

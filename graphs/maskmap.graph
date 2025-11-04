@@ -1,129 +1,155 @@
 {
+  "properties" : [],
   "nodes" : [
     {
-      "model" : {      },
-      "builder_id" : "gegl:add",
-      "width" : 107,
-      "height" : 139,
-      "expanded" : false,
-      "position_x" : 618,
-      "position_y" : 66
-    },
-    {
-      "model" : {      },
+      "_type" : "canvas_node",
+      "model" : {
+        "_properties_as_sinks" : []
+      },
       "builder_id" : "gegl:svg-luminancetoalpha",
-      "width" : 203,
-      "height" : 110,
+      "width" : 236,
+      "height" : 214,
       "expanded" : false,
-      "position_x" : 555,
-      "position_y" : 398
+      "position_x" : 670,
+      "position_y" : 715
     },
     {
-      "model" : {      },
+      "_type" : "canvas_node",
+      "model" : {
+        "_properties_as_sinks" : []
+      },
       "builder_id" : "gegl:invert-linear",
-      "width" : 112,
-      "height" : 110,
+      "width" : 145,
+      "height" : 214,
       "expanded" : false,
-      "color" : "rgb(0,0,255)",
-      "position_x" : 196,
-      "position_y" : 514
+      "position_x" : 353,
+      "position_y" : 801
     },
     {
+      "_type" : "canvas_node",
       "model" : {
-        "path" : "/media/activey/Dane/Projekty/Models/Chair/textures/metalness.png"
+        "path" : "/media/activey/Dane/Projekty/Models/Chair/textures/metalness.png",
+        "_properties_as_sinks" : []
       },
       "builder_id" : "gegl:load",
-      "width" : 141,
-      "height" : 81,
+      "width" : 216,
+      "height" : 185,
       "expanded" : false,
-      "color" : "rgb(255,0,0)",
-      "position_x" : 78,
-      "position_y" : 36
+      "color" : "rgb(165,29,45)",
+      "position_x" : 67,
+      "position_y" : 85
     },
     {
+      "_type" : "canvas_node",
       "model" : {
-        "path" : "/media/activey/Dane/Projekty/Models/Chair/textures/soviet_chair_AO.png"
+        "path" : "/media/activey/Dane/Projekty/Models/Chair/textures/soviet_chair_AO.png",
+        "_properties_as_sinks" : []
       },
       "builder_id" : "gegl:load",
-      "width" : 141,
-      "height" : 81,
+      "width" : 216,
+      "height" : 185,
       "expanded" : false,
-      "color" : "rgb(0,255,0)",
-      "position_x" : 101,
-      "position_y" : 338
+      "color" : "rgb(38,162,105)",
+      "position_x" : 69,
+      "position_y" : 414
     },
     {
+      "_type" : "canvas_node",
       "model" : {
-        "path" : "/media/activey/Dane/Projekty/Models/Chair/textures/soviet_chair_Roughness.png"
+        "path" : "/media/activey/Dane/Projekty/Models/Chair/textures/soviet_chair_Roughness.png",
+        "_properties_as_sinks" : []
       },
       "builder_id" : "gegl:load",
-      "width" : 141,
-      "height" : 81,
+      "width" : 216,
+      "height" : 185,
       "expanded" : false,
-      "position_x" : 16,
-      "position_y" : 616
+      "color" : "rgb(26,95,180)",
+      "position_x" : 15,
+      "position_y" : 754
     },
     {
-      "model" : {      },
-      "builder_id" : "image:display",
-      "width" : 448,
-      "height" : 611,
-      "expanded" : true,
-      "position_x" : 1084,
-      "position_y" : 94
-    },
-    {
+      "_type" : "canvas_node",
       "model" : {
+        "preserve-luminosity" : false,
         "gg-gain" : 0.0,
-        "bb-gain" : 0.0
-      },
-      "builder_id" : "gegl:channel-mixer",
-      "width" : 154,
-      "height" : 110,
-      "expanded" : false,
-      "position_x" : 356,
-      "position_y" : 13
-    },
-    {
-      "model" : {
         "bb-gain" : 0.0,
         "rg-gain" : 0.0,
-        "rr-gain" : 0.0
+        "rr-gain" : 1.0,
+        "_properties_as_sinks" : []
       },
       "builder_id" : "gegl:channel-mixer",
-      "width" : 154,
-      "height" : 110,
+      "width" : 176,
+      "height" : 214,
       "expanded" : false,
-      "position_x" : 343,
-      "position_y" : 309
+      "position_x" : 427,
+      "position_y" : 97
     },
     {
-      "model" : {      },
+      "_type" : "canvas_node",
+      "model" : {
+        "gr-gain" : 0.0,
+        "gg-gain" : 1.0,
+        "bb-gain" : 0.0,
+        "rg-gain" : 0.0,
+        "rr-gain" : 0.0,
+        "_properties_as_sinks" : []
+      },
+      "builder_id" : "gegl:channel-mixer",
+      "width" : 176,
+      "height" : 214,
+      "expanded" : false,
+      "position_x" : 423,
+      "position_y" : 412
+    },
+    {
+      "_type" : "canvas_node",
+      "model" : {
+        "_properties_as_sinks" : []
+      },
+      "builder_id" : "gegl:add",
+      "width" : 145,
+      "height" : 243,
+      "expanded" : false,
+      "position_x" : 768,
+      "position_y" : 295
+    },
+    {
+      "_type" : "canvas_node",
+      "model" : {
+        "_properties_as_sinks" : []
+      },
       "builder_id" : "svg:dst-in",
-      "width" : 112,
-      "height" : 139,
+      "width" : 145,
+      "height" : 243,
       "expanded" : false,
-      "position_x" : 847,
-      "position_y" : 199
+      "position_x" : 1009,
+      "position_y" : 462
     },
     {
-      "model" : {      },
-      "builder_id" : "image:display",
-      "width" : 254,
-      "height" : 291,
+      "_type" : "canvas_node",
+      "model" : {
+        "_properties_as_sinks" : []
+      },
+      "builder_id" : "gegl:save-pixbuf",
+      "width" : 641,
+      "height" : 650,
       "expanded" : true,
-      "position_x" : 754,
-      "position_y" : 547
+      "position_x" : 1286,
+      "position_y" : 51,
+      "external-window" : {
+        "active" : false
+      }
     }
   ],
+  "property_nodes" : [],
   "links" : [
     {
       "node_index" : 0,
       "source_name" : "Output",
       "sinks" : [
         {
-          "node_index" : 9,
-          "sink_name" : "Input"
+          "node_index" : 8,
+          "sink_name" : "Aux"
         }
       ]
     },
@@ -132,12 +158,8 @@
       "source_name" : "Output",
       "sinks" : [
         {
-          "node_index" : 9,
-          "sink_name" : "Aux"
-        },
-        {
-          "node_index" : 10,
-          "sink_name" : "GEGL node"
+          "node_index" : 0,
+          "sink_name" : "Input"
         }
       ]
     },
@@ -146,7 +168,7 @@
       "source_name" : "Output",
       "sinks" : [
         {
-          "node_index" : 1,
+          "node_index" : 5,
           "sink_name" : "Input"
         }
       ]
@@ -156,7 +178,7 @@
       "source_name" : "Output",
       "sinks" : [
         {
-          "node_index" : 7,
+          "node_index" : 6,
           "sink_name" : "Input"
         }
       ]
@@ -166,7 +188,7 @@
       "source_name" : "Output",
       "sinks" : [
         {
-          "node_index" : 8,
+          "node_index" : 1,
           "sink_name" : "Input"
         }
       ]
@@ -176,7 +198,17 @@
       "source_name" : "Output",
       "sinks" : [
         {
-          "node_index" : 2,
+          "node_index" : 7,
+          "sink_name" : "Aux"
+        }
+      ]
+    },
+    {
+      "node_index" : 6,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 7,
           "sink_name" : "Input"
         }
       ]
@@ -186,8 +218,8 @@
       "source_name" : "Output",
       "sinks" : [
         {
-          "node_index" : 0,
-          "sink_name" : "Aux"
+          "node_index" : 8,
+          "sink_name" : "Input"
         }
       ]
     },
@@ -196,18 +228,8 @@
       "source_name" : "Output",
       "sinks" : [
         {
-          "node_index" : 0,
+          "node_index" : 9,
           "sink_name" : "Input"
-        }
-      ]
-    },
-    {
-      "node_index" : 9,
-      "source_name" : "Output",
-      "sinks" : [
-        {
-          "node_index" : 6,
-          "sink_name" : "GEGL node"
         }
       ]
     }

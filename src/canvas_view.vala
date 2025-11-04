@@ -89,7 +89,7 @@ public class CanvasView : Gtk.Widget {
     }
     
     private void graph_dirty_state_changed(bool is_dirty) {
-        this.save_button.sensitive = is_dirty;
+        this.save_button.sensitive = (is_dirty && current_graph_file != null);
     }
 
     private void create_main_view() {
@@ -327,6 +327,7 @@ public class CanvasView : Gtk.Widget {
                         serialized_graph.length,
                         GLib.FileSetContentsFlags.CONSISTENT
                     );
+                    modification_guard.reset();
                 }
             } catch (Error e) {
                 warning("Save cancelled or failed: %s", e.message);
@@ -424,7 +425,7 @@ public class CanvasView : Gtk.Widget {
     }
 
     public Gtk.Button create_save_graph_button() {
-        save_button = new Gtk.Button();
+        this.save_button = new Gtk.Button();
         save_button.set_sensitive(false);
         save_button.set_icon_name("document-save-symbolic");
         save_button.set_tooltip_text("Save graph");
