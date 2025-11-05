@@ -42,6 +42,8 @@ class CanvasApplication : Adw.Application {
     var deserializers = new Serialize.CustomDeserializers();
 
     activate.connect (() => {
+      GtkFlow.init();
+
       this.window = new Adw.ApplicationWindow(this);
       window.set_title("RasterFlow");
       window.set_icon_name("io.canvas.Canvas");
@@ -79,30 +81,36 @@ class CanvasApplication : Adw.Application {
       window.present();
       
       canvas_view.setup_popovers();
-      
+
       try {
         add_actions_and_shortcuts();
       } catch (Error e) {
         warning(e.message);
       }
-      
+      add_screenshot_window_resize_controller();
+
       var window_dimensions = settings.read_window_dimensions();
       WindowGeometryManager.set_geometry(window, window_dimensions);
     });
   }
   
+  private void add_screenshot_window_resize_controller() {
+
+  }
+
   private void add_actions_and_shortcuts() throws Error {
     var actions = new SimpleActionGroup();
     
     actions.add_action(create_undo_action());
     actions.add_action(create_redo_action());
     actions.add_action(canvas_view.create_save_action());
+    actions.add_action(create_window_resize_action(window));
     window.insert_action_group("app", actions);
     
     set_accels_for_action("app.undo", { "<Control>z" });
     set_accels_for_action("app.redo", { "<Control><Shift>z" });
     set_accels_for_action("app.save", { "<Control>s" });
-    
+    set_accels_for_action("app.window_resize", { "<Control><Shift><Alt>q" });
     
     this.shortcuts_window = new AppShortcutsWindowBuilder(this.window)
         .new_section("General")
@@ -186,7 +194,7 @@ class CanvasApplication : Adw.Application {
     Gtk.StyleContext.add_provider_for_display(
       Gdk.Display.get_default(),
       css_provider,
-      Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
+      Gtk.STYLE_PROVIDER_PRIORITY_USER
     );
   }
 

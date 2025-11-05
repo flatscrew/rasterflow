@@ -17,3 +17,14 @@ private static SimpleAction create_redo_action() {
     });
     return redo_action;
 }
+
+private static SimpleAction create_window_resize_action(Gtk.Window window) {
+    var undo_action = new SimpleAction("window_resize", null);
+    undo_action.activate.connect(() => {
+        WindowGeometryManager.set_geometry(window, Gdk.Rectangle() {
+            width = 1600,
+            height = 1000
+        });
+    });
+    return undo_action;
+}

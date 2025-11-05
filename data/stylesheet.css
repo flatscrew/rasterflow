@@ -1,3 +1,11 @@
+.gtkflow_dock {
+    background-color: silver;
+}
+
+.gtkflow_dock:hover {
+    background-color: blueviolet;
+}
+
 .canvas_view {
     background-image:
     linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px),

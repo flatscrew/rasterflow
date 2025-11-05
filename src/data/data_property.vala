@@ -187,7 +187,7 @@ namespace Data {
                 combobox.append_text(v.value_name);
             }
 
-            combobox.active = 0;
+            combobox.active = enum_specs.default_value;
             combobox.changed.connect(() => {
                 EnumValue? v = enumc.get_value(combobox.get_active());
                 property_value_changed(v.value);
