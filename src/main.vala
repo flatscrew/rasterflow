@@ -42,6 +42,8 @@ class CanvasApplication : Adw.Application {
     var deserializers = new Serialize.CustomDeserializers();
 
     activate.connect (() => {
+      GtkFlow.init();
+      
       this.window = new Adw.ApplicationWindow(this);
       window.set_title("RasterFlow");
       window.set_icon_name("io.canvas.Canvas");
@@ -186,7 +188,7 @@ class CanvasApplication : Adw.Application {
     Gtk.StyleContext.add_provider_for_display(
       Gdk.Display.get_default(),
       css_provider,
-      Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
+      Gtk.STYLE_PROVIDER_PRIORITY_USER
     );
   }
 

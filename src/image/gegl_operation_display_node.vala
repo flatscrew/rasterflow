@@ -7,6 +7,7 @@ namespace Image {
     }
     
     public class GeglOperationDisplayNode : CanvasDisplayNode {
+        
         private GeglOperationNode gegl_operation_node;
         private GeglOperationNodeDisplayOverride? display_override;
         private GeglOperationOverridesCallback? operation_overrides_callback;
@@ -15,8 +16,11 @@ namespace Image {
         private History.HistoryOfChangesRecorder changes_recorder;
         private CanvasNodeTask current_task;
 
-        public GeglOperationDisplayNode(string builder_id, GeglOperationNode node) {
-            base(builder_id, node, new GeglNodePropertyBridgeSinkLabelFactory(node));
+        public GeglOperationDisplayNode(
+            string builder_id, GeglOperationNode node, 
+            int x_initial = 0, int y_initial = 0
+        ) {
+            base(builder_id, node, x_initial, y_initial, new GeglNodePropertyBridgeSinkLabelFactory(node));
 
             this.changes_recorder = History.HistoryOfChangesRecorder.instance;
             this.data_display_view = new Data.DataDisplayView();

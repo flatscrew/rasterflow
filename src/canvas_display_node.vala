@@ -118,7 +118,7 @@ public interface CanvasNodeBuilder : Object {
         return null;
     }
 
-    public abstract CanvasDisplayNode create() throws Error;
+    public abstract CanvasDisplayNode create(int x = 0, int y = 0) throws Error;
 }
 
 public interface CanvasNodeTitleWidgetBuilder : Object {
@@ -139,6 +139,8 @@ public class CanvasDisplayNode : GtkFlow.Node {
 
     private History.HistoryOfChangesRecorder changes_recorder;
     private Graphene.Size previous_node_size = {width: 100, height: 200};
+    private int x_initial; 
+    private int y_initial;
     private Gtk.CssProvider? custom_backround_css;
     
     private CanvasNodeDetailsView details_view;
@@ -180,9 +182,12 @@ public class CanvasDisplayNode : GtkFlow.Node {
     public CanvasDisplayNode(
         string builder_id, 
         CanvasNode node,
+        int x_initial = 0, int y_initial = 0,
         GtkFlow.NodeDockLabelWidgetFactory dock_label_factory = new GtkFlow.NodeDockLabelWidgetFactory(node)
     ) {
         base.with_margin(node, 0, dock_label_factory);
+        this.x_initial = x_initial;
+        this.y_initial = y_initial;
         this.changes_recorder = History.HistoryOfChangesRecorder.instance;
         
         apply_css_provider();
@@ -193,6 +198,10 @@ public class CanvasDisplayNode : GtkFlow.Node {
         
         create_node_content();
         create_action_bar();
+    }
+    
+    public void init_position() {
+        set_position(x_initial, y_initial);
     }
     
     private void apply_css_provider() {
@@ -245,7 +254,6 @@ public class CanvasDisplayNode : GtkFlow.Node {
         );
 
         custom_backround_css.load_from_data(css.data);
-    
     }
     
     private void record_position_changed(int old_x, int old_y, int new_x, int new_y) {
@@ -374,11 +382,8 @@ public class CanvasDisplayNode : GtkFlow.Node {
     }
 
     private void remove_node() {
-        //  stop_sinks_history_recording();
-        {
-            removed(this);
-            this.remove();
-        }
+        removed(this);
+        this.remove();
     }
 
     private void add_icon(Data.TitleBar title_bar, GLib.Icon? icon) {
@@ -454,24 +459,8 @@ public class CanvasDisplayNode : GtkFlow.Node {
         }
     }
 
-    private bool is_color_light(Gdk.RGBA color) {
-        double luminance = 0.299 * color.red + 0.587 * color.green + 0.114 * color.blue;
-        return luminance > 0.5;
-    }
-
     protected void make_busy(bool busy) {
         set_sensitive(!busy);
-    }
-
-    private void stop_sinks_history_recording() {
-        var node = n as CanvasNode;
-        unowned var sinks = node.get_sinks();
-        foreach (var sink in sinks) {
-            if (!(sink is CanvasNodeSink)) continue;
-
-            var canvas_sink = sink as CanvasNodeSink;
-            canvas_sink.stop_history_recording();
-        }
     }
 
     public virtual void undo_remove() {
@@ -486,5 +475,17 @@ public class CanvasDisplayNode : GtkFlow.Node {
         
         progress_bar.set_fraction(0.0);
         return task;
+    }
+    
+    public void link_sink(string sink_name, GtkFlow.Dock target_dock) {
+        n.get_sinks().foreach(sink => {
+            if (sink.name == sink_name) {
+                try {
+                    sink.link(target_dock.d);
+                } catch (Error e) {
+                    warning(e.message);
+                }
+            }    
+        });
     }
 }
