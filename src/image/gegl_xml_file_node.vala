@@ -14,8 +14,8 @@ namespace Image {
 
     public class GeglXmlDisplayNodeBuilder : CanvasNodeBuilder, Object {
 
-        public CanvasDisplayNode create() throws Error{
-            return new GeglXmlDisplayNode(id(), new GeglXmlDataNode());
+        public CanvasDisplayNode create(int x, int y) throws Error{
+            return new GeglXmlDisplayNode(id(), x, y, new GeglXmlDataNode());
         }
 
         public string name() {
@@ -38,8 +38,8 @@ namespace Image {
         private Gtk.Label file_location_label;
         private Gtk.FileDialog file_dialog; 
 
-        public GeglXmlDisplayNode(string builder_id, GeglXmlDataNode data_node) {
-            base (builder_id, data_node, new GtkFlow.NodeDockLabelWidgetFactory(data_node));
+        public GeglXmlDisplayNode(string builder_id, int x, int y, GeglXmlDataNode data_node) {
+            base (builder_id, data_node, x, y, new GtkFlow.NodeDockLabelWidgetFactory(data_node));
         
             build_default_title();
 

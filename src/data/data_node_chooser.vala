@@ -228,7 +228,7 @@ namespace Data {
         private void builder_selected(CanvasNodeBuilder builder) {
             try {
                 popover.hide();
-                node_created(builder.create());
+                node_created(builder.create(10, 10));
             } catch (Error e) {
                 warning(e.message);
             }

@@ -78,7 +78,13 @@ class CanvasApplication : Adw.Application {
       window.set_content(toolbar_view);
       window.present();
       
-      add_actions_and_shortcuts();
+      canvas_view.setup_popovers();
+      
+      try {
+        add_actions_and_shortcuts();
+      } catch (Error e) {
+        warning(e.message);
+      }
       
       var window_dimensions = settings.read_window_dimensions();
       WindowGeometryManager.set_geometry(window, window_dimensions);
