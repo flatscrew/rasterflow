@@ -157,6 +157,10 @@ public class CanvasView : Gtk.Widget {
     }
     
     private void choose_node_and_connect_dock(GtkFlow.Dock dock, double x, double y) {
+        if (dock.d is CanvasNodePropertySource || dock.d is CanvasNodeSink) {
+            return;
+        }
+        
         this.node_x = (int) x;
         this.node_y = (int) y;
         this.source_dock = dock;
