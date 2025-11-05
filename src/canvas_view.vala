@@ -23,7 +23,7 @@ public class CanvasView : Gtk.Widget {
     private int node_x; // where node will be spawned
     private int node_y;
     private weak GtkFlow.Dock source_dock;
-
+    
     private CanvasNodeFactory node_factory;
     private CanvasGraph canvas_graph;
     private CanvasGraphPropertiesEditor properties_editor;
@@ -55,9 +55,6 @@ public class CanvasView : Gtk.Widget {
         modification_guard.dirty_state_changed.connect(this.graph_dirty_state_changed);
         
         this.file_origin_node_factory = file_data_node_factory;
-        this.file_origin_popover = new Gtk.Popover();
-        file_origin_popover.set_parent(this);
-
         this.node_factory = node_factory;
         this.serializers = serializers;
         this.deserializers = deserializers;
@@ -70,9 +67,6 @@ public class CanvasView : Gtk.Widget {
         canvas_graph.property_added.connect_after(new_property => {
             changes_recorder.record(new History.AddGraphPropertyAction(canvas_graph, new_property));
         });
-        //  canvas_graph.property_removed.connect_after(property => {
-        //      changes_recorder.record(new History.RemoveGraphPropertyAction(canvas_graph, property));
-        //  });
         canvas_graph.property_removed.connect_after(this.property_removed);
         
         this.properties_editor = new CanvasGraphPropertiesEditor(canvas_graph);
@@ -103,15 +97,13 @@ public class CanvasView : Gtk.Widget {
         var chooser_box = new Data.DataNodeChooserBox(node_factory);
         chooser_box.builder_selected.connect(builder => {
             try {
+                // TODO probably gegl node should decide about it
                 var new_node = builder.create(node_x, node_y);
-                new_node.link_sink("input", source_dock);
-                
-                //  var model_node = new_node.n;
-                //  var sink = model_node.get_sinks().nth_data(0);
-                //  source_dock.d.link(sink);
-                // ---
+                new_node.link_sink("Input", source_dock);
                 
                 this.canvas_graph.add_node(new_node);
+                
+                this.source_dock = null;
             } catch (Error e) {
                 warning(e.message);
             }
@@ -122,7 +114,7 @@ public class CanvasView : Gtk.Widget {
     }
     
     private void graph_dirty_state_changed(bool is_dirty) {
-        this.save_button.sensitive = (is_dirty && current_graph_file != null);
+        this.save_button.sensitive = is_dirty;
     }
 
     private void create_main_view() {
@@ -236,7 +228,7 @@ public class CanvasView : Gtk.Widget {
     
     private void property_dropped(CanvasGraphProperty property, double x, double y) {
         var property_n = new CanvasPropertyNode(property); 
-        var property_node = new CanvasPropertyDisplayNode(property_n, x, y);
+        var property_node = new CanvasPropertyDisplayNode(property_n, (int) x, (int) y);
         
         canvas_graph.add_property_node(property_node);
     }
@@ -291,7 +283,7 @@ public class CanvasView : Gtk.Widget {
                 var builder = file_node_builders[0];
                 var node_builder = builder.find_builder(node_factory);
                 try {
-                    var new_node = node_builder.create();
+                    var new_node = node_builder.create((int) x, (int) y);
                     canvas_graph.add_node(new_node);
 
                     builder.apply_file_data(new_node, file, file_info);
@@ -374,7 +366,6 @@ public class CanvasView : Gtk.Widget {
                         serialized_graph.length,
                         GLib.FileSetContentsFlags.CONSISTENT
                     );
-                    modification_guard.reset();
                 }
             } catch (Error e) {
                 warning("Save cancelled or failed: %s", e.message);
@@ -472,7 +463,7 @@ public class CanvasView : Gtk.Widget {
     }
 
     public Gtk.Button create_save_graph_button() {
-        this.save_button = new Gtk.Button();
+        save_button = new Gtk.Button();
         save_button.set_sensitive(false);
         save_button.set_icon_name("document-save-symbolic");
         save_button.set_tooltip_text("Save graph");

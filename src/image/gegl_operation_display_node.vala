@@ -18,10 +18,10 @@ namespace Image {
 
         public GeglOperationDisplayNode(
             string builder_id, GeglOperationNode node, 
-            int x_initial = 0, int y_initial = 0
+            int x_initial = 10, int y_initial = 10
         ) {
             base(builder_id, node, x_initial, y_initial, new GeglNodePropertyBridgeSinkLabelFactory(node));
-
+            
             this.changes_recorder = History.HistoryOfChangesRecorder.instance;
             this.data_display_view = new Data.DataDisplayView();
             this.gegl_operation_node = node;

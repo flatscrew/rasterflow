@@ -43,7 +43,7 @@ class CanvasApplication : Adw.Application {
 
     activate.connect (() => {
       GtkFlow.init();
-      
+
       this.window = new Adw.ApplicationWindow(this);
       window.set_title("RasterFlow");
       window.set_icon_name("io.canvas.Canvas");
@@ -80,18 +80,24 @@ class CanvasApplication : Adw.Application {
       window.set_content(toolbar_view);
       window.present();
       
-      add_actions_and_shortcuts();
+      canvas_view.setup_popovers();
+
+      try {
+        add_actions_and_shortcuts();
+      } catch (Error e) {
+        warning(e.message);
+      }
       add_screenshot_window_resize_controller();
-      
+
       var window_dimensions = settings.read_window_dimensions();
       WindowGeometryManager.set_geometry(window, window_dimensions);
     });
   }
   
   private void add_screenshot_window_resize_controller() {
-    
+
   }
-  
+
   private void add_actions_and_shortcuts() throws Error {
     var actions = new SimpleActionGroup();
     

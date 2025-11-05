@@ -254,6 +254,7 @@ public class CanvasDisplayNode : GtkFlow.Node {
         );
 
         custom_backround_css.load_from_data(css.data);
+    
     }
     
     private void record_position_changed(int old_x, int old_y, int new_x, int new_y) {
@@ -382,8 +383,11 @@ public class CanvasDisplayNode : GtkFlow.Node {
     }
 
     private void remove_node() {
-        removed(this);
-        this.remove();
+        //  stop_sinks_history_recording();
+        {
+            removed(this);
+            this.remove();
+        }
     }
 
     private void add_icon(Data.TitleBar title_bar, GLib.Icon? icon) {
@@ -459,6 +463,11 @@ public class CanvasDisplayNode : GtkFlow.Node {
         }
     }
 
+    private bool is_color_light(Gdk.RGBA color) {
+        double luminance = 0.299 * color.red + 0.587 * color.green + 0.114 * color.blue;
+        return luminance > 0.5;
+    }
+
     protected void make_busy(bool busy) {
         set_sensitive(!busy);
     }
@@ -477,15 +486,18 @@ public class CanvasDisplayNode : GtkFlow.Node {
         return task;
     }
     
-    public void link_sink(string sink_name, GtkFlow.Dock target_dock) {
-        n.get_sinks().foreach(sink => {
+    public bool link_sink(string sink_name, GtkFlow.Dock target_dock) {
+        foreach (var sink in n.get_sinks()) {
             if (sink.name == sink_name) {
                 try {
                     sink.link(target_dock.d);
+                    return true;
                 } catch (Error e) {
                     warning(e.message);
+                    return false;
                 }
             }    
-        });
+        }
+        return false;
     }
 }

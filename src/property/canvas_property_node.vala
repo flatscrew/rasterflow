@@ -85,12 +85,12 @@ public class CanvasPropertyDisplayNode : GtkFlow.Node {
     
     public signal void removed(CanvasPropertyDisplayNode removed_node);
     
-    private double x_initial; 
-    private double y_initial;
+    private int x_initial; 
+    private int y_initial;
     private History.HistoryOfChangesRecorder changes_recorder;
     private CanvasNodePropertySource? node_source;
     
-    public CanvasPropertyDisplayNode(CanvasPropertyNode property_node, double x_initial = 0, double y_initial = 0) {
+    public CanvasPropertyDisplayNode(CanvasPropertyNode property_node, int x_initial = 0, int y_initial = 0) {
         base.with_margin(property_node, 0, new PropertyNodeSourceLabelFactory(property_node));
         this.x_initial = x_initial;
         this.y_initial = y_initial;
@@ -111,7 +111,7 @@ public class CanvasPropertyDisplayNode : GtkFlow.Node {
     }
     
     public void init_position() {
-        set_position((int) x_initial, (int) y_initial);
+        set_position(x_initial, y_initial);
     }
     
     public void init_property_source() {
