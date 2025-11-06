@@ -71,12 +71,26 @@ name: Operation properties
         out_text = out_text.replace("{{properties}}", props_md);
         return out_text;
     }
-
-    private string build_properties(Gegl.Operation operation) {
+    
+    string capitalize_first_only(string s) {
+        if (s == null || s == "")
+            return s;
+    
+        int first_end = s.index_of_nth_char(1);
+        return s.substring(0, first_end).up(1) + s.substring(first_end);
+    }
+    
+    private string build_properties(Gegl.Node node) {
+        var operation = node.get_gegl_operation();
+        
         var sb = new StringBuilder();
         foreach (var param_spec in operation.get_class().list_properties()) {
             var description = param_spec.get_blurb();
-    
+            if (description != null && !description.has_suffix(".")) {
+                description = description + ".";
+            } 
+            
+            var param_name = capitalize_first_only(param_spec.get_nick());
             var value_type = param_spec.value_type;
             var type_name = value_type.name();
     
@@ -103,7 +117,7 @@ name: Operation properties
                 
                 type_name = "dictionary";
     
-                sb.append_printf("      ::field{name=\"%s\" type=\"%s\"}\n", param_spec.get_nick(), type_name);
+                sb.append_printf("      ::field{name=\"%s\" type=\"%s\"}\n", param_name, type_name);
                 sb.append_printf("        %s", description == null ? "" : "%s  \n".printf(description));
                 sb.append_printf("        :icon{name=\"i-lucide-puzzle\"} Default `%s`  \n", default_string);
                 sb.append_printf("        :icon{name=\"i-lucide-chart-candlestick\"} Possible values %s \n", enum_values);
@@ -115,7 +129,7 @@ name: Operation properties
             var default_value = get_default_as_string(param_spec);
             var value_range = get_range_as_string(param_spec);
             
-            sb.append_printf("      ::field{name=\"%s\" type=\"%s\"}\n", param_spec.get_nick(), type_name);
+            sb.append_printf("      ::field{name=\"%s\" type=\"%s\"}\n", param_name, type_name);
             sb.append_printf("        %s", description == null ? "\n" : "%s  \n".printf(description));
             sb.append_printf("        :icon{name=\"i-lucide-puzzle\"} Default `%s`  %s\n", default_value, value_range);
             sb.append_printf("      ::\n");
@@ -247,6 +261,10 @@ name: Operation properties
                 var title = Gegl.Operation.get_key(op_name, "title") ?? "";
                 var desc = Gegl.Operation.get_key(op_name, "description") ?? "";
     
+                if (desc != null && !desc.has_suffix(".")) {
+                    desc = desc + ".";
+                } 
+                
                 var has_input = false;
                 var has_aux = false;
                 var has_output = false;
@@ -263,8 +281,7 @@ name: Operation properties
                         has_output = true;
                 }
     
-                var gegl_operation = operation_node.get_gegl_operation();
-                string props = build_properties(gegl_operation);
+                string props = build_properties(operation_node);
                 string md = render(op_name, title, desc, has_input, has_aux, has_output, props);
     
                 //  string safe_name = "%d.%s".printf(op_index, op_name.replace(":", "-"));

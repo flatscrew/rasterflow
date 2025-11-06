@@ -3,7 +3,8 @@ delegate void LongOperationDelegate();
 public class CanvasView : Gtk.Widget {
 
     public signal void before_file_load();
-    public signal void after_file_load(string? file_name);
+    public signal void after_file_load(string file_name);
+    public signal void after_file_save(string file_name);
     
     private History.HistoryOfChangesRecorder changes_recorder;
     private CanvasGraphModificationGuard modification_guard;
@@ -367,14 +368,10 @@ public class CanvasView : Gtk.Widget {
             try {
                 var file = file_dialog.save.end(res);
                 if (file != null) {
-                    current_graph_file = file.get_path();
-                    var serialized_graph = canvas_graph.serialize_graph(serializers);
-                    FileUtils.set_contents_full(
-                        current_graph_file,
-                        serialized_graph,
-                        serialized_graph.length,
-                        GLib.FileSetContentsFlags.CONSISTENT
-                    );
+                    this.current_graph_file = file.get_path();
+                    save_graph();
+                    
+                    after_file_save(file.get_basename());
                 }
             } catch (Error e) {
                 warning("Save cancelled or failed: %s", e.message);
@@ -393,7 +390,7 @@ public class CanvasView : Gtk.Widget {
             try {
                 var file = file_dialog.open.end(res);
                 if (file != null) {
-                    current_graph_file = file.get_path();
+                    this.current_graph_file = file.get_path();
                     load_graph_async.begin(file);
                 }
             } catch (Error e) {

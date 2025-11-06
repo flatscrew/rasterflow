@@ -73,6 +73,7 @@ class CanvasApplication : Adw.Application {
       );
       canvas_view.before_file_load.connect_after(this.before_file_load);
       canvas_view.after_file_load.connect_after(this.after_file_load);
+      canvas_view.after_file_save.connect_after(this.after_file_save);
       canvas_view.show_properties_sidebar(settings.is_sidebar_visible());
 
       var toolbar_view = build_toolbar_view(header_widgets);
@@ -163,7 +164,7 @@ class CanvasApplication : Adw.Application {
     changes_recorder.pause();
   }
 
-  private void after_file_load(string? file_name) {
+  private void after_file_load(string file_name) {
     unmark_busy();
     window.set_cursor_from_name(null);
     window.set_sensitive(true);
@@ -173,6 +174,11 @@ class CanvasApplication : Adw.Application {
     
     changes_recorder.clear();
     changes_recorder.resume();
+  }
+  
+  private void after_file_save(string file_name) {
+    this.current_file = file_name;
+    update_title();
   }
   
   private void update_title(bool dirty = false) {
