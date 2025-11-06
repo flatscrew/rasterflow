@@ -117,8 +117,8 @@ name: Operation properties
                 
                 type_name = "dictionary";
     
-                sb.append_printf("      ::field{name=\"%s\" type=\"%s\"}\n", param_name, type_name);
-                sb.append_printf("        %s", description == null ? "" : "%s  \n".printf(description));
+                sb.append_printf("      ::field{name=\"%s\" type=\"%s\"}\n", param_spec.get_nick(), type_name);
+                sb.append_printf("        %s", description == null ? "\n" : "%s  \n".printf(description));
                 sb.append_printf("        :icon{name=\"i-lucide-puzzle\"} Default `%s`  \n", default_string);
                 sb.append_printf("        :icon{name=\"i-lucide-chart-candlestick\"} Possible values %s \n", enum_values);
                 sb.append_printf("      ::\n\n");
