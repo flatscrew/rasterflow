@@ -19,6 +19,7 @@ links:
 ---
 alt: {{title}}
 caption: {{caption}}
+src: /images/operations/{{normalized_id}}.png
 ---
 ::
 

@@ -114,6 +114,11 @@ public class CanvasView : Gtk.Widget {
     }
     
     private void graph_dirty_state_changed(bool is_dirty) {
+        if (this.current_graph_file == null) {
+            this.save_button.sensitive = false;
+            return;    
+        }
+        
         this.save_button.sensitive = is_dirty;
     }
 
@@ -498,7 +503,11 @@ public class CanvasView : Gtk.Widget {
         
         this.save_action = new SimpleAction("save", null);
         save_action.activate.connect(() => {
-            save_graph();
+            if (current_graph_file != null) {
+                save_graph();
+                return;
+            }
+            save_graph_as();
         });
         return save_action;
     }
