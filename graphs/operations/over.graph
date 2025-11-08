@@ -1,0 +1,142 @@
+{
+  "properties" : [],
+  "nodes" : [
+    {
+      "_type" : "canvas_node",
+      "model" : {
+        "y" : 1.0,
+        "_properties_as_sinks" : []
+      },
+      "builder_id" : "gegl:reflect",
+      "width" : 145,
+      "height" : 214,
+      "expanded" : false,
+      "position_x" : 239,
+      "position_y" : 262
+    },
+    {
+      "_type" : "canvas_node",
+      "model" : {
+        "path" : "/home/activey/Desktop/Kapibara.webp",
+        "_properties_as_sinks" : []
+      },
+      "builder_id" : "gegl:load",
+      "width" : 216,
+      "height" : 185,
+      "expanded" : false,
+      "position_x" : 44,
+      "position_y" : 39
+    },
+    {
+      "_type" : "canvas_node",
+      "model" : {
+        "_properties_as_sinks" : []
+      },
+      "builder_id" : "gegl:save-pixbuf",
+      "width" : 465,
+      "height" : 739,
+      "expanded" : true,
+      "position_x" : 979,
+      "position_y" : 17,
+      "external-window" : {
+        "active" : false
+      }
+    },
+    {
+      "_type" : "canvas_node",
+      "model" : {
+        "_properties_as_sinks" : []
+      },
+      "builder_id" : "svg:dst-over",
+      "width" : 294,
+      "height" : 430,
+      "expanded" : true,
+      "color" : "rgb(97,53,131)",
+      "position_x" : 619,
+      "position_y" : 152
+    },
+    {
+      "_type" : "canvas_node",
+      "model" : {
+        "path" : "/home/activey/Desktop/Hat.png",
+        "_properties_as_sinks" : []
+      },
+      "builder_id" : "gegl:load",
+      "width" : 216,
+      "height" : 185,
+      "expanded" : false,
+      "position_x" : 9,
+      "position_y" : 271
+    },
+    {
+      "_type" : "canvas_node",
+      "model" : {
+        "y" : 0.14999999999999999,
+        "near-z" : 0.40000000000000002,
+        "origin-x" : 820.0,
+        "origin-y" : -80.0,
+        "x" : 0.14999999999999999,
+        "_properties_as_sinks" : []
+      },
+      "builder_id" : "gegl:scale-ratio",
+      "width" : 156,
+      "height" : 214,
+      "expanded" : false,
+      "position_x" : 412,
+      "position_y" : 255
+    }
+  ],
+  "property_nodes" : [],
+  "links" : [
+    {
+      "node_index" : 0,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 5,
+          "sink_name" : "Input"
+        }
+      ]
+    },
+    {
+      "node_index" : 1,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 3,
+          "sink_name" : "Aux"
+        }
+      ]
+    },
+    {
+      "node_index" : 3,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 2,
+          "sink_name" : "Input"
+        }
+      ]
+    },
+    {
+      "node_index" : 4,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 0,
+          "sink_name" : "Input"
+        }
+      ]
+    },
+    {
+      "node_index" : 5,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 3,
+          "sink_name" : "Input"
+        }
+      ]
+    }
+  ]
+}

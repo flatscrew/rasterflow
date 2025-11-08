@@ -1,0 +1,105 @@
+{
+  "properties" : [],
+  "nodes" : [
+    {
+      "_type" : "canvas_node",
+      "model" : {
+        "use-background-color" : true,
+        "thread-color1" : {
+          "type" : "GeglColor",
+          "color" : "rgb(0.647, 0.114, 0.176)"
+        },
+        "background-color" : {
+          "type" : "GeglColor",
+          "color" : "rgb(0.604, 0.600, 0.588)"
+        },
+        "thread-color2" : {
+          "type" : "GeglColor",
+          "color" : "rgb(0.380, 0.208, 0.514)"
+        },
+        "_properties_as_sinks" : []
+      },
+      "builder_id" : "ai/lb:weave",
+      "width" : 634,
+      "height" : 804,
+      "expanded" : true,
+      "color" : "rgb(97,53,131)",
+      "position_x" : 829,
+      "position_y" : 63
+    },
+    {
+      "_type" : "canvas_node",
+      "model" : {
+        "_properties_as_sinks" : []
+      },
+      "builder_id" : "gegl:buffer-source",
+      "width" : 174,
+      "height" : 185,
+      "expanded" : false,
+      "position_x" : 67,
+      "position_y" : 279
+    },
+    {
+      "_type" : "canvas_node",
+      "model" : {
+        "width" : 400.0,
+        "height" : 400.0,
+        "_properties_as_sinks" : []
+      },
+      "builder_id" : "gegl:crop",
+      "width" : 389,
+      "height" : 518,
+      "expanded" : true,
+      "position_x" : 329,
+      "position_y" : 155
+    },
+    {
+      "_type" : "canvas_node",
+      "model" : {
+        "_properties_as_sinks" : []
+      },
+      "builder_id" : "gegl:save-pixbuf",
+      "width" : 475,
+      "height" : 669,
+      "expanded" : true,
+      "position_x" : 1532,
+      "position_y" : 109,
+      "external-window" : {
+        "active" : false
+      }
+    }
+  ],
+  "property_nodes" : [],
+  "links" : [
+    {
+      "node_index" : 0,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 3,
+          "sink_name" : "Input"
+        }
+      ]
+    },
+    {
+      "node_index" : 1,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 2,
+          "sink_name" : "Input"
+        }
+      ]
+    },
+    {
+      "node_index" : 2,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 0,
+          "sink_name" : "Input"
+        }
+      ]
+    }
+  ]
+}
