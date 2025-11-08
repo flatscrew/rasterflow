@@ -209,5 +209,12 @@ install_data('io.flatscrew.RasterFlow.gschema.xml',
              install_dir: join_paths(get_option('datadir'), 'glib-2.0', 'schemas'))
 gnome.post_install(glib_compile_schemas: true)
 
+# Install .desktop file and app icon
+install_data('data/io.flatscrew.RasterFlow.desktop',
+             install_dir: join_paths(get_option('datadir'), 'applications'))
+
+install_data('data/icons/scalable/apps/io.flatscrew.RasterFlow.svg',
+             install_dir: join_paths(get_option('datadir'), 'icons/hicolor/scalable/apps'))
+
 subdir('gegl-docs-generator')
 subdir('linux-beaver-gegl-plugins')

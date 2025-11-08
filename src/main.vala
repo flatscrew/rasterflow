@@ -17,7 +17,7 @@ class CanvasApplication : Adw.Application {
   private About.AboutRegistry about_registry;
 
   construct {
-    base.application_id = "io.canvas.Canvas";
+    base.application_id = "io.flatscrew.RasterFlow";
     base.flags = ApplicationFlags.FLAGS_NONE;
     this.settings = new AppSettings(this.application_id);
     this.changes_recorder = History.HistoryOfChangesRecorder.instance;
@@ -46,7 +46,7 @@ class CanvasApplication : Adw.Application {
 
       this.window = new Adw.ApplicationWindow(this);
       window.set_title("RasterFlow");
-      window.set_icon_name("io.canvas.Canvas");
+      window.set_icon_name("io.flatscrew.RasterFlow");
       window.close_request.connect(this.window_closed);
       
       this.modification_guard = CanvasGraphModificationGuard.instance;
