@@ -29,7 +29,7 @@ namespace History {
         }
         
         public string get_label() {
-            return "Mode node";
+            return "Move node";
         }
     }
 }

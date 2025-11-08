@@ -1,0 +1,75 @@
+{
+  "properties" : [],
+  "nodes" : [
+    {
+      "_type" : "canvas_node",
+      "model" : {
+        "line-color" : {
+          "type" : "GeglColor",
+          "color" : "rgb(0.102, 0.373, 0.706)"
+        },
+        "x-offset" : -3,
+        "_properties_as_sinks" : []
+      },
+      "builder_id" : "gegl:grid",
+      "width" : 399,
+      "height" : 647,
+      "expanded" : true,
+      "color" : "rgb(97,53,131)",
+      "position_x" : 95,
+      "position_y" : 70
+    },
+    {
+      "_type" : "canvas_node",
+      "model" : {
+        "width" : 500.0,
+        "height" : 500.0,
+        "_properties_as_sinks" : []
+      },
+      "builder_id" : "gegl:crop",
+      "width" : 145,
+      "height" : 243,
+      "expanded" : false,
+      "position_x" : 640,
+      "position_y" : 129
+    },
+    {
+      "_type" : "canvas_node",
+      "model" : {
+        "_properties_as_sinks" : []
+      },
+      "builder_id" : "gegl:save-pixbuf",
+      "width" : 424,
+      "height" : 476,
+      "expanded" : true,
+      "position_x" : 970,
+      "position_y" : 129,
+      "external-window" : {
+        "active" : false
+      }
+    }
+  ],
+  "property_nodes" : [],
+  "links" : [
+    {
+      "node_index" : 0,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 1,
+          "sink_name" : "Input"
+        }
+      ]
+    },
+    {
+      "node_index" : 1,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 2,
+          "sink_name" : "Input"
+        }
+      ]
+    }
+  ]
+}

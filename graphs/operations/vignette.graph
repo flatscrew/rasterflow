@@ -1,0 +1,73 @@
+{
+  "properties" : [],
+  "nodes" : [
+    {
+      "_type" : "canvas_node",
+      "model" : {
+        "path" : "/home/activey/Desktop/Kapibara.webp",
+        "_properties_as_sinks" : []
+      },
+      "builder_id" : "gegl:load",
+      "width" : 216,
+      "height" : 185,
+      "expanded" : false,
+      "position_x" : 46,
+      "position_y" : 181
+    },
+    {
+      "_type" : "canvas_node",
+      "model" : {
+        "gamma" : 0.59999999999999931,
+        "softness" : 0.50000000000000011,
+        "shape" : 1,
+        "radius" : 1.0,
+        "_properties_as_sinks" : []
+      },
+      "builder_id" : "gegl:vignette",
+      "width" : 456,
+      "height" : 686,
+      "expanded" : true,
+      "color" : "rgb(97,53,131)",
+      "position_x" : 335,
+      "position_y" : 81
+    },
+    {
+      "_type" : "canvas_node",
+      "model" : {
+        "_properties_as_sinks" : []
+      },
+      "builder_id" : "gegl:save-pixbuf",
+      "width" : 563,
+      "height" : 660,
+      "expanded" : true,
+      "position_x" : 858,
+      "position_y" : 78,
+      "external-window" : {
+        "active" : false
+      }
+    }
+  ],
+  "property_nodes" : [],
+  "links" : [
+    {
+      "node_index" : 0,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 1,
+          "sink_name" : "Input"
+        }
+      ]
+    },
+    {
+      "node_index" : 1,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 2,
+          "sink_name" : "Input"
+        }
+      ]
+    }
+  ]
+}

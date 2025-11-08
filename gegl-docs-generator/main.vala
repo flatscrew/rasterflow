@@ -23,29 +23,20 @@ src: /images/operations/{{normalized_id}}.png
 ---
 ::
 
-::collapsible
----
-name: Operation pads
----
+## Operation pads
 This operation exposes the following data pads, defining how it receives, processes, and emits image data:
 
-  ::operation-pads
-  ---
-  has-input: {{has_input}}
-  has-aux: {{has_aux}}
-  has-output: {{has_output}}
-  ---
-  ::
+::operation-pads
+---
+has-input: {{has_input}}
+has-aux: {{has_aux}}
+has-output: {{has_output}}
+---
 ::
 
-::collapsible
----
-name: Operation properties
----
-
-    ::field-group
+## Operation properties
+::field-group
 {{properties}}
-    ::
 ::
 """;
 

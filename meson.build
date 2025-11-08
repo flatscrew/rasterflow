@@ -1,5 +1,6 @@
 project('vala app', 'vala', 'c', 'cpp',
-  default_options : ['warning_level=3', 'cpp_std=c++17', 'buildtype=debug']
+  default_options: ['warning_level=3', 'cpp_std=c++17', 'buildtype=debug'],
+  license: 'GPL-3.0-or-later'
 )
 
 app_version = get_option('version') 
@@ -209,3 +210,4 @@ install_data('io.flatscrew.RasterFlow.gschema.xml',
 gnome.post_install(glib_compile_schemas: true)
 
 subdir('gegl-docs-generator')
+subdir('linux-beaver-gegl-plugins')

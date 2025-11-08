@@ -52,7 +52,8 @@ private GLib.ListStore build_pixbuf_filters() {
 public string initialize_image_plugin(Plugin.PluginContribution plugin_contribution, string[] args) {
     Gegl.config().application_license = "GPL3";
     Gegl.init(ref args);
-
+    Gegl.load_module_directory("./linux-beaver-gegl-plugins"); // experimental
+    
     new Image.GeglOperationOverrides();
 
     plugin_contribution.contribute_file_data_node_factory(node_factory => {
@@ -116,9 +117,17 @@ public string initialize_image_plugin(Plugin.PluginContribution plugin_contribut
         overrides.override_title(gegl_load_title_override);
         overrides.override_property("path", (param_spec) => {
             var filters = build_pixbuf_filters();
-            return new Data.FileLocationProperty.with_file_filters(param_spec as ParamSpecString, filters);
+            return new Data.OpenFileLocationProperty.with_file_filters(param_spec as ParamSpecString, filters);
         });
     });
+    Image.GeglOperationOverrides.override_operation("gegl:save", overrides => {
+        overrides.override_title(gegl_load_title_override);
+        overrides.override_property("path", (param_spec) => {
+            var filters = build_pixbuf_filters();
+            return new Data.SaveFileLocationProperty.with_file_filters(param_spec as ParamSpecString, filters);
+        });
+    });
+    
     Image.GeglOperationOverrides.override_operation("gegl:save-pixbuf", overrides => {
         overrides.override_content((display_node, node) => {
             var image_view = new Image.ImageDataView(display_node, node);
