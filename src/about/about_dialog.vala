@@ -95,7 +95,7 @@ namespace About {
         }
         
         private void append_logo(Gtk.Box box) {
-            var logo = new Gtk.Image.from_icon_name("io.canvas.Canvas");
+            var logo = new Gtk.Image.from_icon_name("io.flatscrew.RasterFlow");
             logo.pixel_size = 256;
             logo.halign = Gtk.Align.CENTER;
             logo.margin_bottom = 8;

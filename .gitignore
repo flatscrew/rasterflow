@@ -1,8 +1,11 @@
 .flatpak-builder/*
 **/build/*
+**/build-dir/*
 **/dist/*
 buildDir/*
 .vscode/*
 .idea/*
 gschemas.compiled
 **/*.exe
+**/repo/*
+**/*.flatpak

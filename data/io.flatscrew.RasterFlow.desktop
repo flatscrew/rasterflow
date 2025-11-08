@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=0.1.0
+Type=Application
+Name=RasterFlow
+Comment=Graph-based image processing with GTK4 and GEGL
+Exec=rasterflow
+Icon=io.flatscrew.RasterFlow
+Terminal=false
+Categories=Graphics;GTK;
+StartupNotify=true

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist>
-  <schema id="io.canvas.Canvas" path="/io/canvas/Canvas/">
+  <schema id="io.flatscrew.RasterFlow" path="/io/flatscrew/RasterFlow/">
 
     <key name="sidebar-visible" type="b">
       <default>false</default>

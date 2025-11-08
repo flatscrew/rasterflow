@@ -7,7 +7,7 @@ public class AppSettings : Object {
     private const string WINDOW_WIDTH_KEY = "window-width";
     private const string WINDOW_HEIGHT_KEY = "window-height";
 
-    public AppSettings(string schema_id = "io.canvas.Canvas") {
+    public AppSettings(string schema_id = "io.flatscrew.RasterFlow") {
         settings = new GLib.Settings(schema_id);
     }
 

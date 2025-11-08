@@ -1,0 +1,71 @@
+app-id: io.flatscrew.RasterFlow
+runtime: org.gnome.Platform
+runtime-version: "48"
+sdk: org.gnome.Sdk
+command: rasterflow
+finish-args:
+  - --share=ipc
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --share=network
+  - --device=dri
+  - --filesystem=home
+  - --socket=session-bus
+  
+modules:
+  - name: babl
+    buildsystem: meson
+    config-opts:
+      - --prefix=/app
+      - --libdir=/app/lib
+    sources:
+      - type: git
+        url: https://gitlab.gnome.org/GNOME/babl.git
+        tag: BABL_0_1_116
+  - name: gegl
+    buildsystem: meson
+    config-opts:
+      - --prefix=/app
+      - --libdir=/app/lib
+    sources:
+      - type: git
+        url: https://gitlab.gnome.org/GNOME/gegl.git
+        tag: GEGL_0_4_64
+  - name: libgflow
+    buildsystem: meson
+    config-opts:
+      - --prefix=/app
+      - -Denable_valadoc=false
+      - -Denable_gtk3=false
+      - --libdir=/app/lib
+    sources:
+      - type: git
+        url: https://github.com/flatscrew/libgtkflow
+        branch: master
+  - name: libportal
+    buildsystem: meson
+    config-opts:
+      - --prefix=/app
+      - --libdir=/app/lib
+      - -Dbackend-gtk4=enabled
+      - -Dbackend-gtk3=disabled
+      - -Ddocs=false
+      - -Dtests=false
+    sources:
+      - type: git
+        url: https://github.com/flatpak/libportal.git
+        tag: 0.9.1
+  - name: rasterflow
+    buildsystem: meson
+    config-opts:
+      - -Dversion=0.1.0
+    build-options:
+      env:
+        PKG_CONFIG_PATH: /app/lib64/pkgconfig:/app/lib/pkgconfig:/app/share/pkgconfig
+        LD_LIBRARY_PATH: /app/lib64:/app/lib
+    sources:
+      - type: dir
+        path: .
+    install-data:
+      - data/io.flatscrew.RasterFlow.desktop:/app/share/applications/io.flatscrew.RasterFlow.desktop
+      - data/io.flatscrew.RasterFlow.svg:/app/share/icons/hicolor/scalable/apps/io.flatscrew.RasterFlow.svg
