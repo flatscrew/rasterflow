@@ -216,5 +216,5 @@ install_data('data/io.flatscrew.RasterFlow.desktop',
 install_data('data/icons/scalable/apps/io.flatscrew.RasterFlow.svg',
              install_dir: join_paths(get_option('datadir'), 'icons/hicolor/scalable/apps'))
 
-#subdir('gegl-docs-generator')
-#subdir('linux-beaver-gegl-plugins')
+subdir('gegl-docs-generator')
+subdir('linux-beaver-gegl-plugins')
