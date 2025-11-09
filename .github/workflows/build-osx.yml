@@ -18,7 +18,7 @@ jobs:
       - name: Install dependencies (brew)
         run: |
           brew update
-          brew install vala gtk4 libadwaita meson ninja pkg-config glib gobject-introspection
+          brew install vala gtk4 libadwaita meson gobject-introspection
           brew install babl json-glib libgee
       - name: Clone libgtkflow
         run: |
