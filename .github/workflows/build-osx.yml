@@ -18,11 +18,28 @@ jobs:
       - name: Install dependencies (brew)
         run: |
           brew update
-          brew install vala gtk4 libadwaita meson ninja pkg-config glib
-
+          brew install vala gtk4 libadwaita meson ninja pkg-config glib gobject-introspection
+          brew install babl
       - name: Clone libgtkflow
         run: |
           git clone https://github.com/flatscrew/libgtkflow
+
+            - name: Clone GEGL
+        run: |
+          git clone https://gitlab.gnome.org/GNOME/gegl.git
+          cd gegl
+          git checkout GEGL_0_4_64
+
+      - name: Build and install GEGL
+        run: |
+          cd gegl
+
+          meson setup build \
+            --prefix=/opt/homebrew \
+            --buildtype=release
+
+          ninja -C build
+          sudo ninja -C build install
 
       - name: Build and install libgtkflow
         run: |
