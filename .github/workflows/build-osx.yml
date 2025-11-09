@@ -121,14 +121,8 @@ jobs:
       - name: Create new release and upload asset
         run: |
           gh release create "v${{ steps.version.outputs.version }}" \
-            "Rasterflow-${{ steps.version.outputs.version }}.dmg" \
-            --title "Rasterflow v${{ steps.version.outputs.version }}" \
+            "RasterFlow-${{ steps.version.outputs.version }}.dmg" \
+            --title "RasterFlow v${{ steps.version.outputs.version }} MacOS ARM" \
             --notes "Automated macOS ARM build for Rasterflow v${{ steps.version.outputs.version }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Upload CI artifact (optional)
-        uses: actions/upload-artifact@v4
-        with:
-          name: rasterflow-macos-dmg-${{ steps.version.outputs.version }}
-          path: Rasterflow-${{ steps.version.outputs.version }}.dmg
