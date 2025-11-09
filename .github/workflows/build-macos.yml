@@ -1,0 +1,56 @@
+name: Build RasterFlow (macOS ARM)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-macos:
+    runs-on: macos-14
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Read version
+        id: version
+        run: echo "version=$(cat VERSION)" >> $GITHUB_OUTPUT
+
+      - name: Install dependencies (brew)
+        run: |
+          brew update
+          brew install vala gtk4 libadwaita meson ninja pkg-config glib
+
+      - name: Build RasterFlow
+        run: |
+          meson setup build --buildtype=release
+          meson compile -C build
+
+      - name: Create DMG
+        run: |
+          APP_NAME="RasterFlow.app"
+          DMG_NAME="RasterFlow-${{ steps.version.outputs.version }}.dmg"
+
+          # ensure build dir contains .app bundle
+          if [ ! -d "build/$APP_NAME" ]; then
+            echo "Error: build/$APP_NAME not found!" >&2
+            exit 1
+          fi
+
+          mkdir -p dist
+          cp -R "build/$APP_NAME" dist/
+
+          hdiutil create \
+            -volname "RasterFlow" \
+            -srcfolder dist \
+            -ov \
+            -format UDZO \
+            "$DMG_NAME"
+
+      - name: Auth check GH CLI
+        run: gh auth status
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Delete old release if exists
+        run: |
+          gh release delete "v${{ steps.version.output

@@ -1,25 +1,18 @@
-name: Build Rasterflow (Windows)
+name: Build RasterFlow (Windows)
 
 on:
   workflow_dispatch:
-    inputs:
-      branch:
-        description: "Branch to build"
-        required: true
-        default: "main"
 
 jobs:
   build-windows:
     runs-on: windows-latest
 
     steps:
-      - name: Configure Git to preserve LF endings
-        run: git config --global core.autocrlf input
-
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.ref }}
+
+      - name: Configure Git autocrlf
+        run: git config --global core.autocrlf input
 
       - name: Install MSYS2 and dependencies
         uses: msys2/setup-msys2@v2
@@ -44,10 +37,9 @@ jobs:
             zip
             unzip
 
-      - name: Clone libgtkflow (host Git)
-        shell: bash
+      - name: Clone libgtkflow
+        shell: msys2 {0}
         run: |
-          git config --global core.autocrlf input
           git clone https://github.com/flatscrew/libgtkflow
 
       - name: Build and install libgtkflow
@@ -88,8 +80,12 @@ jobs:
           name: rasterflow-installer-windows-${{ steps.get_version.outputs.version }}
           path: windows_installer/*.exe
 
-      - name: Upload ZIP artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: rasterflow-archive-windows-${{ steps.get_version.outputs.version }}
-          path: dist/*
+      - name: Create new release
+        run: |
+          gh release create "v${{ steps.version.outputs.version }}" \
+            windows_installer/*.exe \
+            dist/* \
+            --title "Rasterflow v${{ steps.version.outputs.version }}" \
+            --notes "Automated Windows build for Rasterflow v${{ steps.version.outputs.version }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
