@@ -66,7 +66,13 @@ jobs:
           cd gtk-mac-bundler
           make
           sudo make install
-      
+          
+      - name: Show Homebrew tree
+        run: |
+          brew install tree
+          echo "---- Contents of /opt/homebrew ----"
+          tree -L 4 /opt/homebrew
+
       - name: Generate .app bundle using gtk-mac-bundler
         run: |
           gtk-mac-bundler osx-bundle/RasterFlow.bundle

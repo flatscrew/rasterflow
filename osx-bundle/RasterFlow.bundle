@@ -10,7 +10,7 @@
     </image>
 
     <run-install-name-tool/>
-    <launcher-script>${project}/gtk4-launcher.sh</launcher-script >
+    <launcher-script>${project}/rasterflow-launcher.sh</launcher-script >
     <gtk>gtk4</gtk>
   </meta>
 
@@ -22,7 +22,7 @@
     ${prefix}/lib/gdk-pixbuf-2.0/${pkg:gdk-pixbuf-2.0:gdk_pixbuf_binary_version}/loaders/*.so
   </binary>
 
-  <translations  name="gtk40">
+  <translations name="gtk40">
     ${prefix}/share/locale
   </translations>
 
