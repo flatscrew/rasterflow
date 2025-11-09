@@ -54,7 +54,10 @@ jobs:
 
       - name: Build Rasterflow
         run: |
-          meson setup build --buildtype=release
+          meson setup build \
+            --buildtype=release \
+            -Dc_args='-Wno-incompatible-pointer-types-discards-qualifiers'
+
           meson compile -C build
 
       - name: Create DMG
