@@ -90,11 +90,6 @@ jobs:
         run: |
           gtk-mac-bundler osx-bundle/RasterFlow.bundle
           
-      - name: Show tree
-        run: |
-          brew install tree
-          tree -L 4 .
-
       - name: Package .app into DMG
         run: |
           DMG_NAME="RasterFlow-${{ steps.version.outputs.version }}.dmg"
