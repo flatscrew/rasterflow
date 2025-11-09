@@ -56,7 +56,7 @@ jobs:
         run: |
           meson setup build \
             --buildtype=release \
-            -Dc_args='-Wno-incompatible-pointer-types-discards-qualifiers'
+            -Dc_args='-Wno-incompatible-pointer-types-discards-qualifiers -Wno-incompatible-function-pointer-types'
 
           meson compile -C build
 
