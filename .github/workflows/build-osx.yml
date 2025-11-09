@@ -24,7 +24,7 @@ jobs:
         run: |
           git clone https://github.com/flatscrew/libgtkflow
 
-            - name: Clone GEGL
+      - name: Clone GEGL
         run: |
           git clone https://gitlab.gnome.org/GNOME/gegl.git
           cd gegl
