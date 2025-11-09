@@ -3,6 +3,9 @@ name: Build Rasterflow (macOS ARM)
 on:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build-macos:
     runs-on: macos-14  # Apple Silicon runner
@@ -19,10 +22,22 @@ jobs:
         run: |
           brew update
           brew install vala gtk4 libadwaita meson gobject-introspection
-          brew install babl json-glib libgee
-      - name: Clone libgtkflow
+          brew install json-glib libgee
+          
+      - name: Clone babl
         run: |
-          git clone https://github.com/flatscrew/libgtkflow
+          git clone https://gitlab.gnome.org/GNOME/babl.git
+          cd babl
+          git checkout BABL_0_1_116
+          
+      - name: Build and install babl
+        run: |
+          cd babl
+          meson setup build \
+            --prefix=/opt/homebrew \
+            --buildtype=release
+          ninja -C build
+          sudo ninja -C build install
 
       - name: Clone GEGL
         run: |
@@ -40,6 +55,10 @@ jobs:
 
           ninja -C build
           sudo ninja -C build install
+
+      - name: Clone libgtkflow
+        run: |
+          git clone https://github.com/flatscrew/libgtkflow
 
       - name: Build and install libgtkflow
         run: |

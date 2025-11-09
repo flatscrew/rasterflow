@@ -21,10 +21,26 @@
   <binary>
     ${prefix}/lib/gdk-pixbuf-2.0/${pkg:gdk-pixbuf-2.0:gdk_pixbuf_binary_version}/loaders/*.so
   </binary>
+  
+  <!-- GEGL core libs -->
+  <binary>
+    ${prefix}/lib/libgegl*.dylib
+  </binary>
 
-  <translations name="gtk40">
-    ${prefix}/share/locale
-  </translations>
+  <!-- GEGL plugin folders -->
+  <data>
+    ${prefix}/lib/gegl-0.4
+  </data>
+
+  <!-- BABL core libs -->
+  <binary>
+    ${prefix}/lib/libbabl*.dylib
+  </binary>
+
+  <!-- BABL plugin folders -->
+  <data>
+    ${prefix}/lib/babl-0.1
+  </data>
 
   <data>
     ${prefix}/share/glib-2.0/schemas
@@ -34,4 +50,7 @@
     ${prefix}/share/icons
   </data>
 
+  <translations name="gtk40">
+    ${prefix}/share/locale
+  </translations>
 </app-bundle>
