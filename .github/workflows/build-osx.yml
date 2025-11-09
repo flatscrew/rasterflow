@@ -20,6 +20,21 @@ jobs:
           brew update
           brew install vala gtk4 libadwaita meson ninja pkg-config glib
 
+      - name: Clone libgtkflow
+        run: |
+          git clone https://github.com/flatscrew/libgtkflow
+
+      - name: Build and install libgtkflow
+        run: |
+          cd libgtkflow
+          meson setup build \
+            --prefix=/opt/homebrew \
+            -Denable_gtk3=false \
+            -Denable_valadoc=false \
+            --buildtype=release
+          ninja -C build
+          sudo ninja -C build install
+
       - name: Build Rasterflow
         run: |
           meson setup build --buildtype=release
