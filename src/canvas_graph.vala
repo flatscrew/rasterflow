@@ -1,5 +1,7 @@
 public class CanvasGraph : Object {
 
+    public delegate void CanvasGraphPropertyFunc (CanvasGraphProperty property);
+    
     public signal void node_added(CanvasDisplayNode node);
     public signal void node_removed(CanvasDisplayNode node);
     public signal void property_added(CanvasGraphProperty property);
@@ -72,7 +74,7 @@ public class CanvasGraph : Object {
         return all_properties.has_key(property_name);
     }
     
-    public void foreach_property(GLib.Func<CanvasGraphProperty> callback) {
+    public void foreach_property(CanvasGraphPropertyFunc callback) {
         all_properties.values.foreach(element => {
             callback(element);
             return true;
