@@ -3,7 +3,7 @@
   <meta>
     <prefix name="default">/opt/homebrew</prefix>
 
-    <destination overwrite="yes">${env:HOME}/Desktop</destination>
+    <destination overwrite="yes">${project}</destination>
 
     <image>
       <!-- Not implemented yet (DMG image). -->
