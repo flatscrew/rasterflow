@@ -19,7 +19,7 @@ jobs:
         run: |
           brew update
           brew install vala gtk4 libadwaita meson ninja pkg-config glib gobject-introspection
-          brew install babl gdk-pixbuf json-glib libgee
+          brew install babl json-glib libgee
       - name: Clone libgtkflow
         run: |
           git clone https://github.com/flatscrew/libgtkflow
@@ -62,20 +62,19 @@ jobs:
 
       - name: Create DMG
         run: |
-          APP_NAME="Rasterflow.app"
-          DMG_NAME="Rasterflow-${{ steps.version.outputs.version }}.dmg"
+          APP_NAME="rasterflow"
+          DMG_NAME="RasterFlow-${{ steps.version.outputs.version }}.dmg"
 
-          # ensure build dir contains .app bundle
-          if [ ! -d "build/$APP_NAME" ]; then
-            echo "Error: build/$APP_NAME not found!" >&2
+          if [ ! -f "build/$APP_NAME" ]; then
+            echo "Error: build/$APP_NAME not found!"
             exit 1
           fi
 
           mkdir -p dist
-          cp -R "build/$APP_NAME" dist/
+          cp "build/$APP_NAME" dist/
 
           hdiutil create \
-            -volname "Rasterflow" \
+            -volname "RasterFlow" \
             -srcfolder dist \
             -ov \
             -format UDZO \
