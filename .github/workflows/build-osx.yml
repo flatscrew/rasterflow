@@ -19,7 +19,7 @@ jobs:
         run: |
           brew update
           brew install vala gtk4 libadwaita meson ninja pkg-config glib gobject-introspection
-          brew install babl
+          brew install babl gdk-pixbuf json-glib
       - name: Clone libgtkflow
         run: |
           git clone https://github.com/flatscrew/libgtkflow
