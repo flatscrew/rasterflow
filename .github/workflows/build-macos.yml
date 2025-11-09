@@ -1,11 +1,11 @@
-name: Build RasterFlow (macOS ARM)
+name: Build Rasterflow (macOS ARM)
 
 on:
   workflow_dispatch:
 
 jobs:
   build-macos:
-    runs-on: macos-14
+    runs-on: macos-14  # Apple Silicon runner
 
     steps:
       - name: Checkout repo
@@ -20,15 +20,15 @@ jobs:
           brew update
           brew install vala gtk4 libadwaita meson ninja pkg-config glib
 
-      - name: Build RasterFlow
+      - name: Build Rasterflow
         run: |
           meson setup build --buildtype=release
           meson compile -C build
 
       - name: Create DMG
         run: |
-          APP_NAME="RasterFlow.app"
-          DMG_NAME="RasterFlow-${{ steps.version.outputs.version }}.dmg"
+          APP_NAME="Rasterflow.app"
+          DMG_NAME="Rasterflow-${{ steps.version.outputs.version }}.dmg"
 
           # ensure build dir contains .app bundle
           if [ ! -d "build/$APP_NAME" ]; then
@@ -40,7 +40,7 @@ jobs:
           cp -R "build/$APP_NAME" dist/
 
           hdiutil create \
-            -volname "RasterFlow" \
+            -volname "Rasterflow" \
             -srcfolder dist \
             -ov \
             -format UDZO \
@@ -53,4 +53,21 @@ jobs:
 
       - name: Delete old release if exists
         run: |
-          gh release delete "v${{ steps.version.output
+          gh release delete "v${{ steps.version.outputs.version }}" -y || true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create new release and upload asset
+        run: |
+          gh release create "v${{ steps.version.outputs.version }}" \
+            "Rasterflow-${{ steps.version.outputs.version }}.dmg" \
+            --title "Rasterflow v${{ steps.version.outputs.version }}" \
+            --notes "Automated macOS ARM build for Rasterflow v${{ steps.version.outputs.version }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload CI artifact (optional)
+        uses: actions/upload-artifact@v4
+        with:
+          name: rasterflow-macos-dmg-${{ steps.version.outputs.version }}
+          path: Rasterflow-${{ steps.version.outputs.version }}.dmg
