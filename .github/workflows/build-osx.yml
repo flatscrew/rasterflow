@@ -89,6 +89,11 @@ jobs:
       - name: Generate .app bundle using gtk-mac-bundler
         run: |
           gtk-mac-bundler osx-bundle/RasterFlow.bundle
+          echo "Signing application (ad-hoc)..."
+          codesign --force --deep --sign - \
+            --options runtime \
+            --timestamp=none \
+            "osx-bundle/RasterFlow.app"
           
       - name: Package .app into DMG
         run: |
