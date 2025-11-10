@@ -10,7 +10,6 @@
     </image>
 
     <run-install-name-tool/>
-    <launcher-script>${project}/rasterflow-launcher.sh</launcher-script >
     <gtk>gtk4</gtk>
   </meta>
 
