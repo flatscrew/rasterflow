@@ -86,14 +86,54 @@ jobs:
           make
           sudo make install
           
-      - name: Generate .app bundle using gtk-mac-bundler
+      - name: Generate .app bundle using gtk-mac-bundler + sign + verify
         run: |
+          set -e
+
+          echo "=== Bundling application ==="
           gtk-mac-bundler osx-bundle/RasterFlow.bundle
-          echo "Signing application (ad-hoc)..."
-          codesign --force --deep --sign - \
+
+          if [ ! -d "osx-bundle/RasterFlow.app" ]; then
+            echo "ERROR: RasterFlow.app not generated!"
+            ls -la osx-bundle
+            exit 1
+          fi
+
+          echo "=== Signing application (ad-hoc) ==="
+          codesign \
+            --force \
+            --deep \
             --options runtime \
             --timestamp=none \
+            --sign - \
             "osx-bundle/RasterFlow.app"
+
+          echo "=== Verifying signature - strict mode ==="
+          # Fail if strict verification fails
+          if ! codesign --verify --deep --strict --verbose=2 "osx-bundle/RasterFlow.app"; then
+            echo "ERROR: codesign --verify failed!"
+            exit 1
+          fi
+
+          echo "=== Checking signature identity & entitlements ==="
+          codesign -dv --verbose=4 "osx-bundle/RasterFlow.app" || {
+            echo "ERROR: codesign -dv failed!"
+            exit 1
+          }
+
+          echo "=== Gatekeeper assessment ==="
+          # spctl returns non-zero for ad-hoc sign, but it should still detect valid structure
+          # We treat real signature errors as failures, but non-zero exit due to ad-hoc signing is normal.
+          spctl -a -vv "osx-bundle/RasterFlow.app" 2>&1 | tee spctl_output.txt
+
+          if grep -q "rejected" spctl_output.txt; then
+            echo "ERROR: spctl reports rejection!"
+            cat spctl_output.txt
+            exit 1
+          fi
+
+          echo "✅ App bundle is properly signed and verified."
+
           
       - name: Package .app into DMG
         run: |
