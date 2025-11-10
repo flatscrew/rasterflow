@@ -86,32 +86,35 @@ jobs:
           make
           sudo make install
           
-      - name: Generate .app bundle + ad-hoc sign
+      - name: Bundle + robust ad-hoc signing of ALL Mach-O files
         run: |
-          set -e
+          set -euo pipefail
 
           echo "=== Bundling application ==="
           gtk-mac-bundler osx-bundle/RasterFlow.bundle
 
           APP="osx-bundle/RasterFlow.app"
+          [ -d "$APP" ] || { echo "ERROR: $APP not generated"; exit 1; }
 
-          if [ ! -d "$APP" ]; then
-            echo "ERROR: RasterFlow.app not found!"
-            ls -la osx-bundle
-            exit 1
-          fi
+          echo "=== Ensuring main executables are +x (just in case) ==="
+          chmod +x "$APP/Contents/MacOS/"* || true
 
-          echo "=== Ensuring main executable flags ==="
-          chmod +x "$APP/Contents/MacOS/rasterflow" || true
-          chmod +x "$APP/Contents/MacOS/rasterflow-bin" || true
+          echo "=== Detecting ALL Mach-O files and signing ad-hoc one by one ==="
+          # Podpisujemy każdy plik, który jest Mach-O (nie tylko te z bitem executable)
+          while IFS= read -r -d '' f; do
+            if /usr/bin/file -b "$f" | grep -q 'Mach-O'; then
+              echo "Signing Mach-O: $f"
+              /usr/bin/codesign --force --sign - --timestamp=none "$f"
+            fi
+          done < <(find "$APP" -type f -print0)
 
-          echo "=== Ad-hoc signing ==="
-          codesign --force --deep --sign - "$APP"
+          echo "=== Final: sign the .app bundle itself ==="
+          /usr/bin/codesign --force --sign - "$APP"
 
-          echo "=== Quick verification ==="
-          codesign --verify --verbose=1 "$APP"
+          echo "=== Verify (deep/strict) ==="
+          /usr/bin/codesign --verify --deep --strict --verbose=2 "$APP"
 
-          echo "✅ Bundle creation & signing complete."
+          echo "✅ All Mach-O files signed, bundle verified."
           
       - name: Package .app into DMG
         run: |
