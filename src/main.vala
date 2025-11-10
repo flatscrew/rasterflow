@@ -32,17 +32,23 @@ class CanvasApplication : Adw.Application {
     var display = Gdk.Display.get_default();
     var theme = Gtk.IconTheme.get_for_display(display);
     theme.add_resource_path("/icons");
+    
+    activate.connect(app_activated);
   }
   
   public CanvasApplication(string[] args) {
+    
+  
+  }
+  
+  private void app_activated() {
     var header_widgets = new CanvasHeaderbarWidgets();
     var data_node_factory = new CanvasNodeFactory();
     var file_origin_node_factory = new Data.FileOriginNodeFactory();
     var serializers = new Serialize.CustomSerializers();
     var deserializers = new Serialize.CustomDeserializers();
-
-    activate.connect (() => {
-      GtkFlow.init();
+    
+    GtkFlow.init();
 
       this.window = new Adw.ApplicationWindow(this);
       window.set_title("RasterFlow");
@@ -62,7 +68,7 @@ class CanvasApplication : Adw.Application {
         about_registry
       );
 
-      initialize_image_plugin(plugin_contribution, args);
+      initialize_image_plugin(plugin_contribution);
 
       this.about_dialog = new About.AboutDialog(this.about_registry);
       this.canvas_view = new CanvasView(
@@ -88,17 +94,11 @@ class CanvasApplication : Adw.Application {
       } catch (Error e) {
         warning(e.message);
       }
-      add_screenshot_window_resize_controller();
 
       var window_dimensions = settings.read_window_dimensions();
       WindowGeometryManager.set_geometry(window, window_dimensions);
-    });
   }
   
-  private void add_screenshot_window_resize_controller() {
-
-  }
-
   private void add_actions_and_shortcuts() throws Error {
     var actions = new SimpleActionGroup();
     

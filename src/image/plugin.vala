@@ -49,11 +49,11 @@ private GLib.ListStore build_pixbuf_filters() {
     return filters;
 }
 
-public string initialize_image_plugin(Plugin.PluginContribution plugin_contribution, string[] args) {
-    var local_args = args;
-
+public string initialize_image_plugin(Plugin.PluginContribution plugin_contribution) {
+    string[] args = {};
+    
     Gegl.config().application_license = "GPL3";
-    Gegl.init(ref local_args);
+    Gegl.init(ref args);
     Gegl.load_module_directory("./linux-beaver-gegl-plugins"); // experimental
     
     new Image.GeglOperationOverrides();
