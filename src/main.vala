@@ -16,6 +16,7 @@ class CanvasApplication : Adw.Application {
   private About.AboutDialog about_dialog;
   private About.AboutRegistry about_registry;
 
+  
   construct {
     base.application_id = "io.flatscrew.RasterFlow";
     base.flags = ApplicationFlags.FLAGS_NONE;
@@ -33,12 +34,16 @@ class CanvasApplication : Adw.Application {
     var theme = Gtk.IconTheme.get_for_display(display);
     theme.add_resource_path("/icons");
     
-    activate.connect(app_activated);
+    //  activate.connect(app_activated);
   }
   
   public CanvasApplication(string[] args) {
     
   
+  }
+  
+  public override void activate() {
+    app_activated();
   }
   
   private void app_activated() {
