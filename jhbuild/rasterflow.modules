@@ -16,7 +16,7 @@
   </meson>
 
   <!-- Gee -->
-  <autotools id="libgee">
+  <autotools id="libgee" skip="true">
     <branch repo="gnome-github" module="libgee.git"/>
     <dependencies>
       <dep package="glib"/>
@@ -56,7 +56,7 @@
     <dependencies>
       <dep package="glib"/>
       <dep package="json-glib"/>
-      <dep package="libgee"/>
+      <!--dep package="libgee"/-->
       <dep package="gegl"/>
       <dep package="gtk4"/>
     </dependencies>
