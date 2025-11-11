@@ -8,7 +8,7 @@ permissions:
 
 jobs:
   build-macos-arm:
-    runs-on: macos-14   # macOS ARM runner (M1/M2)
+    runs-on: macos-14
 
     steps:
       - name: Checkout repo
@@ -78,13 +78,9 @@ jobs:
             --buildtype=release \
             -Dc_args='-Wno-incompatible-pointer-types-discards-qualifiers -Wno-incompatible-function-pointer-types'
           meson compile -C build
-          meson install -C build --destdir=staging
 
       - name: Install into staging directory
         run: meson install -C build --destdir=staging
-
-      - name: Validate rpath
-        run: otool -L staging/opt/homebrew/bin/rasterflow
 
       - name: Create tarball
         run: |
