@@ -24,9 +24,10 @@ jobs:
 
       - name: Checkout jhbuild
         run: |
-          git clone https://gitlab.gnome.org/GNOME/jhbuild.git
-          cd jhbuild
+          git clone https://gitlab.gnome.org/GNOME/jhbuild.git build-jhbuild
+          cd build-jhbuild
           ./autogen.sh
+          ./configure --prefix=$HOME/.local
           make
           make install
 
