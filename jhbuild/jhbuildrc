@@ -14,7 +14,9 @@
 # what module set should be used.
 # but it can be any of the files in the modulesets directory, or even
 # the URL of a module set file on a web server.
-moduleset = '/opt/projects/vala/rasterflow/jhbuild/rasterflow.modules'
+import os
+
+moduleset = os.path.join(os.path.dirname(__file__), 'rasterflow.modules')
 
 # A list of the modules to build.
 modules = [ 'rasterflow', 'gnome-themes-standard', 'dconf', 'gvfs' ]
