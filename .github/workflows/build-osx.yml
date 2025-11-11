@@ -36,10 +36,11 @@ jobs:
           make
           make install DISABLE_GETTEXT=1
           
-      - name: Build with jhbuild
+      - name: Bootstrap jhbuild
         run: |
-          jhbuild -f jhbuild/jhbuildrc sysdeps
-          jhbuild -f jhbuild/jhbuildrc build rasterflow
+          jhbuild -f jhbuild/jhbuildrc bootstrap
+          jhbuild -f jhbuild/jhbuildrc build --nodeps glib
+          jhbuild -f jhbuild/jhbuildrc bootstrap vala-bootstrap
 
       # - name: Install dependencies (brew)
       #   run: |

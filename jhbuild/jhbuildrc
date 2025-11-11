@@ -42,7 +42,7 @@ os.environ['LINGUAS'] = ''
 # Tips from Vincent Untz
 # http://www.vuntz.net/journal/post/2010/09/23/My-love-for-jhbuild
 #
-skip = [ 'm4' ]
+skip = ['m4', 'bison', 'flex', 'autoconf', 'automake', 'libtool', 'gettext']
 
 ## Module options
 module_autogenargs['rasterflow'] = autogenargs + ' --bleble '
