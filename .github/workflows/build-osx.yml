@@ -22,7 +22,7 @@ jobs:
         run: |
           brew install autoconf automake libtool
 
-      - name: Checkout jhbuild
+      - name: Checkout and install jhbuild
         run: |
           git clone https://gitlab.gnome.org/GNOME/jhbuild.git build-jhbuild
           cd build-jhbuild
@@ -30,6 +30,12 @@ jobs:
           ./configure --prefix=$HOME/.local
           make
           make install
+          
+      - name: Bootstrap jhbuild
+        run: |
+          jhbuild bootstrap
+          jhbuild build --nodeps glib
+          jhbuild bootstrap vala-bootstrap
 
       # - name: Install dependencies (brew)
       #   run: |
