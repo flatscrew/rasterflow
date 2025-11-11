@@ -14,12 +14,10 @@
 # what module set should be used.
 # but it can be any of the files in the modulesets directory, or even
 # the URL of a module set file on a web server.
-import os
-
-moduleset = 'jhbuild/rasterflow.modules'
+moduleset = '/Users/runner/work/rasterflow/rasterflow/jhbuild/rasterflow.modules'
 
 # A list of the modules to build.
-modules = [ 'rasterflow', 'gnome-themes-standard', 'dconf', 'gvfs' ]
+modules = [ 'rasterflow']
 
 # what directory should the source be checked out to?
 checkoutroot = os.path.join(os.environ['HOME'], 'jhbuild', 'rasterfow', 'checkout')
