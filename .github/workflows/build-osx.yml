@@ -22,8 +22,10 @@ jobs:
         run: |
           brew install autoconf automake libtool
 
-      - name: Install python distutils
-        run: pip3 install distutils
+      - name: Setup Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
 
       - name: Checkout and install jhbuild
         run: |
