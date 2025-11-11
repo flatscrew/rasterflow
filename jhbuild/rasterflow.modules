@@ -24,7 +24,7 @@
   </autotools>
 
   <!-- GdkPixbuf -->
-  <meson id="gdk-pixbuf">
+  <meson id="gdk-pixbuf" mesonargs="-Djasper=false -Dx11=false">
     <branch repo="gnome-github" module="gdk-pixbuf.git"/>
     <dependencies>
       <dep package="glib"/>
