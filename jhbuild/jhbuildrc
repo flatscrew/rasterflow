@@ -35,6 +35,8 @@ os.environ['CFLAGS'] = '-g -O2'
 # to speed up builds, only build the default documentation language
 os.environ['LINGUAS'] = ''
  
+os.environ['PKG_CONFIG_PATH'] = '/opt/homebrew/lib/pkgconfig:/opt/homebrew/share/pkgconfig'
+ 
 # On SMP systems you may use something like this to improve compilation time:
 # be aware that not all modules compile correctly with make -j2
 # makeargs = '-j4'
@@ -42,7 +44,7 @@ os.environ['LINGUAS'] = ''
 # Tips from Vincent Untz
 # http://www.vuntz.net/journal/post/2010/09/23/My-love-for-jhbuild
 #
-skip = ['m4', 'bison', 'flex', 'autoconf', 'automake', 'libtool', 'gettext']
+skip = ['m4', 'bison', 'flex', 'autoconf', 'automake', 'libtool', 'gettext', 'pkg-config']
 
 ## Module options
 module_autogenargs['rasterflow'] = autogenargs + ' --bleble '
