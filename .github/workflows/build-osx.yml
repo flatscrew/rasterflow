@@ -19,32 +19,66 @@ jobs:
         run: |
           echo "version=$(cat VERSION)" >> $GITHUB_OUTPUT
 
-      - name: Install Homebrew dependencies
+      - name: Install dependencies (brew)
         run: |
           brew update
-          brew install \
-            meson \
-            ninja \
-            pkg-config \
-            vala \
-            libgee \
-            gtk4 \
-            glib \
-            gobject-introspection \
-            pango \
-            gdk-pixbuf \
-            gettext
+          brew install vala gtk4 libadwaita meson gobject-introspection
+          brew install json-glib libgee
+          
+      - name: Clone babl
+        run: |
+          git clone https://gitlab.gnome.org/GNOME/babl.git
+          cd babl
+          git checkout BABL_0_1_116
+          
+      - name: Build and install babl
+        run: |
+          cd babl
+          meson setup build \
+            --prefix=/opt/homebrew \
+            --buildtype=release
+          ninja -C build
+          sudo ninja -C build install
 
-      - name: Configure (Meson)
-        run: >
-          meson setup build
-          --prefix=/opt/homebrew
-          --buildtype=release
-          --default-library=shared
-          -Dstrip=true
+      - name: Clone GEGL
+        run: |
+          git clone https://gitlab.gnome.org/GNOME/gegl.git
+          cd gegl
+          git checkout GEGL_0_4_64
 
-      - name: Build
-        run: meson compile -C build
+      - name: Build and install GEGL
+        run: |
+          cd gegl
+
+          meson setup build \
+            --prefix=/opt/homebrew \
+            --buildtype=release
+
+          ninja -C build
+          sudo ninja -C build install
+
+      - name: Clone libgtkflow
+        run: |
+          git clone https://github.com/flatscrew/libgtkflow
+
+      - name: Build and install libgtkflow
+        run: |
+          cd libgtkflow
+          meson setup build \
+            --prefix=/opt/homebrew \
+            -Denable_gtk3=false \
+            -Denable_valadoc=false \
+            --buildtype=release
+          ninja -C build
+          sudo ninja -C build install
+
+      - name: Build Rasterflow
+        run: |
+          meson setup build \
+            --buildtype=release \
+            -Dc_args='-Wno-incompatible-pointer-types-discards-qualifiers -Wno-incompatible-function-pointer-types'
+          meson compile -C build
+          meson install -C build --destdir=staging
 
       - name: Install into staging directory
         run: meson install -C build --destdir=staging
@@ -62,123 +96,7 @@ jobs:
         with:
           name: rasterflow-macos-arm64
           path: output/rasterflow-macos-arm64-${{ steps.version.outputs.version }}.tar.gz
-
-
-      # - name: Install dependencies (brew)
-      #   run: |
-      #     brew update
-      #     brew install vala gtk4 libadwaita meson gobject-introspection
-      #     brew install json-glib libgee
           
-      # - name: Clone babl
-      #   run: |
-      #     git clone https://gitlab.gnome.org/GNOME/babl.git
-      #     cd babl
-      #     git checkout BABL_0_1_116
-          
-      # - name: Build and install babl
-      #   run: |
-      #     cd babl
-      #     meson setup build \
-      #       --prefix=/opt/homebrew \
-      #       --buildtype=release
-      #     ninja -C build
-      #     sudo ninja -C build install
-
-      # - name: Clone GEGL
-      #   run: |
-      #     git clone https://gitlab.gnome.org/GNOME/gegl.git
-      #     cd gegl
-      #     git checkout GEGL_0_4_64
-
-      # - name: Build and install GEGL
-      #   run: |
-      #     cd gegl
-
-      #     meson setup build \
-      #       --prefix=/opt/homebrew \
-      #       --buildtype=release
-
-      #     ninja -C build
-      #     sudo ninja -C build install
-
-      # - name: Clone libgtkflow
-      #   run: |
-      #     git clone https://github.com/flatscrew/libgtkflow
-
-      # - name: Build and install libgtkflow
-      #   run: |
-      #     cd libgtkflow
-      #     meson setup build \
-      #       --prefix=/opt/homebrew \
-      #       -Denable_gtk3=false \
-      #       -Denable_valadoc=false \
-      #       --buildtype=release
-      #     ninja -C build
-      #     sudo ninja -C build install
-
-      # - name: Build Rasterflow
-      #   run: |
-      #     meson setup build \
-      #       --buildtype=release \
-      #       -Dc_args='-Wno-incompatible-pointer-types-discards-qualifiers -Wno-incompatible-function-pointer-types'
-      #     meson compile -C build
-      #     meson install -C build
-          
-      # - name: Install gtk-mac-bundler from Git
-      #   run: |
-      #     git clone https://gitlab.gnome.org/GNOME/gtk-mac-bundler.git
-      #     cd gtk-mac-bundler
-      #     make
-      #     sudo make install
-          
-      # - name: Bundle + robust ad-hoc signing of ALL Mach-O files
-      #   run: |
-      #     set -euo pipefail
-
-      #     echo "=== Bundling application ==="
-      #     gtk-mac-bundler osx-bundle/RasterFlow.bundle
-
-      #     APP="osx-bundle/RasterFlow.app"
-      #     [ -d "$APP" ] || { echo "ERROR: $APP not generated"; exit 1; }
-
-      #     echo "=== Ensuring main executables are +x (just in case) ==="
-      #     chmod +x "$APP/Contents/MacOS/"* || true
-
-      #     echo "=== Detecting ALL Mach-O files and signing ad-hoc one by one ==="
-      #     # Podpisujemy każdy plik, który jest Mach-O (nie tylko te z bitem executable)
-      #     while IFS= read -r -d '' f; do
-      #       if /usr/bin/file -b "$f" | grep -q 'Mach-O'; then
-      #         echo "Signing Mach-O: $f"
-      #         /usr/bin/codesign --force --sign - --timestamp=none "$f"
-      #       fi
-      #     done < <(find "$APP" -type f -print0)
-
-      #     echo "=== Final: sign the .app bundle itself ==="
-      #     /usr/bin/codesign --force --sign - "$APP"
-
-      #     echo "=== Verify (deep/strict) ==="
-      #     /usr/bin/codesign --verify --deep --strict --verbose=2 "$APP"
-
-      #     echo "✅ All Mach-O files signed, bundle verified."
-          
-      # - name: Package .app into DMG
-      #   run: |
-      #     DMG_NAME="RasterFlow-${{ steps.version.outputs.version }}.dmg"
-      #     APP_NAME="RasterFlow.app"
-
-      #     if [ ! -d "osx-bundle/$APP_NAME" ]; then
-      #       echo "Error: $APP_NAME not generated by bundler!"
-      #       exit 1
-      #     fi
-
-      #     hdiutil create \
-      #       -volname "RasterFlow" \
-      #       -srcfolder "osx-bundle/$APP_NAME" \
-      #       -ov \
-      #       -format UDZO \
-      #       "$DMG_NAME"
-            
       # - name: Auth check GH CLI
       #   run: gh auth status
       #   env:
