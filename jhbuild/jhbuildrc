@@ -16,7 +16,7 @@
 # the URL of a module set file on a web server.
 import os
 
-moduleset = os.path.join(os.path.dirname(__file__), 'rasterflow.modules')
+moduleset = 'jhbuild/rasterflow.modules'
 
 # A list of the modules to build.
 modules = [ 'rasterflow', 'gnome-themes-standard', 'dconf', 'gvfs' ]
