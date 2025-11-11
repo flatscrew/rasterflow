@@ -7,8 +7,8 @@ permissions:
   contents: write
 
 jobs:
-  build-macos:
-    runs-on: macos-14  # Apple Silicon runner
+  build-macos-arm:
+    runs-on: macos-14   # macOS ARM runner (M1/M2)
 
     steps:
       - name: Checkout repo
@@ -16,36 +16,53 @@ jobs:
 
       - name: Read version
         id: version
-        run: echo "version=$(cat VERSION)" >> $GITHUB_OUTPUT
-
-      - name: Install dependencies (brew)
         run: |
-          brew install pkg-config gettext libffi autoconf automake libtool
-          brew install vala libgee
+          echo "version=$(cat VERSION)" >> $GITHUB_OUTPUT
 
-      - name: Setup Python 3.10
-        uses: actions/setup-python@v5
+      - name: Install Homebrew dependencies
+        run: |
+          brew update
+          brew install \
+            meson \
+            ninja \
+            pkg-config \
+            vala \
+            libgee \
+            gtk4 \
+            glib \
+            gobject-introspection \
+            pango \
+            gdk-pixbuf \
+            gettext
+
+      - name: Configure (Meson)
+        run: >
+          meson setup build
+          --prefix=/opt/homebrew
+          --buildtype=release
+          --default-library=shared
+          -Dstrip=true
+
+      - name: Build
+        run: meson compile -C build
+
+      - name: Install into staging directory
+        run: meson install -C build --destdir=staging
+
+      - name: Validate rpath
+        run: otool -L staging/opt/homebrew/bin/rasterflow
+
+      - name: Create tarball
+        run: |
+          mkdir output
+          tar -czvf output/rasterflow-macos-arm64-${{ steps.version.outputs.version }}.tar.gz -C staging .
+
+      - name: Upload artifact (GH Actions)
+        uses: actions/upload-artifact@v4
         with:
-          python-version: '3.10'
-          
-      - name: Install meson & ninja
-        run: |
-          python3 -m pip install --upgrade pip setuptools
-          python3 -m pip install meson ninja
+          name: rasterflow-macos-arm64
+          path: output/rasterflow-macos-arm64-${{ steps.version.outputs.version }}.tar.gz
 
-      - name: Checkout and install jhbuild
-        run: |
-          git clone https://gitlab.gnome.org/GNOME/jhbuild.git build-jhbuild
-          cd build-jhbuild
-          ./autogen.sh
-          ./configure --prefix=$HOME/.local
-          make
-          make install DISABLE_GETTEXT=1
-          
-      - name: Bootstrap jhbuild
-        run: |
-          jhbuild -f jhbuild/jhbuildrc sysdeps
-          jhbuild -f jhbuild/jhbuildrc build rasterflow
 
       # - name: Install dependencies (brew)
       #   run: |
