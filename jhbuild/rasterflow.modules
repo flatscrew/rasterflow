@@ -1,18 +1,67 @@
 <moduleset>
-  
-  <repository type="git" name="git.gnome.org" href="https://gitlab.gnome.org/GNOME"/>
-  <repository type="git" name="github-rasterflow" href="git@github.com:flatscrew"/>
 
-  <meson id="gtk4" mesonargs="-Dgtk_doc=true">
-    <branch repo="git.gnome.org" module="gtk.git"/>
+  <!-- Repositories -->
+  <repository type="git" name="gnome-gitlab" href="https://gitlab.gnome.org/GNOME/"/>
+  <repository type="git" name="github-rasterflow" href="https://github.com/flatscrew/"/>
+  <repository type="git" name="github-gee" href="https://github.com/GNOME/"/>
+  <repository type="git" name="gnome-legacy" href="https://gitlab.gnome.org/GNOME/"/>
+
+  <!-- GLib -->
+  <meson id="glib">
+    <branch repo="gnome-gitlab" module="glib.git"/>
+  </meson>
+
+  <!-- JSON-GLib -->
+  <meson id="json-glib">
+    <branch repo="gnome-gitlab" module="json-glib.git"/>
     <dependencies>
+      <dep package="glib"/>
+    </dependencies>
+  </meson>
+
+  <!-- Gee -->
+  <meson id="libgee">
+    <branch repo="github-gee" module="libgee.git"/>
+    <dependencies>
+      <dep package="glib"/>
+    </dependencies>
+  </meson>
+
+  <!-- GdkPixbuf -->
+  <meson id="gdk-pixbuf">
+    <branch repo="gnome-gitlab" module="gdk-pixbuf.git"/>
+    <dependencies>
+      <dep package="glib"/>
+    </dependencies>
+  </meson>
+
+  <!-- GEGL -->
+  <meson id="gegl">
+    <branch repo="gnome-gitlab" module="gegl.git"/>
+    <dependencies>
+      <dep package="glib"/>
       <dep package="gdk-pixbuf"/>
     </dependencies>
   </meson>
-    
-  <meson id="rasterflow" mesonargs="-Dversion=0.1.0">
-    <branch repo="github-rasterflow" module="" checkoutdir="rasterflow"/>
+
+  <!-- GTK4 -->
+  <meson id="gtk4">
+    <branch repo="gnome-gitlab" module="gtk.git"/>
     <dependencies>
+      <dep package="glib"/>
+      <dep package="gdk-pixbuf"/>
+      <dep package="json-glib"/>
+    </dependencies>
+  </meson>
+
+  <!-- Rasterflow -->
+  <meson id="rasterflow" mesonargs="-Dversion=0.1.0">
+    <branch repo="github-rasterflow" module="." checkoutdir="rasterflow"/>
+    <dependencies>
+      <dep package="glib"/>
+      <dep package="json-glib"/>
+      <dep package="libgee"/>
+      <dep package="gegl"/>
       <dep package="gtk4"/>
     </dependencies>
   </meson>
