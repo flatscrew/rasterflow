@@ -1,0 +1,48 @@
+# -*- mode: python -*-
+#
+# edit this file to match your settings and copy it to ~/.jhbuildrc
+# or use it with:
+#   $ jhbuild -f this-jhbuild-file
+
+# If you are behind a firewall that has blocked the port 9418
+# (for example, you get connection time out to git.gnome.org),
+# then uncomment the following lines:
+# repos['git.gnome.org']='https://git.gnome.org/browse/'
+# repos['git.freedesktop.org']= 'http://anongit.freedesktop.org/git/'
+# repos['poppler.freedesktop.org'] = 'http://anongit.freedesktop.org/git/poppler/'
+
+# what module set should be used.
+# but it can be any of the files in the modulesets directory, or even
+# the URL of a module set file on a web server.
+moduleset = '/opt/projects/vala/rasterflow/jhbuild/rasterflow.modules'
+
+# A list of the modules to build.
+modules = [ 'rasterflow', 'gnome-themes-standard', 'dconf', 'gvfs' ]
+
+# what directory should the source be checked out to?
+checkoutroot = os.path.join(os.environ['HOME'], 'jhbuild', 'rasterfow', 'checkout')
+
+# the prefix to configure/install modules to (must have write access)
+prefix = os.path.join(os.environ['HOME'], 'jhbuild', 'rasterflow', 'install')
+
+# extra arguments to pass to all autogen.sh scripts
+# to speed up builds, try '--disable-static --disable-gtk-doc'
+autogenargs='--disable-gtk-doc '
+
+# set CFLAGS:
+os.environ['CFLAGS'] = '-g -O2'
+
+# to speed up builds, only build the default documentation language
+os.environ['LINGUAS'] = ''
+ 
+# On SMP systems you may use something like this to improve compilation time:
+# be aware that not all modules compile correctly with make -j2
+# makeargs = '-j4'
+
+# Tips from Vincent Untz
+# http://www.vuntz.net/journal/post/2010/09/23/My-love-for-jhbuild
+#
+# skip = [ 'cairo' ]
+
+## Module options
+module_autogenargs['rasterflow'] = autogenargs + ' --bleble '

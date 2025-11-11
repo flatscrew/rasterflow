@@ -22,31 +22,7 @@
   </binary>
   
   <binary>
-    ${prefix}/lib/libglib-2.0*.dylib
-  </binary>
-  
-  <binary>
-    ${prefix}/lib/libgobject-2.0*.dylib
-  </binary>
-  
-  <binary>
-    ${prefix}/lib/libgmodule-2.0*.dylib
-  </binary>
-  
-  <binary>
-    ${prefix}/lib/libgio-2.0*.dylib
-  </binary>
-  
-  <binary>
-    ${prefix}/lib/libcairo*.dylib
-  </binary>
-  
-  <binary>
-    ${prefix}/lib/libpango*.dylib
-  </binary>
-  
-  <binary>
-    ${prefix}/lib/libgraphene*.dylib
+    ${prefix}/opt/lib/glib/*.dylib
   </binary>
   
   <binary>

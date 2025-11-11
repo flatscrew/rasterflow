@@ -1,0 +1,22 @@
+<moduleset>
+  
+  <repository type="git" name="git.gnome.org" href="git://gitlab.gnome.org"/>
+  <repository type="git" name="github.com" href="git://github.com"/>
+  <repository type="git" name="github-rasterflow" href="git@github.com:flatscrew"/>
+
+  <meson id="gtk4" mesonargs="-Dgtk_doc=true">
+    <branch repo="git.gnome.org" module="gtk.git"/>
+    <dependencies>
+      <dep package="gdk-pixbuf"/>
+    </dependencies>
+  </meson>
+    
+  <meson id="rasterflow" mesonargs="-Dversion=0.1.0">
+    <branch repo="github-rasterflow" module="" checkoutdir="rasterflow"/>
+    <dependencies>
+      <dep package="gtk4"/>
+    </dependencies>
+  </meson>
+
+
+</moduleset>
