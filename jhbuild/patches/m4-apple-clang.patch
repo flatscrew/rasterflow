@@ -1,0 +1,9 @@
+--- lib/obstack.c.orig 2020-01-01 00:00:00
++++ lib/obstack.c      2020-01-01 00:01:00
+@@ -348,7 +348,7 @@
+ int obstack_exit_failure = EXIT_FAILURE;
+ 
+ /* Exit and use the error routine.  */
+-__attribute_noreturn__ void (*obstack_alloc_failed_handler) (void)
++__attribute__((__noreturn__)) void (*obstack_alloc_failed_handler) (void)
+   = _obstack_alloc_failed_handler;
