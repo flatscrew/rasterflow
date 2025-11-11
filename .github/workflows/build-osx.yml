@@ -34,7 +34,7 @@ jobs:
           ./autogen.sh
           ./configure --prefix=$HOME/.local
           make
-          make install
+          make install DISABLE_GETTEXT=1
           
       - name: Bootstrap jhbuild
         run: |
