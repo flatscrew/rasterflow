@@ -1,6 +1,6 @@
 <moduleset>
   
-  <repository type="git" name="git.gnome.org" href="https://gitlab.gnome.org/GNOME/gtk.git"/>
+  <repository type="git" name="git.gnome.org" href="https://gitlab.gnome.org/GNOME"/>
   <repository type="git" name="github-rasterflow" href="git@github.com:flatscrew"/>
 
   <meson id="gtk4" mesonargs="-Dgtk_doc=true">
