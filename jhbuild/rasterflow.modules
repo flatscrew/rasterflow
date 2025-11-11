@@ -1,35 +1,31 @@
 <moduleset>
-
-  <!-- Repositories -->
-  <repository type="git" name="gnome-gitlab" href="https://gitlab.gnome.org/GNOME/"/>
+  <repository type="git" name="gnome-github" href="https://github.com/GNOME/"/>
   <repository type="git" name="github-rasterflow" href="https://github.com/flatscrew/"/>
-  <repository type="git" name="github-gee" href="https://github.com/GNOME/"/>
-  <repository type="git" name="gnome-legacy" href="https://gitlab.gnome.org/GNOME/"/>
 
   <!-- GLib -->
   <meson id="glib">
-    <branch repo="gnome-gitlab" module="glib.git"/>
+    <branch repo="gnome-github" module="glib.git"/>
   </meson>
 
   <!-- JSON-GLib -->
   <meson id="json-glib">
-    <branch repo="gnome-gitlab" module="json-glib.git"/>
+    <branch repo="gnome-github" module="json-glib.git"/>
     <dependencies>
       <dep package="glib"/>
     </dependencies>
   </meson>
 
   <!-- Gee -->
-  <meson id="libgee">
-    <branch repo="github-gee" module="libgee.git"/>
+  <autotools id="libgee">
+    <branch repo="gnome-github" module="libgee.git"/>
     <dependencies>
       <dep package="glib"/>
     </dependencies>
-  </meson>
+  </autotools>
 
   <!-- GdkPixbuf -->
   <meson id="gdk-pixbuf">
-    <branch repo="gnome-gitlab" module="gdk-pixbuf.git"/>
+    <branch repo="gnome-github" module="gdk-pixbuf.git"/>
     <dependencies>
       <dep package="glib"/>
     </dependencies>
@@ -37,7 +33,7 @@
 
   <!-- GEGL -->
   <meson id="gegl">
-    <branch repo="gnome-gitlab" module="gegl.git"/>
+    <branch repo="gnome-github" module="gegl.git"/>
     <dependencies>
       <dep package="glib"/>
       <dep package="gdk-pixbuf"/>
@@ -46,7 +42,7 @@
 
   <!-- GTK4 -->
   <meson id="gtk4">
-    <branch repo="gnome-gitlab" module="gtk.git"/>
+    <branch repo="gnome-github" module="gtk.git"/>
     <dependencies>
       <dep package="glib"/>
       <dep package="gdk-pixbuf"/>
