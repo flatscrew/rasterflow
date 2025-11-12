@@ -13,6 +13,14 @@ jobs:
 
       - name: Configure Git autocrlf
         run: git config --global core.autocrlf input
+        
+      - name: Cache MSYS2 packages
+        uses: actions/cache@v4
+        with:
+          path: C:\msys64\var\cache\pacman\pkg
+          key: ${{ runner.os }}-msys2-pkgs-v1
+          restore-keys: |
+            ${{ runner.os }}-msys2-pkgs-
 
       - name: Install MSYS2 and dependencies
         uses: msys2/setup-msys2@v2
