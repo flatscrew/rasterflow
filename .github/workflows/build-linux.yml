@@ -43,23 +43,21 @@ jobs:
         run: |
           flatpak build-bundle repo RasterFlow-${{ steps.version.outputs.version }}.flatpak io.flatscrew.RasterFlow
 
-      - name: Upload artifact (Flatpak)
-        uses: actions/upload-artifact@v4
-        with:
-          name: rasterflow-flatpak
-          path: RasterFlow-${{ steps.version.outputs.version }}.flatpak
-
-      - name: Delete old release if exists
+      - name: Upload Flatpak to GitHub Release
         run: |
-          gh release delete "v${{ steps.version.outputs.version }}" -y || true
+          tag="v${{ steps.version.outputs.version }}"
+          asset="RasterFlow-${{ steps.version.outputs.version }}.flatpak"
+
+          if gh release view "$tag" >/dev/null 2>&1; then
+            echo "Release $tag already exists — attaching asset..."
+          else
+            echo "Creating new release $tag..."
+            gh release create "$tag" \
+              --title "RasterFlow $tag" \
+              --notes "Automated multi-platform release for RasterFlow $tag"
+          fi
+
+          gh release upload "$tag" "$asset" --clobber
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Create GitHub release and upload Flatpak
-        run: |
-          gh release create "v${{ steps.version.outputs.version }}" \
-            "rasterflow-${{ steps.version.outputs.version }}.flatpak" \
-            --title "RasterFlow v${{ steps.version.outputs.version }} (Flatpak)" \
-            --notes "Automated Flatpak build for RasterFlow v${{ steps.version.outputs.version }}"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
