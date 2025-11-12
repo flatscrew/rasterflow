@@ -22,6 +22,7 @@ Name: "{group}\RasterFlow"; Filename: "{app}\rasterflow.exe"
 Name: "{commondesktop}\RasterFlow"; Filename: "{app}\rasterflow.exe"
 
 [Registry]
+Root: HKCU; Subkey: "Environment"; ValueType: expandsz; ValueName: "GSETTINGS_SCHEMA_DIR"; ValueData: "{app}\share\glib-2.0\schemas"; Flags: preservestringtype uninsdeletevalue
 Root: HKCU; Subkey: "Environment"; ValueType: expandsz; ValueName: "BABL_PATH"; ValueData: "{app}\lib\babl-0.1"; Flags: preservestringtype uninsdeletevalue
 Root: HKCU; Subkey: "Environment"; ValueType: expandsz; ValueName: "GEGL_PATH"; ValueData: "{app}\lib\gegl-0.4"; Flags: preservestringtype uninsdeletevalue
 
