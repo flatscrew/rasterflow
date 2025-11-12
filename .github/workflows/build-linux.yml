@@ -29,17 +29,17 @@ jobs:
       - name: Build Flatpak
         run: |
           mkdir -p build-dir
-          flatpak-builder --user --force-clean build-dir io.flatscrew.RasterFlow.yml
+          flatpak-builder --force-clean --repo=repo build-dir io.flatscrew.RasterFlow.yml
 
       - name: Create Flatpak bundle
         run: |
-          flatpak build-bundle build-dir rasterflow-${{ steps.version.outputs.version }}.flatpak io.flatscrew.RasterFlow 0.1.0
+          flatpak build-bundle repo RasterFlow-${{ steps.version.outputs.version }}.flatpak io.flatscrew.RasterFlow
 
       - name: Upload artifact (Flatpak)
         uses: actions/upload-artifact@v4
         with:
           name: rasterflow-flatpak
-          path: rasterflow-${{ steps.version.outputs.version }}.flatpak
+          path: RasterFlow-${{ steps.version.outputs.version }}.flatpak
 
       - name: Delete old release if exists
         run: |
