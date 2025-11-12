@@ -3,9 +3,10 @@ project('vala app', 'vala', 'c', 'cpp',
   license: 'GPL-3.0-or-later'
 )
 
-app_version = get_option('version') 
-conf = configuration_data()
-conf.set('version', app_version)
+fs = import('fs')
+
+version_file = join_paths(meson.project_source_root(), 'VERSION')
+app_version = fs.read(version_file).strip()
 
 config_vala = configure_file(
   input: 'config.vala.in',

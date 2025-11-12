@@ -20,7 +20,7 @@ modules:
       - --libdir=/app/lib
     sources:
       - type: git
-        url: https://gitlab.gnome.org/GNOME/babl.git
+        url: https://github.com/GNOME/babl.git
         tag: BABL_0_1_116
   - name: gegl
     buildsystem: meson
@@ -29,7 +29,7 @@ modules:
       - --libdir=/app/lib
     sources:
       - type: git
-        url: https://gitlab.gnome.org/GNOME/gegl.git
+        url: https://github.com/GNOME/gegl.git
         tag: GEGL_0_4_64
   - name: libgflow
     buildsystem: meson
@@ -57,8 +57,6 @@ modules:
         tag: 0.9.1
   - name: rasterflow
     buildsystem: meson
-    config-opts:
-      - -Dversion=0.1.0
     build-options:
       env:
         PKG_CONFIG_PATH: /app/lib64/pkgconfig:/app/lib/pkgconfig:/app/share/pkgconfig

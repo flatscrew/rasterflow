@@ -58,7 +58,7 @@ jobs:
       - name: Configure Rasterflow build
         shell: msys2 {0}
         run: |
-          meson setup build --prefix=/mingw64 --buildtype=release -Dversion=${{ steps.get_version.outputs.version }}
+          meson setup build --prefix=/mingw64 --buildtype=release
 
       - name: Build Rasterflow
         shell: msys2 {0}
