@@ -19,7 +19,7 @@ jobs:
         run: |
           echo "version=$(cat VERSION)" >> $GITHUB_OUTPUT
 
-            - name: Install Flatpak and Builder
+      - name: Install Flatpak and Builder
         run: |
           sudo apt-get update
           sudo apt-get install -y flatpak flatpak-builder git
