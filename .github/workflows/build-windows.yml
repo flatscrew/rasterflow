@@ -86,7 +86,7 @@ jobs:
         shell: bash
         run: |
           tag="v${{ steps.get_version.outputs.version }}"
-          asset="RasterFlow-${{ steps.get_version.outputs.version }}-Setup-win64.exe"
+          asset="windows_installer/RasterFlow-${{ steps.get_version.outputs.version }}-Setup-win64.exe"
 
           if gh release view "$tag" >/dev/null 2>&1; then
             echo "Release $tag already exists — attaching asset..."
