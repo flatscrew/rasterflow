@@ -46,8 +46,9 @@ jobs:
             unzip
 
       - name: Clone libgtkflow
-        shell: msys2 {0}
+        shell: bash
         run: |
+          git config --global core.autocrlf input
           git clone https://github.com/flatscrew/libgtkflow
 
       - name: Build and install libgtkflow
