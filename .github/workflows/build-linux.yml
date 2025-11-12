@@ -1,0 +1,57 @@
+name: Build Rasterflow (Flatpak)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-flatpak:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Read version
+        id: version
+        run: |
+          echo "version=$(cat VERSION)" >> $GITHUB_OUTPUT
+
+      - name: Install Flatpak and Builder
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y flatpak flatpak-builder git
+          flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+          flatpak install -y flathub org.gnome.Sdk//48 org.gnome.Platform//48
+
+      - name: Build Flatpak
+        run: |
+          mkdir -p build-dir
+          flatpak-builder --user --force-clean build-dir io.flatscrew.RasterFlow.yml
+
+      - name: Create Flatpak bundle
+        run: |
+          flatpak build-bundle build-dir rasterflow-${{ steps.version.outputs.version }}.flatpak io.flatscrew.RasterFlow 0.1.0
+
+      - name: Upload artifact (Flatpak)
+        uses: actions/upload-artifact@v4
+        with:
+          name: rasterflow-flatpak
+          path: rasterflow-${{ steps.version.outputs.version }}.flatpak
+
+      - name: Delete old release if exists
+        run: |
+          gh release delete "v${{ steps.version.outputs.version }}" -y || true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create GitHub release and upload Flatpak
+        run: |
+          gh release create "v${{ steps.version.outputs.version }}" \
+            "rasterflow-${{ steps.version.outputs.version }}.flatpak" \
+            --title "RasterFlow v${{ steps.version.outputs.version }} (Flatpak)" \
+            --notes "Automated Flatpak build for RasterFlow v${{ steps.version.outputs.version }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -66,6 +66,3 @@ modules:
     sources:
       - type: dir
         path: .
-    install-data:
-      - data/io.flatscrew.RasterFlow.desktop:/app/share/applications/io.flatscrew.RasterFlow.desktop
-      - data/io.flatscrew.RasterFlow.svg:/app/share/icons/hicolor/scalable/apps/io.flatscrew.RasterFlow.svg
