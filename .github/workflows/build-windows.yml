@@ -48,16 +48,29 @@ jobs:
             zip
             unzip
 
-      - name: Clone libgtkflow
+      - name: Clone libgflow
         shell: bash
         run: |
-          git clone https://github.com/flatscrew/libgtkflow
+          git clone https://github.com/flatscrew/libgflow
 
-      - name: Build and install libgtkflow
+      - name: Build and install libgflow
         shell: msys2 {0}
         run: |
-          cd libgtkflow
-          meson setup build --prefix=/mingw64 -Denable_gtk3=false -Denable_valadoc=false --buildtype=release
+          cd libgflow
+          meson setup build --prefix=/mingw64 -Denable_valadoc=false --buildtype=release
+          ninja -C build
+          ninja -C build install
+
+      - name: Clone libgtkflow4
+        shell: bash
+        run: |
+          git clone https://github.com/flatscrew/libgtkflow4
+
+      - name: Build and install libgtkflow4
+        shell: msys2 {0}
+        run: |
+          cd libgtkflow4
+          meson setup build --prefix=/mingw64 -Denable_valadoc=false --buildtype=release
           ninja -C build
           ninja -C build install
 
