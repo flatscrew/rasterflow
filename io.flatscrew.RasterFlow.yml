@@ -36,11 +36,20 @@ modules:
     config-opts:
       - --prefix=/app
       - -Denable_valadoc=false
-      - -Denable_gtk3=false
       - --libdir=/app/lib
     sources:
       - type: git
-        url: https://github.com/flatscrew/libgtkflow
+        url: https://github.com/flatscrew/libgflow
+        branch: master
+  - name: libgtflow4
+    buildsystem: meson
+    config-opts:
+      - --prefix=/app
+      - -Denable_valadoc=false
+      - --libdir=/app/lib
+    sources:
+      - type: git
+        url: https://github.com/flatscrew/libgtkflow4
         branch: master
   - name: libportal
     buildsystem: meson
