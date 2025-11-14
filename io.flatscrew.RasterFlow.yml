@@ -40,7 +40,7 @@ modules:
     sources:
       - type: git
         url: https://github.com/flatscrew/libgflow
-        branch: master
+        tag: v1.0
   - name: libgtflow4
     buildsystem: meson
     config-opts:
@@ -50,7 +50,7 @@ modules:
     sources:
       - type: git
         url: https://github.com/flatscrew/libgtkflow4
-        branch: master
+        tag: v0.2
   - name: libportal
     buildsystem: meson
     config-opts:
