@@ -1,0 +1,87 @@
+{
+  "properties" : [],
+  "nodes" : [
+    {
+      "_type" : "canvas_node",
+      "model" : {
+        "path" : "/home/activey/Desktop/red-eyes.jpeg",
+        "_properties_as_sinks" : []
+      },
+      "builder_id" : "gegl:load",
+      "width" : 216,
+      "height" : 185,
+      "expanded" : false,
+      "position_x" : 100,
+      "position_y" : 111
+    },
+    {
+      "_type" : "canvas_node",
+      "model" : {
+        "_properties_as_sinks" : []
+      },
+      "builder_id" : "gegl:red-eye-removal",
+      "width" : 193,
+      "height" : 214,
+      "expanded" : false,
+      "position_x" : 571,
+      "position_y" : 85
+    },
+    {
+      "_type" : "canvas_node",
+      "model" : {
+        "_properties_as_sinks" : []
+      },
+      "builder_id" : "gegl:save-pixbuf",
+      "width" : 419,
+      "height" : 385,
+      "expanded" : true,
+      "position_x" : 390,
+      "position_y" : 350,
+      "external-window" : {
+        "active" : false
+      }
+    },
+    {
+      "_type" : "canvas_node",
+      "model" : {
+        "_properties_as_sinks" : []
+      },
+      "builder_id" : "gegl:save-pixbuf",
+      "width" : 463,
+      "height" : 473,
+      "expanded" : true,
+      "position_x" : 954,
+      "position_y" : 83,
+      "external-window" : {
+        "active" : false
+      }
+    }
+  ],
+  "property_nodes" : [],
+  "links" : [
+    {
+      "node_index" : 0,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 1,
+          "sink_name" : "Input"
+        },
+        {
+          "node_index" : 2,
+          "sink_name" : "Input"
+        }
+      ]
+    },
+    {
+      "node_index" : 1,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 3,
+          "sink_name" : "Input"
+        }
+      ]
+    }
+  ]
+}
