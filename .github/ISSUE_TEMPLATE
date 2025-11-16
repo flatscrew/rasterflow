@@ -21,6 +21,17 @@ body:
     validations:
       required: true
   - type: dropdown
+    id: version
+    attributes:
+      label: Version
+      description: What version of RasterFlow are you running?
+      options:
+        - 0.1.1
+        - 0.1.0
+      default: 0
+    validations:
+      required: true
+  - type: dropdown
     id: platform
     attributes:
       label: Platform
