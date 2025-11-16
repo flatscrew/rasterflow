@@ -1,0 +1,40 @@
+name: Bug Report
+description: File a bug report.
+title: "[Bug]: "
+labels: ["bug"]
+projects: ["rasterflow"]
+assignees:
+  - activey
+type: bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please tell us what went wrong.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Also tell us, what did you expect to happen?
+      placeholder: Tell us what you see!
+      value: "This!"
+    validations:
+      required: true
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platform
+      description: What operating system are you running RasterFlow on?
+      options:
+        - linux (Linux)
+        - macos (MacOS)
+        - windows (Windows)
+      default: 0
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
+      render: shell
