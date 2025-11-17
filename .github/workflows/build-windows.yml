@@ -51,8 +51,7 @@ jobs:
       - name: Clone libgflow
         shell: bash
         run: |
-          git clone https://github.com/flatscrew/libgflow
-          git checkout v1.0
+          git clone --tags --branch v1.0 https://github.com/flatscrew/libgflow
 
       - name: Build and install libgflow
         shell: msys2 {0}
@@ -65,8 +64,7 @@ jobs:
       - name: Clone libgtkflow4
         shell: bash
         run: |
-          git clone https://github.com/flatscrew/libgtkflow4
-          git checkout v0.2
+          git clone --tags --branch v0.2 https://github.com/flatscrew/libgtkflow4
 
       - name: Build and install libgtkflow4
         shell: msys2 {0}
