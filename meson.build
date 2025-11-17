@@ -208,7 +208,12 @@ executable(
 # Install the .gschema.xml file
 install_data('io.flatscrew.RasterFlow.gschema.xml',
              install_dir: join_paths(get_option('datadir'), 'glib-2.0', 'schemas'))
-gnome.post_install(glib_compile_schemas: true)
+
+if get_option('compile_gschemas')
+  gnome.post_install(glib_compile_schemas: true)
+else
+  gnome.post_install()
+endif
 
 # Install .desktop file and app icon
 install_data('data/io.flatscrew.RasterFlow.desktop',

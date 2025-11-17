@@ -1,0 +1,1 @@
+option('compile_gschemas', type: 'boolean', value: true)

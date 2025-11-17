@@ -71,7 +71,6 @@ public string initialize_image_plugin(Plugin.PluginContribution plugin_contribut
     
     Gegl.config().application_license = "GPL3";
     Gegl.init(ref args);
-    Gegl.load_module_directory("./linux-beaver-gegl-plugins"); // experimental
     
     new Image.GeglOperationOverrides();
 
