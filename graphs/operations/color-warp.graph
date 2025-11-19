@@ -1,0 +1,87 @@
+{
+  "properties" : [],
+  "nodes" : [
+    {
+      "_type" : "canvas_node",
+      "model" : {
+        "path" : "/home/activey/Desktop/Kapibara.webp",
+        "_properties_as_sinks" : []
+      },
+      "builder_id" : "gegl:load",
+      "width" : 216,
+      "height" : 185,
+      "expanded" : false,
+      "position_x" : 50,
+      "position_y" : 297
+    },
+    {
+      "_type" : "canvas_node",
+      "model" : {
+        "_properties_as_sinks" : []
+      },
+      "builder_id" : "gegl:save-pixbuf",
+      "width" : 432,
+      "height" : 582,
+      "expanded" : true,
+      "position_x" : 992,
+      "position_y" : 110,
+      "external-window" : {
+        "active" : false
+      }
+    },
+    {
+      "_type" : "canvas_node",
+      "model" : {
+        "from-0" : {
+          "type" : "GeglColor",
+          "color" : "rgb(0.694, 0.635, 0.616)"
+        },
+        "to-0" : {
+          "type" : "GeglColor",
+          "color" : "rgb(0.776, 0.275, 0.000)"
+        },
+        "from-1" : {
+          "type" : "GeglColor",
+          "color" : "rgb(0.698, 0.859, 0.384)"
+        },
+        "to-1" : {
+          "type" : "GeglColor",
+          "color" : "rgb(0.776, 0.275, 0.000)"
+        },
+        "weight-0" : 500.0,
+        "weight-1" : 500.0,
+        "_properties_as_sinks" : []
+      },
+      "builder_id" : "gegl:color-warp",
+      "width" : 393,
+      "height" : 454,
+      "expanded" : true,
+      "color" : "rgb(97,53,131)",
+      "position_x" : 453,
+      "position_y" : 164
+    }
+  ],
+  "property_nodes" : [],
+  "links" : [
+    {
+      "node_index" : 0,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 2,
+          "sink_name" : "Input"
+        }
+      ]
+    },
+    {
+      "node_index" : 2,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 1,
+          "sink_name" : "Input"
+        }
+      ]
+    }
+  ]
+}

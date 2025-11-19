@@ -1,0 +1,101 @@
+{
+  "properties" : [],
+  "nodes" : [
+    {
+      "_type" : "canvas_node",
+      "model" : {
+        "path" : "/home/activey/Desktop/Kapibara.webp",
+        "_properties_as_sinks" : []
+      },
+      "builder_id" : "gegl:load",
+      "width" : 216,
+      "height" : 185,
+      "expanded" : false,
+      "position_x" : 50,
+      "position_y" : 297
+    },
+    {
+      "_type" : "canvas_node",
+      "model" : {
+        "_properties_as_sinks" : []
+      },
+      "builder_id" : "gegl:save-pixbuf",
+      "width" : 432,
+      "height" : 582,
+      "expanded" : true,
+      "position_x" : 992,
+      "position_y" : 110,
+      "external-window" : {
+        "active" : false
+      }
+    },
+    {
+      "_type" : "canvas_node",
+      "model" : {
+        "transparency-threshold" : 0.20000000000000004,
+        "opacity-threshold" : 0.50000000000000011,
+        "color" : {
+          "type" : "GeglColor",
+          "color" : "rgb(0.576, 0.816, 0.169)"
+        },
+        "_properties_as_sinks" : []
+      },
+      "builder_id" : "gegl:color-to-alpha",
+      "width" : 174,
+      "height" : 214,
+      "expanded" : false,
+      "position_x" : 315,
+      "position_y" : 267
+    },
+    {
+      "_type" : "canvas_node",
+      "model" : {
+        "value" : {
+          "type" : "GeglColor",
+          "color" : "rgb(0.753, 0.749, 0.737)"
+        },
+        "_properties_as_sinks" : []
+      },
+      "builder_id" : "gegl:color-overlay",
+      "width" : 250,
+      "height" : 404,
+      "expanded" : true,
+      "color" : "rgb(97,53,131)",
+      "position_x" : 621,
+      "position_y" : 129
+    }
+  ],
+  "property_nodes" : [],
+  "links" : [
+    {
+      "node_index" : 0,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 2,
+          "sink_name" : "Input"
+        }
+      ]
+    },
+    {
+      "node_index" : 2,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 3,
+          "sink_name" : "Input"
+        }
+      ]
+    },
+    {
+      "node_index" : 3,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 1,
+          "sink_name" : "Input"
+        }
+      ]
+    }
+  ]
+}

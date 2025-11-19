@@ -1,0 +1,119 @@
+{
+  "properties" : [],
+  "nodes" : [
+    {
+      "_type" : "canvas_node",
+      "model" : {
+        "path" : "/home/activey/Desktop/Kapibara.webp",
+        "_properties_as_sinks" : []
+      },
+      "builder_id" : "gegl:load",
+      "width" : 216,
+      "height" : 185,
+      "expanded" : false,
+      "position_x" : 53,
+      "position_y" : 502
+    },
+    {
+      "_type" : "canvas_node",
+      "model" : {
+        "_properties_as_sinks" : []
+      },
+      "builder_id" : "gegl:save-pixbuf",
+      "width" : 432,
+      "height" : 582,
+      "expanded" : true,
+      "position_x" : 1003,
+      "position_y" : 110,
+      "external-window" : {
+        "active" : false
+      }
+    },
+    {
+      "_type" : "canvas_node",
+      "model" : {
+        "value" : {
+          "type" : "GeglColor",
+          "color" : "rgb(0.647, 0.114, 0.176)"
+        },
+        "_properties_as_sinks" : []
+      },
+      "builder_id" : "gegl:color",
+      "width" : 270,
+      "height" : 310,
+      "expanded" : true,
+      "position_x" : 29,
+      "position_y" : 70
+    },
+    {
+      "_type" : "canvas_node",
+      "model" : {
+        "width" : 768.0,
+        "height" : 512.0,
+        "_properties_as_sinks" : []
+      },
+      "builder_id" : "gegl:crop",
+      "width" : 145,
+      "height" : 243,
+      "expanded" : false,
+      "position_x" : 398,
+      "position_y" : 77
+    },
+    {
+      "_type" : "canvas_node",
+      "model" : {
+        "_properties_as_sinks" : []
+      },
+      "builder_id" : "svg:color-burn",
+      "width" : 252,
+      "height" : 353,
+      "expanded" : true,
+      "color" : "rgb(97,53,131)",
+      "position_x" : 677,
+      "position_y" : 249
+    }
+  ],
+  "property_nodes" : [],
+  "links" : [
+    {
+      "node_index" : 0,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 4,
+          "sink_name" : "Input"
+        }
+      ]
+    },
+    {
+      "node_index" : 2,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 3,
+          "sink_name" : "Input"
+        }
+      ]
+    },
+    {
+      "node_index" : 3,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 4,
+          "sink_name" : "Aux"
+        }
+      ]
+    },
+    {
+      "node_index" : 4,
+      "source_name" : "Output",
+      "sinks" : [
+        {
+          "node_index" : 1,
+          "sink_name" : "Input"
+        }
+      ]
+    }
+  ]
+}
