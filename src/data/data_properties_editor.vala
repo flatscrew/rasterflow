@@ -17,7 +17,7 @@
 
 namespace Data {
 
-    public delegate void DataPropertiesOverrideFunc (PropertyOverridesComposer composer);
+    public delegate void DataPropertiesOverrideFunc(PropertyOverridesComposer composer);
 
     public class DataPropertiesOverrideCallback {
         private PropertyOverridesComposer composer;
@@ -51,6 +51,7 @@ namespace Data {
             if (builder == null) {
                 return null;
             }
+            
             return builder.build_property(param_spec);
         }
 
@@ -218,15 +219,11 @@ namespace Data {
         }
 
         public bool populate_properties(
-            DataPropertyFilter filter = param_spec => true, 
             DataPropertiesOverrideFunc overrides_func = () => {},
             PropertyDecorator property_decorator = widget => widget
         ) {
             int row = 0;
             foreach (var param_spec in data_object.get_class().list_properties()) {
-                if (!filter(param_spec))
-                    continue;
-                    
                 var data_property_widget = override_property(param_spec, new DataPropertiesOverrideCallback(overrides_func));
                 if (data_property_widget == null) {
                     var factored_property_widget = DataPropertyFactory.instance.build(param_spec);

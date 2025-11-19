@@ -53,7 +53,9 @@ public class CanvasView : Gtk.Widget {
     private DataDropHandler data_drop_handler;
     private PropertyDropHandler property_drop_handler;
     private string current_graph_file;
+    
     private SimpleAction save_action;
+    private SimpleAction show_node_chooser_action;
 
     construct {
         set_layout_manager(new Gtk.BinLayout());
@@ -97,7 +99,7 @@ public class CanvasView : Gtk.Widget {
         this.data_drop_handler = new DataDropHandler();
         data_drop_handler.file_dropped.connect(this.add_file_data_node);
         data_drop_handler.text_dropped.connect(this.add_text_data_node);
-        add_controller(data_drop_handler.data_drop_target);
+        node_view.add_controller(data_drop_handler.data_drop_target);
         
         this.property_drop_handler = new PropertyDropHandler();
         property_drop_handler.property_dropped.connect(this.property_dropped);
@@ -184,13 +186,16 @@ public class CanvasView : Gtk.Widget {
             return;
         }
         
+        double scaled_x, scaled_y;
+        zoomable_area.scale_coordinates(x, y, out scaled_x, out scaled_y);
+        
         this.node_x = (int) x;
         this.node_y = (int) y;
         this.source_dock = dock;
         
         connect_source_popover.set_pointing_to({
-            x: node_x,
-            y: node_y
+            x: (int) scaled_x,
+            y: (int) scaled_y
         });
         connect_source_popover.popup();
     }
@@ -310,11 +315,13 @@ public class CanvasView : Gtk.Widget {
                 var builder = file_node_builders[0];
                 var node_builder = builder.find_builder(node_factory);
                 try {
+                    double scaled_x, scaled_y;
+                    zoomable_area.scale_coordinates(x, y, out scaled_x, out scaled_y);
+                    
                     var new_node = node_builder.create((int) x, (int) y);
                     canvas_graph.add_node(new_node);
-
                     builder.apply_file_data(new_node, file, file_info);
-                    new_node.set_position((int) x, (int) y);
+                    new_node.init_position();
                 } catch (Error e) {
                     warning(e.message);
                 }
@@ -524,5 +531,15 @@ public class CanvasView : Gtk.Widget {
             save_graph_as();
         });
         return save_action;
+    }
+    
+    public GLib.Action create_show_node_chooser_action() {
+        if (this.show_node_chooser_action != null) {
+            return this.show_node_chooser_action;
+        } 
+        
+        this.show_node_chooser_action = new SimpleAction("show_node_chooser", null);
+        show_node_chooser_action.activate.connect(node_chooser.toggle);
+        return show_node_chooser_action;
     }
 }

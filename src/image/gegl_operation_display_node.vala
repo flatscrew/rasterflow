@@ -130,13 +130,7 @@ namespace Image {
                 "Promote as source pad",
                 this.on_property_control_taken
             );
-            properties_editor.populate_properties(
-                () => true,
-                compose_overrides
-            );
-
-            this.data_display_view.add_child(properties_editor);
-            data_display_view.set_margin(10);
+            properties_editor.populate_properties(compose_overrides);
 
             if (properties_editor.has_properties) {
                 scrolled_window.set_child(data_display_view);
@@ -145,6 +139,9 @@ namespace Image {
                 n.resizable = false;
                 base.can_expand = false;
             }
+            
+            this.data_display_view.add_child(properties_editor);
+            data_display_view.set_margin(10);
         }
         
         private void property_changed(string property_name, GLib.Value? property_value) {

@@ -258,5 +258,9 @@ namespace Data {
         public unowned Gtk.MenuButton get_menu_button() {
             return this.menu_button;
         }
+        
+        public void toggle() {
+            menu_button.active = !menu_button.active;
+        }
     }
 }
