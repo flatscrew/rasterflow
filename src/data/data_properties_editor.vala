@@ -309,6 +309,7 @@ namespace Data {
             // TODO make it possible to use a custom icon
             var take_property_control_button = new Gtk.Button.from_icon_name("list-add-symbolic");
             take_property_control_button.valign = Gtk.Align.CENTER;
+            take_property_control_button.focusable = false;
             
             take_property_control_button.add_css_class("flat");
             take_property_control_button.tooltip_text = this.take_control_tooltip;
