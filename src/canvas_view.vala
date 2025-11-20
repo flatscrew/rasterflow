@@ -181,8 +181,6 @@ public class CanvasView : Gtk.Widget {
             return;
         }
         
-        
-        
         double scaled_x, scaled_y;
         zoom_pan_area.child_to_viewport(x, y, out scaled_x, out scaled_y);
         
