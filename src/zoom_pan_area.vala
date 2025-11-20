@@ -269,6 +269,30 @@ public class ZoomPanArea : Gtk.Widget {
         scaled_x = x * zoom;
         scaled_y = y * zoom;
     }
+    
+    public bool child_to_viewport(double x, double y, out double vx, out double vy) {
+        vx = vy = 0;
+        if (child == null)
+            return false;
+    
+        Graphene.Point input = Graphene.Point() {
+            x = (float)x,
+            y = (float)y
+        };
+    
+        Graphene.Point out_p;
+    
+        if (!child.compute_point(this, input, out out_p))
+            return false;
+    
+        var hadj = scrolled.hadjustment;
+        var vadj = scrolled.vadjustment;
+    
+        vx = out_p.x - hadj.get_value();
+        vy = out_p.y - vadj.get_value();
+    
+        return true;
+    }
 
     private class ZoomLayout : Gtk.LayoutManager {
         private weak ZoomPanArea owner;
@@ -289,39 +313,47 @@ public class ZoomPanArea : Gtk.Widget {
             }
 
             int cmin, cnat, d1, d2;
-            owner.child.measure (o, -1, out cmin, out cnat, out d1, out d2);
+            owner.child.measure(o, -1, out cmin, out cnat, out d1, out d2);
 
-            nat = (int)(cnat * owner.zoom);
+            float z = owner.zoom;
+
+            if (o == Gtk.Orientation.HORIZONTAL) {
+                nat = (int)(cnat * z + owner.dynamic_padding_x);
+            } else {
+                nat = (int)(cnat * z + owner.dynamic_padding_y);
+            }
+
             min = nat;
             min_base = nat_base = -1;
         }
         
-        protected override void allocate (Gtk.Widget widget, int width, int height, int baseline) {
+        protected override void allocate(Gtk.Widget widget, int width, int height, int baseline) {
             if (owner.child == null)
                 return;
-
+        
             int cminw, cnatw, cminh, cnath, d1, d2;
-            owner.child.measure (Gtk.Orientation.HORIZONTAL, -1, out cminw, out cnatw, out d1, out d2);
-            owner.child.measure (Gtk.Orientation.VERTICAL, -1, out cminh, out cnath, out d1, out d2);
-
-            float zoom = owner.zoom;
-
-            int scaled_w = (int)(cnatw * zoom);
-            int scaled_h = (int)(cnath * zoom);
-
+            owner.child.measure(Gtk.Orientation.HORIZONTAL, -1, out cminw, out cnatw, out d1, out d2);
+            owner.child.measure(Gtk.Orientation.VERTICAL, -1, out cminh, out cnath, out d1, out d2);
+        
+            float z = owner.zoom;
+        
+            int scaled_w = (int)(cnatw * z + owner.dynamic_padding_x);
+            int scaled_h = (int)(cnath * z + owner.dynamic_padding_y);
+        
             if (scaled_w < width)
-            scaled_w = width;
+                scaled_w = width;
             if (scaled_h < height)
-            scaled_h = height;
-
-            int child_w = (int)(scaled_w / zoom);
-            int child_h = (int)(scaled_h / zoom);
-
-            var transform = new Gsk.Transform ();
-            transform = transform.scale (zoom, zoom);
-
-            owner.child.allocate (child_w, child_h, baseline, transform);
+                scaled_h = height;
+        
+            int child_w = (int)(scaled_w / z);
+            int child_h = (int)(scaled_h / z);
+        
+            var t = new Gsk.Transform();
+            t = t.scale(z, z);
+        
+            owner.child.allocate(child_w, child_h, baseline, t);
         }
+        
         
     }
 }
