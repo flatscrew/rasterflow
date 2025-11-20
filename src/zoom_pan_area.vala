@@ -21,7 +21,7 @@ public class ZoomPanArea : Gtk.Widget {
     
     private double dynamic_padding_x = 0;
     private double dynamic_padding_y = 0;
-    private const double PADDING_STEP = 200.0;
+    private const double PADDING_STEP = 100.0;
 
     public ZoomPanArea (Gtk.ScrolledWindow scrolled_window, Gtk.Widget content,
                         float min_zoom = 0.25f, float max_zoom = 4.0f) {
@@ -89,19 +89,15 @@ public class ZoomPanArea : Gtk.Widget {
                     dynamic_padding_y += PADDING_STEP;
                     changed = true;
                 }
-        
-                if (new_x < 0 && dynamic_padding_x > 0) {
-                    dynamic_padding_x -= PADDING_STEP;
-                    if (dynamic_padding_x < 0)
-                        dynamic_padding_x = 0;
+                
+                if (new_x <= 0 && dynamic_padding_x > 0) {
+                    dynamic_padding_x = 0;
                     changed = true;
                     new_x = 0;
                 }
         
-                if (new_y < 0 && dynamic_padding_y > 0) {
-                    dynamic_padding_y -= PADDING_STEP;
-                    if (dynamic_padding_y < 0)
-                        dynamic_padding_y = 0;
+                if (new_y <= 0 && dynamic_padding_y > 0) {
+                    dynamic_padding_y = 0;
                     changed = true;
                     new_y = 0; 
                 }
@@ -109,7 +105,6 @@ public class ZoomPanArea : Gtk.Widget {
                 if (changed) {
                     queue_resize();
         
-                    // manual clamp for next frame
                     if (new_x < 0) new_x = 0;
                     if (new_y < 0) new_y = 0;
                 }
@@ -274,9 +269,9 @@ public class ZoomPanArea : Gtk.Widget {
             float z = owner.zoom;
 
             if (o == Gtk.Orientation.HORIZONTAL) {
-            nat = (int)(cnat * z + owner.dynamic_padding_x * 2);
+                nat = (int)(cnat * z + owner.dynamic_padding_x * 2);
             } else {
-            nat = (int)(cnat * z + owner.dynamic_padding_y * 2);
+                nat = (int)(cnat * z + owner.dynamic_padding_y * 2);
             }
 
             min = nat;
@@ -304,15 +299,6 @@ public class ZoomPanArea : Gtk.Widget {
                 scaled_h = height;
 
                 
-            // ----------
-            //  int child_w = (int)(scaled_w / zoom);
-            //  int child_h = (int)(scaled_h / zoom);
-
-            //  var transform = new Gsk.Transform ();
-            //  transform = transform.scale (zoom, zoom);
-
-            //  owner.child.allocate (child_w, child_h, baseline, transform);
-            
             int total_w = (int)(cnatw * zoom + owner.dynamic_padding_x * 2);
             int total_h = (int)(cnath * zoom + owner.dynamic_padding_y * 2);
 
