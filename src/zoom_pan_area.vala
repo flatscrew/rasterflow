@@ -243,9 +243,26 @@ public class ZoomPanArea : Gtk.Widget {
         return reset_zoom_button;
     }
     
-    public void scale_coordinates(double x, double y, out double scaled_x, out double scaled_y) {
-        scaled_x = x * zoom;
-        scaled_y = y * zoom;
+    public bool to_child_coords(double x, double y,out double cx, out double cy) {
+        if (child == null) {
+            cx = cy = 0;
+            return false;
+        }
+
+        Graphene.Point in_p = Graphene.Point() {
+            x = (float)x, 
+            y = (float)y
+        };
+        
+        Graphene.Point out_p;
+        if (!compute_point(child, in_p, out out_p)) {
+            cx = cy = 0;
+            return false;
+        }
+
+        cx = out_p.x;
+        cy = out_p.y;
+        return true;
     }
 
     private class ZoomLayout : Gtk.LayoutManager {

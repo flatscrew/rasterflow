@@ -97,12 +97,11 @@ public class CanvasView : Gtk.Widget {
         
         this.data_drop_handler = new DataDropHandler();
         data_drop_handler.file_dropped.connect(this.add_file_data_node);
-        data_drop_handler.text_dropped.connect(this.add_text_data_node);
-        node_view.add_controller(data_drop_handler.data_drop_target);
+        zoom_pan_area.add_controller(data_drop_handler.data_drop_target);
         
         this.property_drop_handler = new PropertyDropHandler();
         property_drop_handler.property_dropped.connect(this.property_dropped);
-        node_view.add_controller(property_drop_handler.data_drop_target);
+        zoom_pan_area.add_controller(property_drop_handler.data_drop_target);
     }
     
     public void setup_popovers() {
@@ -182,16 +181,16 @@ public class CanvasView : Gtk.Widget {
             return;
         }
         
-        double scaled_x, scaled_y;
-        zoom_pan_area.scale_coordinates(x, y, out scaled_x, out scaled_y);
+        double child_x, child_y;
+        zoom_pan_area.to_child_coords(x, y, out child_x, out child_y);
         
-        this.node_x = (int) x;
-        this.node_y = (int) y;
+        this.node_x = (int) child_x;
+        this.node_y = (int) child_y;
         this.source_dock = dock;
         
         connect_source_popover.set_pointing_to({
-            x: (int) scaled_x,
-            y: (int) scaled_y
+            x: (int) x,
+            y: (int) y
         });
         connect_source_popover.popup();
     }
@@ -250,13 +249,12 @@ public class CanvasView : Gtk.Widget {
         changes_recorder.record(new History.RemoveNodeAction(canvas_graph, node, x, y));
     }
     
-    private void add_text_data_node(string text) {
-        debug("Text: %s\n", text);
-    }
-    
     private void property_dropped(CanvasGraphProperty property, double x, double y) {
+        double child_x, child_y;
+        zoom_pan_area.to_child_coords(x, y, out child_x, out child_y);
+        
         var property_n = new CanvasPropertyNode(property); 
-        var property_node = new CanvasPropertyDisplayNode(property_n, (int) x, (int) y);
+        var property_node = new CanvasPropertyDisplayNode(property_n, (int) child_x, (int) child_y);
         
         canvas_graph.add_property_node(property_node);
     }
@@ -297,6 +295,7 @@ public class CanvasView : Gtk.Widget {
     }
     
     private void add_file_data_node(GLib.File file, double x, double y) {
+        
         try {
             var file_info = file.query_info ("*", FileQueryInfoFlags.NONE);
             var mimetype = ContentType.get_mime_type(file_info.get_content_type());
@@ -311,10 +310,10 @@ public class CanvasView : Gtk.Widget {
                 var builder = file_node_builders[0];
                 var node_builder = builder.find_builder(node_factory);
                 try {
-                    double scaled_x, scaled_y;
-                    zoom_pan_area.scale_coordinates(x, y, out scaled_x, out scaled_y);
+                    double child_x, child_y;
+                    zoom_pan_area.to_child_coords(x, y, out child_x, out child_y);
                     
-                    var new_node = node_builder.create((int) x, (int) y);
+                    var new_node = node_builder.create((int) child_x, (int) child_y);
                     canvas_graph.add_node(new_node);
                     builder.apply_file_data(new_node, file, file_info);
                     new_node.init_position();
