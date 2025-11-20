@@ -90,6 +90,22 @@ public class ZoomPanArea : Gtk.Widget {
                     changed = true;
                 }
         
+                if (new_x < 0 && dynamic_padding_x > 0) {
+                    dynamic_padding_x -= PADDING_STEP;
+                    if (dynamic_padding_x < 0)
+                        dynamic_padding_x = 0;
+                    changed = true;
+                    new_x = 0;
+                }
+        
+                if (new_y < 0 && dynamic_padding_y > 0) {
+                    dynamic_padding_y -= PADDING_STEP;
+                    if (dynamic_padding_y < 0)
+                        dynamic_padding_y = 0;
+                    changed = true;
+                    new_y = 0; 
+                }
+                
                 if (changed) {
                     queue_resize();
         

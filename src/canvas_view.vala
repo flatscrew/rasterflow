@@ -186,7 +186,7 @@ public class CanvasView : Gtk.Widget {
         }
         
         double scaled_x, scaled_y;
-        zoomable_area.scale_coordinates(x, y, out scaled_x, out scaled_y);
+        zoom_pan_area.scale_coordinates(x, y, out scaled_x, out scaled_y);
         
         this.node_x = (int) x;
         this.node_y = (int) y;
@@ -315,7 +315,7 @@ public class CanvasView : Gtk.Widget {
                 var node_builder = builder.find_builder(node_factory);
                 try {
                     double scaled_x, scaled_y;
-                    zoomable_area.scale_coordinates(x, y, out scaled_x, out scaled_y);
+                    zoom_pan_area.scale_coordinates(x, y, out scaled_x, out scaled_y);
                     
                     var new_node = node_builder.create((int) x, (int) y);
                     canvas_graph.add_node(new_node);
