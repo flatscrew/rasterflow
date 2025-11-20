@@ -30,10 +30,11 @@ dependencies = [
     dependency('gobject-2.0'),
     dependency('gtk4'),
     dependency('gflow-1.0'),
-    dependency('gtkflow4-0.2'),
+    dependency('gtkflow4-0.2.1'),
     dependency('gee-0.8'),
     dependency('gio-2.0'),
     dependency('json-glib-1.0'),
+    dependency('babl-0.1'),
     dependency('gegl-0.4'),
     dependency('libadwaita-1')
 ]
@@ -109,8 +110,7 @@ vala_sources = [
     'src/canvas_graph_properties_editor.vala',
     'src/add_graph_property_popover.vala',
     'src/colors.vala',
-    'src/panning_scrolled_window.vala',
-    'src/zoomable_area.vala',
+    'src/zoom_pan_area.vala',
 
     # serialization
     'src/serialize/canvas_serializer.vala',
@@ -149,6 +149,7 @@ vala_sources = [
     'src/image/gegl_xml_file_node.vala',
     'src/image/gxml/gxml_export.vala',
     'src/image/color_property.vala',
+    'src/image/babl_format_property.vala',
     'src/image/history/gegl_node_property_control_taken_action.vala',
     'src/image/history/gegl_node_property_control_released_action.vala',
     'src/image/plugin.vala',
@@ -222,5 +223,4 @@ install_data('data/io.flatscrew.RasterFlow.desktop',
 install_data('data/icons/scalable/apps/io.flatscrew.RasterFlow.svg',
              install_dir: join_paths(get_option('datadir'), 'icons/hicolor/scalable/apps'))
 
-# subdir('gegl-docs-generator')
-# subdir('linux-beaver-gegl-plugins')
+subdir('gegl-docs-generator')

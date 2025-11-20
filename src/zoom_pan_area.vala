@@ -1,38 +1,30 @@
-// Copyright (C) 2025 activey
-// 
-// This file is part of RasterFlow.
-// 
-// RasterFlow is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-// 
-// RasterFlow is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// 
-// You should have received a copy of the GNU General Public License
-// along with RasterFlow.  If not, see <https://www.gnu.org/licenses/>.
-
-public class ZoomableArea : Gtk.Widget {
+public class ZoomPanArea : Gtk.Widget {
     public signal void zoom_changed (float new_zoom, float old_zoom);
 
-    private const float ZOOM_TICK = 0.01f;
+    private const float ZOOM_TICK = 0.02f;
     
     private Gtk.Widget? child;
     private Gtk.ScrolledWindow scrolled;
     private Gtk.EventControllerScroll scroll_controller;
+    private Gtk.EventControllerMotion motion_controller;
+    private Gtk.GestureClick click_controller;
+
     private float zoom;
     private float min_zoom;
     private float max_zoom;
     private bool internal_adjustment;
     private bool mouse_initiated_zoom = false;
+
+    private bool panning = false;
     private double last_mouse_x;
     private double last_mouse_y;
+    
+    private double dynamic_padding_x = 0;
+    private double dynamic_padding_y = 0;
+    private const double PADDING_STEP = 100.0;
 
-    public ZoomableArea (Gtk.ScrolledWindow scrolled_window, Gtk.Widget content,
-                         float min_zoom = 0.25f, float max_zoom = 4.0f) {
+    public ZoomPanArea (Gtk.ScrolledWindow scrolled_window, Gtk.Widget content,
+                        float min_zoom = 0.25f, float max_zoom = 4.0f) {
         this.scrolled = scrolled_window;
         this.min_zoom = min_zoom;
         this.max_zoom = max_zoom;
@@ -40,10 +32,12 @@ public class ZoomableArea : Gtk.Widget {
         
         this.set_layout_manager(new ZoomLayout (this));
         scrolled_window.set_child(this);
+        scrolled_window.set_kinetic_scrolling(false);
         set_content(content);
 
         setup_scroll_controller();
         setup_motion_controller();
+        setup_click_controller();
     }
 
     private void setup_scroll_controller() {
@@ -67,11 +61,84 @@ public class ZoomableArea : Gtk.Widget {
     }
 
     private void setup_motion_controller() {
-        var motion_controller = new Gtk.EventControllerMotion ();
+        this.motion_controller = new Gtk.EventControllerMotion ();
         scrolled.add_controller (motion_controller);
-        motion_controller.motion.connect((x, y) => {
+        
+        motion_controller.motion.connect(this.perform_motion);
+    }
+    
+    private void perform_motion(double x, double y) {
+        if (!panning) {
+            return;
+        }
+        
+        double dx = x - last_mouse_x;
+        double dy = y - last_mouse_y;
+
+        var hadj = scrolled.hadjustment;
+        var vadj = scrolled.vadjustment;
+
+        double new_x = hadj.get_value() - dx;
+        double new_y = vadj.get_value() - dy;
+
+        bool changed = false;
+
+        double right_limit = hadj.get_upper() - hadj.get_page_size();
+        double bottom_limit = vadj.get_upper() - vadj.get_page_size();
+
+        if (new_x > right_limit) {
+            dynamic_padding_x += PADDING_STEP;
+            changed = true;
+        }
+
+        if (new_y > bottom_limit) {
+            dynamic_padding_y += PADDING_STEP;
+            changed = true;
+        }
+        
+        if (new_x <= 0 && dynamic_padding_x > 0) {
+            dynamic_padding_x = 0;
+            changed = true;
+            new_x = 0;
+        }
+
+        if (new_y <= 0 && dynamic_padding_y > 0) {
+            dynamic_padding_y = 0;
+            changed = true;
+            new_y = 0; 
+        }
+        
+        if (changed) {
+            queue_resize();
+
+            if (new_x < 0) new_x = 0;
+            if (new_y < 0) new_y = 0;
+        }
+
+        hadj.set_value(new_x);
+        vadj.set_value(new_y);
+    
+        last_mouse_x = x;
+        last_mouse_y = y;
+    }
+
+    private void setup_click_controller() {
+        click_controller = new Gtk.GestureClick ();
+        click_controller.button = Gdk.BUTTON_MIDDLE;
+        scrolled.add_controller(click_controller);
+
+        click_controller.pressed.connect((button, x, y) => {
+            var mods = click_controller.get_current_event_state();
+            if ((mods & Gdk.ModifierType.CONTROL_MASK) == 0)
+                return;
+            
+            panning = true;
             last_mouse_x = x;
             last_mouse_y = y;
+        });
+
+        click_controller.released.connect((button, x, y) => {
+            panning = false;
         });
     }
 
@@ -82,14 +149,6 @@ public class ZoomableArea : Gtk.Widget {
         this.child = c;
         this.child.set_parent (this);
         this.queue_resize ();
-    }
-
-    protected override void dispose () {
-        if (this.child != null) {
-            this.child.unparent ();
-            this.child = null;
-        }
-        base.dispose ();
     }
 
     public void zoom_in () {
@@ -108,56 +167,49 @@ public class ZoomableArea : Gtk.Widget {
         float old = zoom;
         zoom = z.clamp (min_zoom, max_zoom);
         queue_resize ();
-        zoom_changed (zoom, old);
 
         do_zoom_changed(zoom, old);
 
-        child.queue_resize();
-        child.queue_allocate();
+        if (child != null) {
+            child.queue_resize();
+            child.queue_allocate();
+        }
     }
 
     private void do_zoom_changed(double new_zoom, double old_zoom) {
         zoom_changed((float) new_zoom, (float) old_zoom);
 
         if (mouse_initiated_zoom) {
-            // Current position of the viewport
             double viewport_x = scrolled.hadjustment.get_value();
             double viewport_y = scrolled.vadjustment.get_value();
 
-            // Calculate the mouse's position on the image (before zooming)
             double image_x_before = viewport_x + last_mouse_x;
             double image_y_before = viewport_y + last_mouse_y;
 
-            // Find out where that point will be after zooming
             double image_x_after = (image_x_before / old_zoom) * new_zoom;
             double image_y_after = (image_y_before / old_zoom) * new_zoom;
 
-            // Calculate the change in position
             double delta_x = image_x_after - image_x_before;
             double delta_y = image_y_after - image_y_before;
 
-            // Adjust the viewport
             scrolled.hadjustment.set_value(viewport_x + delta_x);
             scrolled.vadjustment.set_value(viewport_y + delta_y);
             mouse_initiated_zoom = false;
             return;
         }
 
-        var allocated_width = scrolled.get_allocated_width();
-        var allocated_height = scrolled.get_allocated_height();
+        var allocated_width = scrolled.get_width();
+        var allocated_height = scrolled.get_height();
 
         double viewport_center_x = scrolled.hadjustment.get_value() + allocated_width / 2.0;
         double viewport_center_y = scrolled.vadjustment.get_value() + allocated_height / 2.0;
     
-        // Calculate the center coordinates in relation to the image.
         double image_center_x = viewport_center_x / old_zoom;
         double image_center_y = viewport_center_y / old_zoom;
     
-        // Calculate new offsets to keep the center.
         double new_offset_x = image_center_x * new_zoom - allocated_width / 2.0;
         double new_offset_y = image_center_y * new_zoom - allocated_height / 2.0;
     
-        // Apply the new offsets.
         scrolled.hadjustment.set_value(new_offset_x);
         scrolled.vadjustment.set_value(new_offset_y);
     }
@@ -167,6 +219,7 @@ public class ZoomableArea : Gtk.Widget {
         var scale_widget = new Gtk.Scale(Gtk.Orientation.HORIZONTAL, adjustment);
         scale_widget.set_value(1);
         scale_widget.set_size_request(150, -1);
+
         scale_widget.value_changed.connect(() => {
             if (internal_adjustment) {
                 internal_adjustment = false;
@@ -174,10 +227,12 @@ public class ZoomableArea : Gtk.Widget {
             }
             this.update_zoom((float) adjustment.get_value());
         });
-        zoom_changed.connect(zoom_value => {
+
+        zoom_changed.connect((new_zoom, old_zoom) => {
             internal_adjustment = true;
-            adjustment.set_value(zoom_value);
+            adjustment.set_value(new_zoom);
         });
+
         return scale_widget;
     }
 
@@ -187,15 +242,61 @@ public class ZoomableArea : Gtk.Widget {
         reset_zoom_button.clicked.connect(this.reset_zoom);
         return reset_zoom_button;
     }
+    
+    public bool to_child_coords(double x, double y,out double cx, out double cy) {
+        if (child == null) {
+            cx = cy = 0;
+            return false;
+        }
+
+        Graphene.Point in_p = Graphene.Point() {
+            x = (float)x, 
+            y = (float)y
+        };
+        
+        Graphene.Point out_p;
+        if (!compute_point(child, in_p, out out_p)) {
+            cx = cy = 0;
+            return false;
+        }
+
+        cx = out_p.x;
+        cy = out_p.y;
+        return true;
+    }
+    
+    public bool child_to_viewport(double x, double y, out double vx, out double vy) {
+        vx = vy = 0;
+        if (child == null)
+            return false;
+    
+        Graphene.Point input = Graphene.Point() {
+            x = (float)x,
+            y = (float)y
+        };
+    
+        Graphene.Point out_p;
+    
+        if (!child.compute_point(this, input, out out_p))
+            return false;
+    
+        var hadj = scrolled.hadjustment;
+        var vadj = scrolled.vadjustment;
+    
+        vx = out_p.x - hadj.get_value();
+        vy = out_p.y - vadj.get_value();
+    
+        return true;
+    }
 
     private class ZoomLayout : Gtk.LayoutManager {
-        private weak ZoomableArea owner;
+        private weak ZoomPanArea owner;
 
-        public ZoomLayout (ZoomableArea owner) {
+        public ZoomLayout (ZoomPanArea owner) {
             this.owner = owner;
         }
 
-        protected override void measure (Gtk.Widget widget,
+        protected override void measure(Gtk.Widget widget,
                                         Gtk.Orientation o,
                                         int for_size,
                                         out int min, out int nat,
@@ -207,41 +308,47 @@ public class ZoomableArea : Gtk.Widget {
             }
 
             int cmin, cnat, d1, d2;
-            owner.child.measure (o, -1, out cmin, out cnat, out d1, out d2);
+            owner.child.measure(o, -1, out cmin, out cnat, out d1, out d2);
 
-            // layout zgłasza: naturalny rozmiar po zoomie
-            nat = (int)(cnat * owner.zoom);
+            float z = owner.zoom;
+
+            if (o == Gtk.Orientation.HORIZONTAL) {
+                nat = (int)(cnat * z + owner.dynamic_padding_x);
+            } else {
+                nat = (int)(cnat * z + owner.dynamic_padding_y);
+            }
+
             min = nat;
             min_base = nat_base = -1;
         }
-
-        protected override void allocate (Gtk.Widget widget,
-                                  int width, int height,
-                                  int baseline) {
+        
+        protected override void allocate(Gtk.Widget widget, int width, int height, int baseline) {
             if (owner.child == null)
                 return;
-
+        
             int cminw, cnatw, cminh, cnath, d1, d2;
-            owner.child.measure (Gtk.Orientation.HORIZONTAL, -1, out cminw, out cnatw, out d1, out d2);
-            owner.child.measure (Gtk.Orientation.VERTICAL, -1, out cminh, out cnath, out d1, out d2);
-
-            float zoom = owner.zoom;
-
-            int scaled_w = (int)(cnatw * zoom);
-            int scaled_h = (int)(cnath * zoom);
-
+            owner.child.measure(Gtk.Orientation.HORIZONTAL, -1, out cminw, out cnatw, out d1, out d2);
+            owner.child.measure(Gtk.Orientation.VERTICAL, -1, out cminh, out cnath, out d1, out d2);
+        
+            float z = owner.zoom;
+        
+            int scaled_w = (int)(cnatw * z + owner.dynamic_padding_x);
+            int scaled_h = (int)(cnath * z + owner.dynamic_padding_y);
+        
             if (scaled_w < width)
                 scaled_w = width;
             if (scaled_h < height)
                 scaled_h = height;
-
-            int child_w = (int)(scaled_w / zoom);
-            int child_h = (int)(scaled_h / zoom);
-
-            var transform = new Gsk.Transform ();
-            transform = transform.scale (zoom, zoom);
-
-            owner.child.allocate (child_w, child_h, baseline, transform);
+        
+            int child_w = (int)(scaled_w / z);
+            int child_h = (int)(scaled_h / z);
+        
+            var t = new Gsk.Transform();
+            t = t.scale(z, z);
+        
+            owner.child.allocate(child_w, child_h, baseline, t);
         }
+        
+        
     }
 }

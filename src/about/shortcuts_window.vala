@@ -25,7 +25,12 @@ public class AppShortcutsWindowInstance : Object {
     
     public Gtk.ShortcutsWindow use_with(Gtk.Window parent) {
         var builder = new Gtk.Builder();
-        builder.add_from_string(xml, -1);
+        try {
+            builder.add_from_string(xml, -1);
+        } catch (Error error) {
+            warning("Error happened while creating shortcuts window: %s".printf(error.message));
+        }
+        
         var window = builder.get_object("shortcuts_window") as Gtk.ShortcutsWindow;
         window.set_transient_for(parent);
         return window;

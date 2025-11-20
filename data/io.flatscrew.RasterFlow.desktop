@@ -1,5 +1,5 @@
 [Desktop Entry]
-Version=0.1.0
+Version=0.1.3
 Type=Application
 Name=RasterFlow
 Comment=Graph-based image processing with GTK4 and GEGL
