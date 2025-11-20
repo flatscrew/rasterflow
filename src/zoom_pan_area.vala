@@ -61,62 +61,65 @@ public class ZoomPanArea : Gtk.Widget {
     }
 
     private void setup_motion_controller() {
-        motion_controller = new Gtk.EventControllerMotion ();
+        this.motion_controller = new Gtk.EventControllerMotion ();
         scrolled.add_controller (motion_controller);
         
-        motion_controller.motion.connect((x, y) => {
-            if (panning) {
-                double dx = x - last_mouse_x;
-                double dy = y - last_mouse_y;
+        motion_controller.motion.connect(this.perform_motion);
+    }
+    
+    private void perform_motion(double x, double y) {
+        if (!panning) {
+            return;
+        }
         
-                var hadj = scrolled.hadjustment;
-                var vadj = scrolled.vadjustment;
+        double dx = x - last_mouse_x;
+        double dy = y - last_mouse_y;
+
+        var hadj = scrolled.hadjustment;
+        var vadj = scrolled.vadjustment;
+
+        double new_x = hadj.get_value() - dx;
+        double new_y = vadj.get_value() - dy;
+
+        bool changed = false;
+
+        double right_limit = hadj.get_upper() - hadj.get_page_size();
+        double bottom_limit = vadj.get_upper() - vadj.get_page_size();
+
+        if (new_x > right_limit) {
+            dynamic_padding_x += PADDING_STEP;
+            changed = true;
+        }
+
+        if (new_y > bottom_limit) {
+            dynamic_padding_y += PADDING_STEP;
+            changed = true;
+        }
         
-                double new_x = hadj.get_value() - dx;
-                double new_y = vadj.get_value() - dy;
+        if (new_x <= 0 && dynamic_padding_x > 0) {
+            dynamic_padding_x = 0;
+            changed = true;
+            new_x = 0;
+        }
+
+        if (new_y <= 0 && dynamic_padding_y > 0) {
+            dynamic_padding_y = 0;
+            changed = true;
+            new_y = 0; 
+        }
         
-                bool changed = false;
-        
-                double right_limit = hadj.get_upper() - hadj.get_page_size();
-                double bottom_limit = vadj.get_upper() - vadj.get_page_size();
-        
-                if (new_x > right_limit) {
-                    dynamic_padding_x += PADDING_STEP;
-                    changed = true;
-                }
-        
-                if (new_y > bottom_limit) {
-                    dynamic_padding_y += PADDING_STEP;
-                    changed = true;
-                }
-                
-                if (new_x <= 0 && dynamic_padding_x > 0) {
-                    dynamic_padding_x = 0;
-                    changed = true;
-                    new_x = 0;
-                }
-        
-                if (new_y <= 0 && dynamic_padding_y > 0) {
-                    dynamic_padding_y = 0;
-                    changed = true;
-                    new_y = 0; 
-                }
-                
-                if (changed) {
-                    queue_resize();
-        
-                    if (new_x < 0) new_x = 0;
-                    if (new_y < 0) new_y = 0;
-                }
-        
-                hadj.set_value(new_x);
-                vadj.set_value(new_y);
-            }
-        
-            last_mouse_x = x;
-            last_mouse_y = y;
-        });
-        
+        if (changed) {
+            queue_resize();
+
+            if (new_x < 0) new_x = 0;
+            if (new_y < 0) new_y = 0;
+        }
+
+        hadj.set_value(new_x);
+        vadj.set_value(new_y);
+    
+        last_mouse_x = x;
+        last_mouse_y = y;
     }
 
     private void setup_click_controller() {
