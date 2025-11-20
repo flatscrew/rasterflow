@@ -64,7 +64,7 @@ jobs:
       - name: Clone libgtkflow4
         shell: bash
         run: |
-          git clone --tags --branch v0.2 https://github.com/flatscrew/libgtkflow4
+          git clone --tags --branch v0.2.1 https://github.com/flatscrew/libgtkflow4
 
       - name: Build and install libgtkflow4
         shell: msys2 {0}

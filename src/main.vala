@@ -138,11 +138,13 @@ class CanvasApplication : Adw.Application {
     
     this.shortcuts_window = new AppShortcutsWindowBuilder(this.window)
         .new_section("General")
+            .new_group("General")
+              .add("Save current graph", "<Ctrl>s")
+            .end_group()
             .new_group("Editing")
                 .add("Show node chooser", "<Ctrl>k")
                 .add("Undo last operation", "<Ctrl>z")
                 .add("Redo last operation", "<Ctrl><Shift>z")
-                .add("Save current graph", "<Ctrl>s")
             .end_group()
         .end_section()
         .build();

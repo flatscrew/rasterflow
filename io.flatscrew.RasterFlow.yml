@@ -50,7 +50,7 @@ modules:
     sources:
       - type: git
         url: https://github.com/flatscrew/libgtkflow4
-        tag: v0.2
+        tag: v0.2.1
   - name: libportal
     buildsystem: meson
     config-opts:

@@ -220,7 +220,7 @@ namespace Data {
             popover.set_offset(-5, 0);
             
             this.menu_button = new Gtk.MenuButton();
-            menu_button.set_tooltip_text("Add operation node");
+            menu_button.set_tooltip_text("Add operation node (Ctrl+K)");
             menu_button.set_child(new Gtk.Image.from_icon_name("insert-object-symbolic"));
             menu_button.set_popover(popover);
             menu_button.add_css_class("button");
