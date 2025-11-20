@@ -30,8 +30,7 @@ public class CanvasView : Gtk.Widget {
     private Gtk.Box node_view_box;
     private Adw.OverlaySplitView main_view;
     private Gtk.ScrolledWindow scrolled_window;
-    private ScrollPanner scroll_panner;
-    private ZoomableArea zoomable_area;
+    private ZoomPanArea zoom_pan_area;
     private GtkFlow.NodeView node_view;
 
     private Data.DataNodeChooser node_chooser;
@@ -173,8 +172,8 @@ public class CanvasView : Gtk.Widget {
         node_view_overlay.set_child(scrolled_window);
         this.node_view_box.append(node_view_overlay);
         
-        this.scroll_panner = new ScrollPanner();
-        scroll_panner.enable_panning(scrolled_window);
+        //  this.scroll_panner = new ScrollPanner();
+        //  scroll_panner.enable_panning(scrolled_window);
 
         create_zoom_control_overlay();
     }
@@ -196,12 +195,12 @@ public class CanvasView : Gtk.Widget {
     }
 
     private void create_zoom_control_overlay() {
-        this.zoomable_area = new ZoomableArea(scrolled_window, node_view);
+        this.zoom_pan_area = new ZoomPanArea(scrolled_window, node_view);
 
-        var scale_widget = zoomable_area.create_scale_widget();
+        var scale_widget = zoom_pan_area.create_scale_widget();
         scale_widget.set_can_focus(false);
 
-        var reset_scale = zoomable_area.create_reset_scale_button();
+        var reset_scale = zoom_pan_area.create_reset_scale_button();
         var control_box = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 5);
         control_box.append(scale_widget);
         control_box.append(reset_scale);
