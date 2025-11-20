@@ -265,11 +265,6 @@ public class ZoomPanArea : Gtk.Widget {
         return true;
     }
     
-    public void scale_coordinates(double x, double y, out double scaled_x, out double scaled_y) {
-        scaled_x = x * zoom;
-        scaled_y = y * zoom;
-    }
-    
     public bool child_to_viewport(double x, double y, out double vx, out double vy) {
         vx = vy = 0;
         if (child == null)
