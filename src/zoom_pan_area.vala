@@ -264,6 +264,11 @@ public class ZoomPanArea : Gtk.Widget {
         cy = out_p.y;
         return true;
     }
+    
+    public void scale_coordinates(double x, double y, out double scaled_x, out double scaled_y) {
+        scaled_x = x * zoom;
+        scaled_y = y * zoom;
+    }
 
     private class ZoomLayout : Gtk.LayoutManager {
         private weak ZoomPanArea owner;
@@ -277,30 +282,21 @@ public class ZoomPanArea : Gtk.Widget {
                                         int for_size,
                                         out int min, out int nat,
                                         out int min_base, out int nat_base) {
-        if (owner.child == null) {
-            min = nat = 0;
-            min_base = nat_base = -1;
-            return;
-        }
-
-            int cmin, cnat, d1, d2;
-            owner.child.measure(o, -1, out cmin, out cnat, out d1, out d2);
-
-            float z = owner.zoom;
-
-            if (o == Gtk.Orientation.HORIZONTAL) {
-                nat = (int)(cnat * z + owner.dynamic_padding_x * 2);
-            } else {
-                nat = (int)(cnat * z + owner.dynamic_padding_y * 2);
+            if (owner.child == null) {
+                min = nat = 0;
+                min_base = nat_base = -1;
+                return;
             }
 
+            int cmin, cnat, d1, d2;
+            owner.child.measure (o, -1, out cmin, out cnat, out d1, out d2);
+
+            nat = (int)(cnat * owner.zoom);
             min = nat;
             min_base = nat_base = -1;
         }
-
-        protected override void allocate (Gtk.Widget widget,
-                                          int width, int height,
-                                          int baseline) {
+        
+        protected override void allocate (Gtk.Widget widget, int width, int height, int baseline) {
             if (owner.child == null)
                 return;
 
@@ -314,21 +310,18 @@ public class ZoomPanArea : Gtk.Widget {
             int scaled_h = (int)(cnath * zoom);
 
             if (scaled_w < width)
-                scaled_w = width;
+            scaled_w = width;
             if (scaled_h < height)
-                scaled_h = height;
+            scaled_h = height;
 
-                
-            int total_w = (int)(cnatw * zoom + owner.dynamic_padding_x * 2);
-            int total_h = (int)(cnath * zoom + owner.dynamic_padding_y * 2);
-
-            int cw = (int)(total_w / zoom);
-            int ch = (int)(total_h / zoom);
+            int child_w = (int)(scaled_w / zoom);
+            int child_h = (int)(scaled_h / zoom);
 
             var transform = new Gsk.Transform ();
             transform = transform.scale (zoom, zoom);
 
-            owner.child.allocate (cw, ch, baseline, transform);
+            owner.child.allocate (child_w, child_h, baseline, transform);
         }
+        
     }
 }

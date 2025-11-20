@@ -181,16 +181,16 @@ public class CanvasView : Gtk.Widget {
             return;
         }
         
-        double child_x, child_y;
-        zoom_pan_area.to_child_coords(x, y, out child_x, out child_y);
+        double scaled_x, scaled_y;
+        zoom_pan_area.scale_coordinates(x, y, out scaled_x, out scaled_y);
         
-        this.node_x = (int) child_x;
-        this.node_y = (int) child_y;
+        this.node_x = (int) x;
+        this.node_y = (int) y;
         this.source_dock = dock;
         
         connect_source_popover.set_pointing_to({
-            x: (int) x,
-            y: (int) y
+            x: (int) scaled_x,
+            y: (int) scaled_y
         });
         connect_source_popover.popup();
     }
