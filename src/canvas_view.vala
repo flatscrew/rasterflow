@@ -174,9 +174,6 @@ public class CanvasView : Gtk.Widget {
         node_view_overlay.set_child(scrolled_window);
         this.node_view_box.append(node_view_overlay);
         
-        //  this.scroll_panner = new ScrollPanner();
-        //  scroll_panner.enable_panning(scrolled_window);
-
         create_zoom_control_overlay();
     }
     
