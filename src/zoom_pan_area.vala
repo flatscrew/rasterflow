@@ -228,6 +228,11 @@ public class ZoomPanArea : Gtk.Widget {
         reset_zoom_button.clicked.connect(this.reset_zoom);
         return reset_zoom_button;
     }
+    
+    public void scale_coordinates(double x, double y, out double scaled_x, out double scaled_y) {
+        scaled_x = x * zoom;
+        scaled_y = y * zoom;
+    }
 
     private class ZoomLayout : Gtk.LayoutManager {
         private weak ZoomPanArea owner;

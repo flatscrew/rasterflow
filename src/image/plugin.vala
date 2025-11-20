@@ -37,6 +37,13 @@ private Gtk.Widget gegl_load_title_override(Gegl.Operation operation) {
     return label;
 }
 
+private Gtk.Widget gegl_save_title_override(Gegl.Operation operation) {
+    var label = new Gtk.Label("Save file");
+    label.ellipsize = Pango.EllipsizeMode.MIDDLE;
+    label.set_size_request(120, -1);
+    return label;
+}
+
 private GLib.ListStore build_pixbuf_filters() {
     var filters = new GLib.ListStore(typeof(Gtk.FileFilter));
 
@@ -139,7 +146,7 @@ public string initialize_image_plugin(Plugin.PluginContribution plugin_contribut
         });
     });
     Image.GeglOperationOverrides.override_operation("gegl:save", overrides => {
-        overrides.override_title(gegl_load_title_override);
+        overrides.override_title(gegl_save_title_override);
         overrides.override_property("path", (param_spec) => {
             var filters = build_pixbuf_filters();
             return new Data.SaveFileLocationProperty.with_file_filters(param_spec as ParamSpecString, filters);
@@ -153,6 +160,12 @@ public string initialize_image_plugin(Plugin.PluginContribution plugin_contribut
             display_node.add_action_bar_child_start(image_view.create_save_button());
             display_node.add_action_bar_child_end(image_view.create_zoom_control());
             return image_view;
+        });
+    });
+    
+    Image.GeglOperationOverrides.override_operation("gegl:convert-format", overrides => {
+        overrides.override_property("format", (param_spec) => {
+            return new Image.FormatProperty(param_spec as ParamSpecPointer);
         });
     });
     

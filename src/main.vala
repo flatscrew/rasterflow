@@ -32,7 +32,6 @@ class CanvasApplication : Adw.Application {
   private AppShortcutsWindowInstance shortcuts_window;
   private About.AboutDialog about_dialog;
   private About.AboutRegistry about_registry;
-
   
   construct {
     base.application_id = "io.flatscrew.RasterFlow";
@@ -127,17 +126,20 @@ class CanvasApplication : Adw.Application {
     actions.add_action(create_undo_action());
     actions.add_action(create_redo_action());
     actions.add_action(canvas_view.create_save_action());
+    actions.add_action(canvas_view.create_show_node_chooser_action());
     actions.add_action(create_window_resize_action(window));
     window.insert_action_group("app", actions);
     
     set_accels_for_action("app.undo", { "<Control>z" });
     set_accels_for_action("app.redo", { "<Control><Shift>z" });
     set_accels_for_action("app.save", { "<Control>s" });
+    set_accels_for_action("app.show_node_chooser", { "<Control>k" });
     set_accels_for_action("app.window_resize", { "<Control><Shift><Alt>q" });
     
     this.shortcuts_window = new AppShortcutsWindowBuilder(this.window)
         .new_section("General")
             .new_group("Editing")
+                .add("Show node chooser", "<Ctrl>k")
                 .add("Undo last operation", "<Ctrl>z")
                 .add("Redo last operation", "<Ctrl><Shift>z")
                 .add("Save current graph", "<Ctrl>s")
@@ -233,7 +235,10 @@ class CanvasApplication : Adw.Application {
 
     var nodes_properties_box = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 0);
     nodes_properties_box.add_css_class("linked");
-    nodes_properties_box.append(canvas_view.create_node_chooser().get_menu_button());
+    
+    var node_chooser = canvas_view.create_node_chooser();
+    
+    nodes_properties_box.append(node_chooser.get_menu_button());
     nodes_properties_box.append(canvas_view.create_properties_toggle());
     headerbar.pack_start(nodes_properties_box);
 

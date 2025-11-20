@@ -179,7 +179,7 @@ public class CanvasDisplayNode : GtkFlow.Node {
 
     public bool can_expand {
         set {
-            details_view.sensitive = value;
+            details_view.visible = value;
         }
     }
     
