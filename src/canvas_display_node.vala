@@ -285,7 +285,7 @@ public class CanvasDisplayNode : GtkFlow.Node {
         };
         
         if (new_width == 0 && new_height == 0) {
-            // TODO why is this happening?    
+            // FIXME why is this happening?    
             return;
         }
         
