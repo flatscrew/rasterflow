@@ -162,10 +162,9 @@ public class CanvasView : Gtk.Widget {
         node_view.dock_connection_missed.connect(choose_node_and_connect_dock);
         
         this.scrolled_window = new Gtk.ScrolledWindow();
-        scrolled_window.set_kinetic_scrolling(false);
-        scrolled_window.set_policy(Gtk.PolicyType.EXTERNAL, Gtk.PolicyType.EXTERNAL);
-        scrolled_window.add_css_class("canvas_view");
         scrolled_window.vexpand = scrolled_window.hexpand = true;
+        scrolled_window.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC);
+        scrolled_window.add_css_class("canvas_view");
         
         this.node_view_overlay = new Gtk.Overlay();
         node_view_overlay.set_hexpand(true);
