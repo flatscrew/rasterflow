@@ -80,7 +80,7 @@ namespace Data {
 
     class DataPropertyWrapper : Gtk.Widget {
 
-        public signal void property_value_changed(string property_name, GLib.Value property_value);
+        public signal void property_value_changed(string property_name, GLib.Value? property_value);
 
         private AbstractDataProperty? property_widget;
         
@@ -123,7 +123,7 @@ namespace Data {
             property_widget.set_value_from_model(new_value);
         }
         
-        private void property_changed(string property_name, GLib.Value property_value) {
+        private void property_changed(string property_name, GLib.Value? property_value) {
             property_value_changed(property_name, property_value);
         }
     }
@@ -360,17 +360,29 @@ namespace Data {
             var pspec = data_object.get_class().find_property(property_name);
             if (pspec == null)
                 return;
-
+        
             GLib.Value old_value = GLib.Value(pspec.value_type);
             data_object.get_property(property_name, ref old_value);
-            data_object.set_property(property_name, property_value);
-
+        
+            GLib.Value new_value;
+        
+            if (property_value == null) {
+                new_value = GLib.Value(pspec.value_type);
+                var default_value = pspec.get_default_value();
+                new_value.copy(ref default_value);
+            } else {
+                new_value = property_value;
+            }
+        
+            data_object.set_property(property_name, new_value);
+        
             history_recorder.record(
-                new History.ChangePropertyAction(data_object, property_name, old_value, property_value)
+                new History.ChangePropertyAction(data_object, property_name, old_value, new_value)
             );
-
-            this.data_property_changed(property_name, property_value);
+        
+            this.data_property_changed(property_name, new_value);
         }
+        
 
         private Gtk.Label property_label(GLib.ParamSpec param_spec, bool multiline = false) {
             var name = param_spec.get_nick();

@@ -121,7 +121,7 @@ public class ZoomPanArea : Gtk.Widget {
         last_mouse_x = x;
         last_mouse_y = y;
     }
-
+    
     private void setup_click_controller() {
         click_controller = new Gtk.GestureClick ();
         click_controller.button = Gdk.BUTTON_MIDDLE;
@@ -348,7 +348,5 @@ public class ZoomPanArea : Gtk.Widget {
         
             owner.child.allocate(child_w, child_h, baseline, t);
         }
-        
-        
     }
 }

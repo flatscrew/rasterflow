@@ -22,7 +22,7 @@ namespace Data {
             set_layout_manager(new Gtk.BinLayout());
         }
 
-        internal signal void changed(string name, GLib.Value value);
+        internal signal void changed(string name, GLib.Value? value);
         
         internal GLib.ParamSpec param_spec;
         internal bool multiline {
@@ -45,7 +45,7 @@ namespace Data {
             set_halign(Gtk.Align.START);
         }
 
-        protected void property_value_changed(GLib.Value new_value) {
+        protected void property_value_changed(GLib.Value? new_value) {
             if (!publish_changes) {
                 return;
             }
@@ -65,7 +65,7 @@ namespace Data {
         internal virtual void set_property_value(GLib.Value value) {
 
         }
-
+        
         protected void set_child(Gtk.Widget child) {
             child.set_parent(this);
         }

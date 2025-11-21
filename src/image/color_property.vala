@@ -18,7 +18,7 @@
 namespace Image {
     public class ColorProperty : Data.AbstractDataProperty {
         private Gtk.Box box;
-        private Gtk.ColorButton color_button;
+        private Gtk.ColorDialogButton color_dialog_button;
         private Gtk.ToggleButton prober_button;
 
         ~ColorProperty() {
@@ -28,16 +28,30 @@ namespace Image {
         public ColorProperty(ParamSpec color_specs) {
             base(color_specs);
             box = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 6);
-            color_button = new Gtk.ColorButton();
             
-            color_button.set_use_alpha(true);
-            box.append(color_button);
+            var dialog = new Gtk.ColorDialog();
+            color_dialog_button = new Gtk.ColorDialogButton(dialog);
+            color_dialog_button.set_tooltip_text("Pick color (Ctrl+Click to reset)");
+            
+            var gesture = new Gtk.GestureClick();
+            gesture.set_propagation_phase(Gtk.PropagationPhase.CAPTURE);
+            gesture.pressed.connect((n_press, x, y) => {
+                var state = gesture.get_current_event_state();
+                if ((state & Gdk.ModifierType.CONTROL_MASK) != 0) {
+                    gesture.set_state(Gtk.EventSequenceState.CLAIMED);
+                    property_value_changed(null);
+                }
+            });
+            color_dialog_button.add_controller(gesture);
+            
+            box.append(color_dialog_button);
             box.set_parent(this);
 #if LINUX
             create_color_prober();
 #endif
-            color_button.color_set.connect(() => {
-                var rgba = color_button.rgba;
+            
+            color_dialog_button.notify["rgba"].connect(() => {
+                var rgba = color_dialog_button.get_rgba();
                 double r = rgba.red;
                 double g = rgba.green;
                 double b = rgba.blue;
@@ -79,7 +93,7 @@ namespace Image {
                 blue = (float)b,
                 alpha = 1.0f
             };
-            color_button.set_rgba(rgba);
+            color_dialog_button.set_rgba(rgba);
 
             var color_str = "rgba(%s,%s,%s,%s)".printf(
                 color_part(r), color_part(g), color_part(b), color_part(1.0)
@@ -103,7 +117,7 @@ namespace Image {
                 blue = (float)b,
                 alpha = (float)a
             };
-            color_button.set_rgba(gdk_color);
+            color_dialog_button.set_rgba(gdk_color);
         }
     }
 }
