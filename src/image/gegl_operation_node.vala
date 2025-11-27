@@ -194,12 +194,23 @@ namespace Image {
         }
 
         private void create_sinks() {
-            foreach (string padname in gegl_node.list_input_pads()) {
+            var order = new Gee.ArrayList<string>.wrap(
+                {"input", "aux"}
+            );
+            var pads = new Gee.ArrayList<string>.wrap(gegl_node.list_input_pads());
+            
+            pads.sort((a, b) => {
+                int ai = order.index_of(a);
+                int bi = order.index_of(b);
+                if (ai < 0) ai = int.MAX;
+                if (bi < 0) bi = int.MAX;
+                return ai - bi;
+            });
+            
+            foreach (var padname in pads) {
                 var sink = new PadSink(gegl_node, padname);
                 sink.name = padname[0].to_string().up().concat(padname.substring(1));
-                // TODO is this below necessary?
-                // sink.updated.connect(this.process_gegl);
-                this.add_sink(sink);
+                add_sink(sink);
             }
         }
 
