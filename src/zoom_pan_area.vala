@@ -1,7 +1,8 @@
 public class ZoomPanArea : Gtk.Widget {
     public signal void zoom_changed (float new_zoom, float old_zoom);
 
-    private const float ZOOM_TICK = 0.02f;
+    private const float ZOOM_TICK = 0.01f;
+    private const double PADDING_STEP = 200.0;
     
     private Gtk.Widget? child;
     private Gtk.ScrolledWindow scrolled;
@@ -21,7 +22,6 @@ public class ZoomPanArea : Gtk.Widget {
     
     private double dynamic_padding_x = 0;
     private double dynamic_padding_y = 0;
-    private const double PADDING_STEP = 100.0;
 
     public ZoomPanArea (Gtk.ScrolledWindow scrolled_window, Gtk.Widget content,
                         float min_zoom = 0.25f, float max_zoom = 4.0f) {
