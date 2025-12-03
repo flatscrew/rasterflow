@@ -176,7 +176,6 @@ namespace Data {
                 var description_label = label.get_next_sibling() as Gtk.Label;
                 description_label.visible = true;
                 description_label.set_markup(description);
-
                 node_box.set_tooltip_markup(description);
             }
         }

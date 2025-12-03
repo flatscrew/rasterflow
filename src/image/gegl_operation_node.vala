@@ -27,20 +27,22 @@ namespace Image {
                 }
 
                 var description = Gegl.Operation.get_key(gegl_operation, "description");
-                string pango_compatible_description = description
-                    .replace("<code>", "<tt>")
-                    .replace("</code>", "</tt>")
-                    .replace("<em>", "<i>")
-                    .replace("</em>", "</i>")
-                    .replace(" > ", " &gt;")
-                    .replace(" < ", " &lt;")
-                    .replace(" <= ", " &lt;=");
+                if (description != null) {
+                    description = description
+                        .replace("<code>", "<tt>")
+                        .replace("</code>", "</tt>")
+                        .replace("<em>", "<i>")
+                        .replace("</em>", "</i>")
+                        .replace(" > ", " &gt;")
+                        .replace(" < ", " &lt;")
+                        .replace(" <= ", " &lt;=");
+                }
 
                 node_factory.register(
                     new GeglOperationNodeBuilder(
                         title, 
                         gegl_operation, 
-                        pango_compatible_description
+                        description
                     )
                 );
             }
@@ -71,7 +73,7 @@ namespace Image {
         }
 
         public override string? description() {
-            return "<b>[%s]</b> %s".printf(gegl_operation, gegl_description);
+            return "<b>[%s]</b> %s".printf(gegl_operation, gegl_description == null ? "" : gegl_description);
         }
 
         public string id() {

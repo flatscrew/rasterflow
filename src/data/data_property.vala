@@ -79,7 +79,6 @@ namespace Data {
         }
     }
     
-    
     enum NumericPropertyType {
         Double,
         Int,
@@ -87,9 +86,9 @@ namespace Data {
         UInt64
     }
     
-    
     class NumericProperty : AbstractDataProperty {
 
+        private NumericPropertyType property_type;
         private Gtk.SpinButton spin_button;
         private double last_published;
         private uint publish_timeout_id = 0;
@@ -119,18 +118,22 @@ namespace Data {
         
         public NumericProperty.from_double(ParamSpecDouble double_specs) {
             this(double_specs, double_specs.minimum, double_specs.maximum, double_specs.default_value, 0.1);
+            this.property_type = NumericPropertyType.Double;
         }
         
         public NumericProperty.from_int(ParamSpecInt int_specs) {
             this(int_specs, int_specs.minimum, int_specs.maximum, int_specs.default_value, 1);
+            this.property_type = NumericPropertyType.Int;
         }
         
         public NumericProperty.from_uint(ParamSpecUInt int_specs) {
             this(int_specs, int_specs.minimum, int_specs.maximum, int_specs.default_value, 1);
+            this.property_type = NumericPropertyType.UInt;
         }
         
         public NumericProperty.from_uint64(ParamSpecUInt64 int_specs) {
             this(int_specs, int_specs.minimum, int_specs.maximum, int_specs.default_value, 1);
+            this.property_type = NumericPropertyType.UInt64;
         }
     
         private void publish_if_changed() {
@@ -159,7 +162,30 @@ namespace Data {
         }
         
         protected override void set_property_value(GLib.Value value) {
-            double v = value.get_double();
+            double v = 0;
+        
+            switch (property_type) {
+                case NumericPropertyType.Double: {
+                    v = value.get_double();
+                    break;
+                }
+                
+                case NumericPropertyType.Int: {
+                    v = value.get_int();
+                    break;
+                }
+                
+                case NumericPropertyType.UInt: {
+                    v = value.get_uint();
+                    break;
+                }
+                
+                case NumericPropertyType.UInt64: {
+                    v = value.get_uint64();
+                    break;
+                }
+            }
+            
             if (v != spin_button.value) {
                 spin_button.set_value(v);
                 last_published = v;

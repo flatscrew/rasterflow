@@ -418,7 +418,6 @@ public class CanvasView : Gtk.Widget {
             try {
                 var file = file_dialog.open.end(res);
                 if (file != null) {
-                    this.current_graph_file = file.get_path();
                     load_graph_async.begin(file);
                 }
             } catch (Error e) {
@@ -445,6 +444,7 @@ public class CanvasView : Gtk.Widget {
     
         after_file_load(selected_file.get_basename());
         modification_guard.reset();
+        this.current_graph_file = selected_file.get_path();
     }
 
     private void export_to_png() {
