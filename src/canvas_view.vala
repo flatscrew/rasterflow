@@ -96,7 +96,7 @@ public class CanvasView : Gtk.Widget {
         create_minimap_overlay();
         
         this.data_drop_handler = new DataDropHandler();
-        data_drop_handler.file_dropped.connect(this.add_file_data_node);
+        data_drop_handler.file_dropped.connect(this.file_dropped);
         zoom_pan_area.add_controller(data_drop_handler.data_drop_target);
         
         this.property_drop_handler = new PropertyDropHandler();
@@ -293,15 +293,29 @@ public class CanvasView : Gtk.Widget {
         changes_recorder.record(new History.RemoveGraphPropertyAction(canvas_graph, property));
     }
     
-    private void add_file_data_node(GLib.File file, double x, double y) {
+    private bool is_graph_file(GLib.File file) {
+        return file.get_basename().has_suffix(".graph");
+    }
+    
+    private void file_dropped(GLib.File file, double x, double y) {
+        // check if this is .graph file
+        if (is_graph_file(file)) {
+            load_graph_async.begin(file);
+            return;
+        }
         
+        // or load image from dropped file
+        try_add_file_data_node(file, x, y);
+    }
+    
+    private void try_add_file_data_node(GLib.File file, double x, double y) {
         try {
             var file_info = file.query_info ("*", FileQueryInfoFlags.NONE);
             var mimetype = ContentType.get_mime_type(file_info.get_content_type());
             var file_node_builders = file_origin_node_factory.available_builders(mimetype);
             
             if (file_node_builders.length == 0) {
-                show_error ("Not supported content type: <b>%s</b>".printf(mimetype));
+                warning("Not supported content type: <b>%s</b>".printf(mimetype));
                 return;
             }
 
@@ -343,12 +357,8 @@ public class CanvasView : Gtk.Widget {
             file_origin_popover.popup();
 
         } catch (Error e) {
-            stderr.printf(e.message);
+            warning(e.message);
         }
-    }
-
-    private void show_error(string error_markup) {
-        warning(error_markup);
     }
 
     private Gtk.FileFilter file_chooser_filter() {
@@ -408,7 +418,6 @@ public class CanvasView : Gtk.Widget {
             try {
                 var file = file_dialog.open.end(res);
                 if (file != null) {
-                    this.current_graph_file = file.get_path();
                     load_graph_async.begin(file);
                 }
             } catch (Error e) {
@@ -435,6 +444,7 @@ public class CanvasView : Gtk.Widget {
     
         after_file_load(selected_file.get_basename());
         modification_guard.reset();
+        this.current_graph_file = selected_file.get_path();
     }
 
     private void export_to_png() {

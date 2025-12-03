@@ -85,24 +85,25 @@ namespace Data {
     }
     
     private Data.AbstractDataProperty create_double_property_widget(ParamSpec double_specs) {
-        var property = new Data.DoubleProperty(double_specs as ParamSpecDouble);
+        var property = new Data.NumericProperty.from_double(double_specs as ParamSpecDouble);
         property.halign = Gtk.Align.START;
         return property;
     }
 
     private Data.AbstractDataProperty create_int_property_widget(ParamSpec int_spec) {
-        var property = new Data.IntProperty(int_spec as ParamSpecInt);
+        var property = new Data.NumericProperty.from_int(int_spec as ParamSpecInt);
         return property;
     }
 
     private Data.AbstractDataProperty create_uint_property_widget(ParamSpec uint_spec) {
-        var property = new Data.UIntProperty(uint_spec as ParamSpecUInt);
-        property.valign = Gtk.Align.CENTER;
+        var property = new Data.NumericProperty.from_uint(uint_spec as ParamSpecUInt);
+        property.halign = Gtk.Align.START;
         return property;
     }
 
     private Data.AbstractDataProperty create_uint64_property_widget(ParamSpec uint64_spec) {
-        var property = new Data.UInt64Property(uint64_spec as ParamSpecUInt64);
+        var property = new Data.NumericProperty.from_uint64(uint64_spec as ParamSpecUInt64);
+        property.halign = Gtk.Align.START;
         return property;
     }
 
