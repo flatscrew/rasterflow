@@ -1,1 +1,2 @@
 option('compile_gschemas', type: 'boolean', value: true)
+option('local_development', type: 'boolean', value: false)
