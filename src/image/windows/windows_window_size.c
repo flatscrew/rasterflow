@@ -18,7 +18,7 @@
  */
 
 #include <windows.h>
-#include <gdk/gdk.h>
+#include <gdk/win32/gdkwin32.h>
 
 void rf_get_window_rect(GdkSurface *surface, int *x, int *y, int *w, int *h) {
     if (!surface) {
