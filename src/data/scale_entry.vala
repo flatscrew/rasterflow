@@ -51,23 +51,50 @@ namespace Data {
 
         static construct {
             set_css_name("spinbutton");
-            load_css();
+            init_css();
         }
         
-        private static void load_css() {
-            var provider = new Gtk.CssProvider();
-            provider.load_from_string("""
-                .property-scale {
-                    border-top: 1px solid rgba(255, 255, 255, 0.1);
-                }
-            """);
-        
+        private static Gtk.CssProvider css_provider;
+        private static Gtk.Settings settings;
+
+        private static void apply_theme_css() {
+            bool dark = settings.gtk_application_prefer_dark_theme;
+
+            if (dark) {
+                message("dark");
+                
+                css_provider.load_from_string("""
+                    .property-scale {
+                        border-top: 1px solid rgba(255,255,255,0.1);
+                    }
+                """);
+            } else {
+                message("light");
+                css_provider.load_from_string("""
+                    .property-scale {
+                        border-top: 1px solid rgba(0,0,0,0.1);
+                    }
+                """);
+            }
+        }
+
+        private static void init_css() {
+            css_provider = new Gtk.CssProvider();
+            settings = Gtk.Settings.get_for_display(Gdk.Display.get_default());
+
             Gtk.StyleContext.add_provider_for_display(
                 Gdk.Display.get_default(),
-                provider,
+                css_provider,
                 Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
             );
+
+            apply_theme_css();
+
+            settings.notify["gtk-application-prefer-dark-theme"].connect(() => {
+                apply_theme_css();
+            });
         }
+
         
         public SpinButtonEntry() {
             this.with_range(-double.MAX, double.MAX, 0.1);
