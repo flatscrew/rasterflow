@@ -89,7 +89,7 @@ namespace Data {
     class NumericProperty : AbstractDataProperty {
 
         private NumericPropertyType property_type;
-        private Gtk.SpinButton spin_button;
+        private Data.SpinButtonEntry spin_button;
         private double last_published;
         private uint publish_timeout_id = 0;
         
@@ -100,19 +100,13 @@ namespace Data {
         public NumericProperty(ParamSpec param_spec, double min, double max, double default_value, double step) {
             base(param_spec);
             
-            this.spin_button = new Gtk.SpinButton.with_range(
+            this.spin_button = new Data.SpinButtonEntry.with_range(
                 min,
                 max,
                 step
             );
-            spin_button.update_policy = Gtk.SpinButtonUpdatePolicy.IF_VALID;
             spin_button.value = default_value;
             spin_button.value_changed.connect(schedule_publish);
-            
-            var focus_ctrl = new Gtk.EventControllerFocus();
-            focus_ctrl.leave.connect(publish_if_changed);
-            spin_button.add_controller(focus_ctrl);
-    
             set_child(spin_button);
         }
         
@@ -135,15 +129,7 @@ namespace Data {
             this(int_specs, int_specs.minimum, int_specs.maximum, int_specs.default_value, 1);
             this.property_type = NumericPropertyType.UInt64;
         }
-    
-        private void publish_if_changed() {
-            double current = spin_button.value;
-            if (current != last_published) {
-                last_published = current;
-                property_value_changed(current);
-            }
-        }
-    
+        
         private void schedule_publish() {
             if (publish_timeout_id > 0)
                 GLib.Source.remove(publish_timeout_id);
@@ -187,7 +173,9 @@ namespace Data {
             }
             
             if (v != spin_button.value) {
-                spin_button.set_value(v);
+                //  spin_button.set_value(v);
+                spin_button.value = v;
+                
                 last_published = v;
             }
         }

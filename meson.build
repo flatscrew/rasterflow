@@ -84,6 +84,8 @@ if host_machine.system() == 'windows'
   ]
 endif
 
+scale_entry = files('src/data/scale_entry.vala')
+
 # vala sources
 vala_sources = [
     config_vala,
@@ -133,6 +135,7 @@ vala_sources = [
     'src/data/data_property_file_location.vala',
     'src/data/file_origin_node_factory.vala',
     'src/data/file_origin_node_chooser.vala',
+    scale_entry,
 
     # image processing
     'src/image/image_data_node.vala',
@@ -224,3 +227,4 @@ install_data('data/icons/scalable/apps/io.flatscrew.RasterFlow.svg',
              install_dir: join_paths(get_option('datadir'), 'icons/hicolor/scalable/apps'))
 
 subdir('gegl-docs-generator')
+subdir('spinner-test')
