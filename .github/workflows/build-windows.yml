@@ -8,8 +8,7 @@ permissions:
   
 jobs:
   build-windows:
-    runs-on: windows-latest
-
+    runs-on: windows-2025
     steps:
       - name: Configure Git autocrlf
         run: git config --global core.autocrlf input
@@ -28,7 +27,6 @@ jobs:
       - name: Install MSYS2 and dependencies
         uses: msys2/setup-msys2@v2
         with:
-          release: 2024-09-15
           msystem: MINGW64
           update: true
           install: >-
