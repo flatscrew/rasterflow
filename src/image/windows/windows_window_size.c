@@ -18,15 +18,25 @@
  */
 
 #include <windows.h>
-#include <gdk/win32/gdkwin32.h>
+#include <gdk/gdk.h>
 
-void rf_get_window_rect(GdkSurface *surface, int *x, int *y, int *w, int *h) {
-    if (!surface) {
-        *x = *y = *w = *h = 0;
-        return;
+static HWND rf_get_hwnd(void)
+{
+    char cname[256];
+
+    for (HWND w = GetTopWindow(NULL); w; w = GetNextWindow(w, GW_HWNDNEXT)) {
+        if (GetClassNameA(w, cname, sizeof(cname))) {
+            if (strncmp(cname, "gdkSurface", 10) == 0)
+                return w;
+        }
     }
 
-    HWND hwnd = gdk_win32_surface_get_handle(surface);
+    return NULL;
+}
+
+void rf_get_window_rect(GdkSurface *surface, int *x, int *y, int *w, int *h)
+{
+    HWND hwnd = rf_get_hwnd();
     if (!hwnd) {
         *x = *y = *w = *h = 0;
         return;
@@ -43,9 +53,11 @@ void rf_get_window_rect(GdkSurface *surface, int *x, int *y, int *w, int *h) {
     }
 }
 
-void rf_set_window_rect(GdkSurface *surface, int x, int y, int w, int h) {
-    HWND hwnd = gdk_win32_surface_get_handle(surface);
-    if (!hwnd) return;
+void rf_set_window_rect(GdkSurface *surface, int x, int y, int w, int h)
+{
+    HWND hwnd = rf_get_hwnd();
+    if (!hwnd)
+        return;
 
     SetWindowPos(hwnd, HWND_TOP, x, y, w, h, SWP_NOZORDER);
 }

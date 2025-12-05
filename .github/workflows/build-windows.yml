@@ -8,7 +8,7 @@ permissions:
   
 jobs:
   build-windows:
-    runs-on: windows-2025@20251102.77
+    runs-on: windows-latest
     steps:
       - name: Configure Git autocrlf
         run: git config --global core.autocrlf input
