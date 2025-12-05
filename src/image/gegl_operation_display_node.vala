@@ -102,7 +102,7 @@ namespace Image {
         }
         
         private void create_process_gegl_button() {
-            var render_button = new Gtk.Button.from_icon_name("media-playback-start");
+            var render_button = new Gtk.Button.from_icon_name("media-playback-start-symbolic");
             render_button.clicked.connect(this.process_gegl);
             render_button.set_tooltip_text("Process");
             add_action_bar_child_start(render_button);
