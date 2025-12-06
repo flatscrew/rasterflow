@@ -1,5 +1,4 @@
 public static void init_environment() {
-    message("initializing environment...");
 #if WIN32
     init_windows();
 #endif

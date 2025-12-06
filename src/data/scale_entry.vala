@@ -270,8 +270,7 @@ namespace Data {
             scale.set_parent(this);
             scale.value_changed.connect(() => {
                 double raw = scale.get_value();
-                double snapped = ((int) ((raw / step) + 0.5)) * step;
-                scale.set_value(snapped);
+                double snapped = Math.round(raw / step) * step;
                 value = snapped;
             });
         }

@@ -10,7 +10,8 @@ public class App : Adw.Application {
         var window = new ApplicationWindow (this);
         window.set_default_size (300, 60);
         
-        var spin_bounded = new Data.SpinButtonEntry.with_range(0, 100, 0.5);
+        var spin_bounded = new Data.SpinButtonEntry.with_range(-100, 100, 1);
+        spin_bounded.value = 0;
         spin_bounded.value_changed.connect(value_changed);
         
         var spin_unbounded = new Data.SpinButtonEntry();

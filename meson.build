@@ -23,9 +23,11 @@ elif host_machine.system() == 'linux'
 endif
 
 gnome = import('gnome')
+m = meson.get_compiler('c').find_library('m', required: true)
 
 # Dependencies
 dependencies = [
+    m,
     dependency('glib-2.0'),
     dependency('gobject-2.0'),
     dependency('gtk4'),
@@ -207,7 +209,7 @@ executable(
   vala_args: vala_args,
   install: true,
   install_dir: join_paths(get_option('prefix'), 'bin'),
-  gui_app: true
+  gui_app: true,
 )
 
 # Install the .gschema.xml file
