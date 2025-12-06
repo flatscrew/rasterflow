@@ -89,6 +89,7 @@ scale_entry = files('src/data/scale_entry.vala')
 # vala sources
 vala_sources = [
     config_vala,
+    'src/environment.vala',
     'src/main.vala',
     'src/application_settings.vala',
     'src/minimap.vala',

@@ -49,20 +49,9 @@ class CanvasApplication : Adw.Application {
     var display = Gdk.Display.get_default();
     var theme = Gtk.IconTheme.get_for_display(display);
     theme.add_resource_path("/icons");
-    
-    //  activate.connect(app_activated);
-  }
-  
-  public CanvasApplication(string[] args) {
-    
-  
   }
   
   public override void activate() {
-    app_activated();
-  }
-  
-  private void app_activated() {
     var header_widgets = new CanvasHeaderbarWidgets();
     var data_node_factory = new CanvasNodeFactory();
     var file_origin_node_factory = new Data.FileOriginNodeFactory();
@@ -276,6 +265,8 @@ class CanvasApplication : Adw.Application {
 }
 
 int main (string[] args) {
-  var app = new CanvasApplication(args);
+  init_environment();
+
+  var app = new CanvasApplication();
   return app.run(args);
 }
