@@ -172,6 +172,11 @@ public string initialize_image_plugin(Plugin.PluginContribution plugin_contribut
     // TODO make it in plugin contribution instead?
     // custom data types for property editor
     Data.DataPropertyFactory.instance.register(typeof(Gegl.Color), param_spec => {
+        var default_color = param_spec.get_default_value() as Gegl.Color;
+        if (default_color != null) {
+            return new Image.ColorProperty(param_spec, default_color);
+        }
+        
         return new Image.ColorProperty(param_spec);
     });
 

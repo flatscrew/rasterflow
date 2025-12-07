@@ -103,7 +103,8 @@ namespace Data {
             this.spin_button = new Data.SpinButtonEntry.with_range(
                 min,
                 max,
-                step
+                step,
+                default_value
             );
             spin_button.value = default_value;
             spin_button.value_changed.connect(schedule_publish);

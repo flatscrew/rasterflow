@@ -20,18 +20,33 @@ namespace Image {
         private Gtk.Box box;
         private Gtk.ColorDialogButton color_dialog_button;
         private Gtk.ToggleButton prober_button;
-
+        private Gegl.Color? default_color;
+        
         ~ColorProperty() {
             box.unparent();
         }
 
-        public ColorProperty(ParamSpec color_specs) {
+        public ColorProperty(ParamSpec color_specs, Gegl.Color? default_color = null) {
             base(color_specs);
             box = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 6);
             
             var dialog = new Gtk.ColorDialog();
             color_dialog_button = new Gtk.ColorDialogButton(dialog);
             color_dialog_button.set_tooltip_text("Pick color (Ctrl+Click to reset)");
+            if (default_color != null) {
+                this.default_color = default_color;
+                
+                double red, green, blue, alpha;
+                default_color.get_rgba(out red, out green, out blue, out alpha);
+                
+                var rgba = Gdk.RGBA() {
+                    red = (float) red,
+                    green = (float) green,
+                    blue = (float) blue,
+                    alpha = (float) alpha
+                };
+                color_dialog_button.set_rgba(rgba);
+            }
             
             var gesture = new Gtk.GestureClick();
             gesture.set_propagation_phase(Gtk.PropagationPhase.CAPTURE);
@@ -39,7 +54,7 @@ namespace Image {
                 var state = gesture.get_current_event_state();
                 if ((state & Gdk.ModifierType.CONTROL_MASK) != 0) {
                     gesture.set_state(Gtk.EventSequenceState.CLAIMED);
-                    property_value_changed(null);
+                    property_value_changed(default_color);
                 }
             });
             color_dialog_button.add_controller(gesture);

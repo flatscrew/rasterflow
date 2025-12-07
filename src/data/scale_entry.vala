@@ -18,6 +18,7 @@ namespace Data {
         private bool scale_visible;
         
         private bool bounded = true;
+        private double default_value;
         private double min;
         private double max;
         private double step;
@@ -66,6 +67,7 @@ namespace Data {
                 css_provider.load_from_string("""
                     .property-scale {
                         border-top: 1px solid rgba(255,255,255,0.1);
+                        padding-top: 8px;
                     }
                 """);
             } else {
@@ -73,6 +75,7 @@ namespace Data {
                 css_provider.load_from_string("""
                     .property-scale {
                         border-top: 1px solid rgba(0,0,0,0.1);
+                        padding-top: 8px;
                     }
                 """);
             }
@@ -97,10 +100,10 @@ namespace Data {
 
         
         public SpinButtonEntry() {
-            this.with_range(-double.MAX, double.MAX, 0.1);
+            this.with_range(-double.MAX, double.MAX, 0.1, 0);
         }
 
-        public SpinButtonEntry.with_range(double min, double max, double step) {
+        public SpinButtonEntry.with_range(double min, double max, double step, double default_value) {
             if (double.MAX == max || -double.MAX == min) {
                 this.bounded = false;
             } else {
@@ -110,6 +113,7 @@ namespace Data {
             this.min = min;
             this.max = max;
             this.step = step;
+            this.default_value = default_value;
             this._value = bounded ? min : 0.0;
     
             create_entry();
@@ -266,6 +270,7 @@ namespace Data {
         
         private void create_scale() {
             scale = new Gtk.Scale.with_range(Gtk.Orientation.HORIZONTAL, min, max, step);
+            scale.add_mark(default_value, Gtk.PositionType.TOP, null);
             scale.add_css_class("property-scale");
             scale.set_parent(this);
             scale.value_changed.connect(() => {
