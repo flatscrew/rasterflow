@@ -18,26 +18,26 @@
 namespace History {
 
     public class AddNodeAction : Object, IAction {
-        private weak GtkFlow.NodeView parent_view;
+        private weak CanvasGraph graph;
         private weak CanvasDisplayNode node;
 
-        public AddNodeAction(GtkFlow.NodeView parent_view, CanvasDisplayNode node) {
-            this.parent_view = parent_view;
+        public AddNodeAction(CanvasGraph graph, CanvasDisplayNode node) {
+            this.graph = graph;
             this.node = node;
         }
+        
         public void undo() {
-            if (parent_view == null || node == null)
+            if (graph == null || node == null)
                 return;
 
-            node.remove();
+            node.remove_node();
         }
 
         public void redo() {
-            if (parent_view == null || node == null)
+            if (graph == null || node == null)
                 return;
 
-            parent_view.add(node);
-            parent_view.queue_allocate();
+            graph.add_node(node);
         }
         
         public string get_label() {

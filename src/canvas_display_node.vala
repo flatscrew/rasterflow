@@ -303,6 +303,39 @@ public class CanvasDisplayNode : GtkFlow.Node {
     public void build_default_title(GLib.Icon? icon = null) {
         build_title(new DefaultTitleWidgetBuilder(), null);
     }
+    
+    protected override bool is_drag_forbidden(Gtk.Widget? widget) {
+        var current = widget;
+        while (current != null) {
+            if (this.delete_button == current) {
+                return true;
+            }
+            current = current.get_parent();
+        }
+        
+        current = widget;
+        while (current != null) {
+            if (is_child_of(current, typeof(Gtk.Switch))) {
+                return true;
+            }
+            current = current.get_parent();
+        }
+        
+        return base.is_drag_forbidden(widget);
+    }
+    
+    private bool is_child_of(Gtk.Widget widget, GLib.Type parent_type) {
+        var parent = widget.get_parent();
+    
+        while (parent != null) {
+            if (parent.get_type().is_a(parent_type)) {
+                return true;
+            }
+            parent = parent.get_parent();
+        }
+    
+        return false;
+    }
 
     private void create_node_content() {
         this.size_changed.connect(this.node_resized);
@@ -399,7 +432,7 @@ public class CanvasDisplayNode : GtkFlow.Node {
         title_bar.append_right(delete_button);
     }
 
-    private void remove_node() {
+    public void remove_node() {
         //  stop_sinks_history_recording();
         {
             removed(this);

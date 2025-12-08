@@ -32,7 +32,7 @@ dependencies = [
     dependency('gobject-2.0'),
     dependency('gtk4'),
     dependency('gflow-1.0'),
-    dependency('gtkflow4-0.2.1'),
+    dependency('gtkflow4-0.2.2'),
     dependency('gee-0.8'),
     dependency('gio-2.0'),
     dependency('json-glib-1.0'),

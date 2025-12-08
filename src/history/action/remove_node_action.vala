@@ -19,7 +19,7 @@ namespace History {
 
     public class RemoveNodeAction : Object, IAction {
         private weak CanvasGraph graph;
-        private CanvasDisplayNode node;
+        private weak CanvasDisplayNode node;
         private int pos_x;
         private int pos_y;
         private int width;

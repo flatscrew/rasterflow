@@ -52,6 +52,7 @@ public class CanvasView : Gtk.Widget {
     private DataDropHandler data_drop_handler;
     private PropertyDropHandler property_drop_handler;
     private string current_graph_file;
+    private bool graph_dirty;
     
     private SimpleAction save_action;
     private SimpleAction show_node_chooser_action;
@@ -132,6 +133,8 @@ public class CanvasView : Gtk.Widget {
     }
     
     private void graph_dirty_state_changed(bool is_dirty) {
+        this.graph_dirty = is_dirty;
+        
         if (this.current_graph_file == null) {
             this.save_button.sensitive = false;
             return;    
@@ -230,7 +233,7 @@ public class CanvasView : Gtk.Widget {
         node_view.add(node);
         node.init_position();
 
-        changes_recorder.record(new History.AddNodeAction(node_view, node));
+        changes_recorder.record(new History.AddNodeAction(canvas_graph, node));
     }
     
     private void node_removed(CanvasDisplayNode node) {
@@ -528,6 +531,8 @@ public class CanvasView : Gtk.Widget {
         
         this.save_action = new SimpleAction("save", null);
         save_action.activate.connect(() => {
+            if (!this.graph_dirty) return;
+            
             if (current_graph_file != null) {
                 save_graph();
                 return;
