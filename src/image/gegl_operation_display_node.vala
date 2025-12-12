@@ -48,7 +48,7 @@ namespace Image {
             if (gegl_operation_node.is_output_node()) {
                 create_process_gegl_button();
             } else {
-                create_gegl_export_button();
+                //  create_gegl_export_button();
             }
             
             this.operation_overrides_callback = GeglOperationOverrides.find_operation_overrides(builder_id);

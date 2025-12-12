@@ -32,7 +32,7 @@ dependencies = [
     dependency('gobject-2.0'),
     dependency('gtk4'),
     dependency('gflow-1.0'),
-    dependency('gtkflow4-0.2.2'),
+    dependency('gtkflow4-0.2.3'),
     dependency('gee-0.8'),
     dependency('gio-2.0'),
     dependency('json-glib-1.0'),
@@ -116,6 +116,7 @@ vala_sources = [
     'src/add_graph_property_popover.vala',
     'src/colors.vala',
     'src/zoom_pan_area.vala',
+    'src/collapsible_section.vala',
 
     # serialization
     'src/serialize/canvas_serializer.vala',
