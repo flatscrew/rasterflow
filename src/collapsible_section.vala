@@ -2,7 +2,14 @@ public class CollapsibleSectionView : Gtk.Widget {
     private Gtk.Box vertical_box;
     private Gtk.Box content_box;
     private Gtk.Image arrow_icon;
+    private bool can_expand_collapse;
     private bool _expanded;
+    
+    public bool collapsible {
+        set {
+            this.can_expand_collapse = value;
+        }
+    }
 
     public bool expanded {
         get { return _expanded; }
@@ -14,6 +21,7 @@ public class CollapsibleSectionView : Gtk.Widget {
         add_css_class("canvas_node_expander");
         add_css_class("card");
         vexpand = hexpand = true;
+        can_expand_collapse = true;
     }
 
     public CollapsibleSectionView(string title) {
@@ -35,9 +43,12 @@ public class CollapsibleSectionView : Gtk.Widget {
         title.wrap = false;
         header.add_prefix(title);
         
-        var click = new Gtk.GestureClick();
-        click.released.connect(() => toggle_expanded(!_expanded));
-        header.add_controller(click);
+        var click_controller = new Gtk.GestureClick();
+        click_controller.released.connect((n_press, x, y) => {
+            if (!this.can_expand_collapse) return;
+            if (n_press > 0) toggle_expanded(!_expanded);
+        });
+        header.add_controller(click_controller);
 
         var icon_theme = Gtk.IconTheme.get_for_display(Gdk.Display.get_default());
         var paintable = icon_theme.lookup_icon("pan-end-symbolic", null, 16, 1,
