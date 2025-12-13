@@ -108,12 +108,12 @@ namespace Image {
             add_action_bar_child_start(render_button);
         }
 
-        private void create_gegl_export_button() {
-            var export_button = new Gtk.Button.from_icon_name("document-export-symbolic");
-            export_button.clicked.connect(export_graph_as_xml);
-            export_button.set_tooltip_text("Export to XML");
-            add_action_bar_child_end(export_button);
-        }
+        //  private void create_gegl_export_button() {
+        //      var export_button = new Gtk.Button.from_icon_name("document-export-symbolic");
+        //      export_button.clicked.connect(export_graph_as_xml);
+        //      export_button.set_tooltip_text("Export to XML");
+        //      add_action_bar_child_end(export_button);
+        //  }
 
         public void add_default_content(Gegl.Operation operation) {
             var scrolled_window = new Gtk.ScrolledWindow();
