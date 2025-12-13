@@ -252,16 +252,7 @@ namespace Data {
             if (overrides_callback == null) {
                 return null;
             }
-            var property = overrides_callback.build_property(param_spec);
-            //  if (property != null) {
-            //      // TODO is it necessary?
-            //      var default_value = property.default_value();
-            //      if (default_value != null) {
-            //          property_changed(param_spec.name, default_value);
-            //      }
-            //      return property;
-            //  }
-            return property;
+            return overrides_callback.build_property(param_spec);
         }
         
         private PropertiesGridEntry create_properties_grid_entry(
