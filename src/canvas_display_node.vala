@@ -133,6 +133,17 @@ public class CanvasDisplayNode : GtkFlow.Node {
         
         create_node_content();
         create_action_bar();
+        
+        base.drag_started.connect(this.start_drag);
+        base.drag_ended.connect(this.end_drag);
+    }
+    
+    private void start_drag() {
+        details_view.collapsible = false;
+    }
+    
+    private void end_drag() {
+        details_view.collapsible = true;
     }
     
     public void init_position() {
