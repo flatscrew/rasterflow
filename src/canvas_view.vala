@@ -56,7 +56,8 @@ public class CanvasView : Gtk.Widget {
     
     private SimpleAction save_action;
     private SimpleAction show_node_chooser_action;
-
+    private SimpleAction paste_action;
+    
     construct {
         set_layout_manager(new Gtk.BinLayout());
     }
@@ -550,5 +551,41 @@ public class CanvasView : Gtk.Widget {
         this.show_node_chooser_action = new SimpleAction("show_node_chooser", null);
         show_node_chooser_action.activate.connect(node_chooser.toggle);
         return show_node_chooser_action;
+    }
+    
+    public GLib.Action create_paste_action() {
+        this.paste_action = new SimpleAction("paste", null);
+        paste_action.activate.connect(paste_image_data);
+        return paste_action;
+    }
+    
+    private async void paste_image_data() {
+        var display = Gdk.Display.get_default();
+        if (display == null)
+            return;
+
+        var clipboard = display.get_clipboard();
+
+        string out_mime;
+
+        try {
+            var stream = yield clipboard.read_async(
+                { "image/png", "image/jpeg", "image/webp", "image/*" },
+                GLib.Priority.DEFAULT,
+                null,
+                out out_mime
+            );
+            
+            var pixbuf = yield new Gdk.Pixbuf.from_stream_async(stream, null);
+
+            var pixbuf_loader_builder = node_factory.find_builder("gegl:pixbuf");
+            if (pixbuf_loader_builder == null) return;
+            
+            var display_node = pixbuf_loader_builder.create(10, 10) as Image.GeglOperationDisplayNode;
+            canvas_graph.add_node(display_node);
+            display_node.set_gegl_property("pixbuf", pixbuf);
+        } catch (Error e) {
+            warning(e.message);
+        }
     }
 }

@@ -116,6 +116,7 @@ class CanvasApplication : Adw.Application {
     actions.add_action(create_redo_action());
     actions.add_action(canvas_view.create_save_action());
     actions.add_action(canvas_view.create_show_node_chooser_action());
+    actions.add_action(canvas_view.create_paste_action());
     actions.add_action(create_window_resize_action(window));
     window.insert_action_group("app", actions);
     
@@ -124,6 +125,7 @@ class CanvasApplication : Adw.Application {
     set_accels_for_action("app.save", { "<Control>s" });
     set_accels_for_action("app.show_node_chooser", { "<Control>k" });
     set_accels_for_action("app.window_resize", { "<Control><Shift><Alt>q" });
+    set_accels_for_action("app.paste", { "<Control>v" });
     
     this.shortcuts_window = new AppShortcutsWindowBuilder(this.window)
         .new_section("General")
@@ -134,6 +136,7 @@ class CanvasApplication : Adw.Application {
                 .add("Show node chooser", "<Ctrl>k")
                 .add("Undo last operation", "<Ctrl>z")
                 .add("Redo last operation", "<Ctrl><Shift>z")
+                .add("Paste image data", "<Ctrl>v")
             .end_group()
         .end_section()
         .build();

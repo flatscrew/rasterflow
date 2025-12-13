@@ -398,7 +398,8 @@ namespace Data {
                 return null;
             }
 
-            var description_label = new Gtk.Label(description);
+            var description_label = new Gtk.Label(null);
+            description_label.set_markup(description);
             description_label.halign = Gtk.Align.START;
             description_label.wrap = true;
             description_label.wrap_mode = Pango.WrapMode.CHAR;
