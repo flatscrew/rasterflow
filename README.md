@@ -18,6 +18,7 @@ Required libraries:
 - GLib / GObject / GIO
 - JSON-GLib
 - LibGee
+- LibExif (for reading image file meta data)
 - GObject Introspection
 
 ---

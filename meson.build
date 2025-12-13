@@ -38,7 +38,8 @@ dependencies = [
     dependency('json-glib-1.0'),
     dependency('babl-0.1'),
     dependency('gegl-0.4'),
-    dependency('libadwaita-1')
+    dependency('libadwaita-1'),
+    dependency('libexif')
 ]
 
 if host_machine.system() == 'linux'
@@ -56,12 +57,8 @@ gresources = gnome.compile_resources('rasterflow-resources', resource_files, sou
 
 vala_args = [
   '--vapidir', meson.current_source_dir() + '/vapi',
-  '--pkg=gegl_wrapper'
-]
-
-# VAPI directories
-vapi_dirs = [
-  'vapi/'
+  '--pkg=gegl_wrapper',
+  '--pkg=libexif'
 ]
 
 include_dirs = [
@@ -142,6 +139,7 @@ vala_sources = [
     scale_entry,
 
     # image processing
+    'src/image/image_file_information.vala',
     'src/image/image_data_node.vala',
     'src/image/image_file_data_node.vala',
     'src/image/image_viewer.vala',

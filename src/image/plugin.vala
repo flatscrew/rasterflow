@@ -142,9 +142,15 @@ public string initialize_image_plugin(Plugin.PluginContribution plugin_contribut
         overrides.override_title(gegl_load_title_override);
         overrides.override_property("path", (param_spec) => {
             var filters = build_pixbuf_filters();
-            return new Data.OpenFileLocationProperty.with_file_filters(param_spec as ParamSpecString, filters);
+            
+            var image_file_details = new Image.ImageFileDetails();
+            var property = new Data.OpenFileLocationProperty.with_file_filters(param_spec as ParamSpecString, filters);
+            property.new_file_info_group("Image Information", image_file_details.file_details);
+            property.new_file_info_group("EXIF Information", image_file_details.exif_details);
+            return property;
         });
     });
+    
     Image.GeglOperationOverrides.override_operation("gegl:save", overrides => {
         overrides.override_title(gegl_save_title_override);
         overrides.override_property("path", (param_spec) => {

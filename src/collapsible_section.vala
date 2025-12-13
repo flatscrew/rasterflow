@@ -2,6 +2,7 @@ public class CollapsibleSectionView : Gtk.Widget {
     private Gtk.Box vertical_box;
     private Gtk.Box content_box;
     private Gtk.Image arrow_icon;
+    private Adw.ActionRow header;
     private bool can_expand_collapse;
     private bool _expanded;
     
@@ -33,8 +34,9 @@ public class CollapsibleSectionView : Gtk.Widget {
     }
 
     private void create_header(string header_title) {
-        var header = new Adw.ActionRow();
+        this.header = new Adw.ActionRow();
         header.add_css_class("rounded_top");
+        header.add_css_class("rounded_bottom");
         header.set_activatable(true);
         
         var title = new Gtk.Label(header_title);
@@ -70,8 +72,6 @@ public class CollapsibleSectionView : Gtk.Widget {
 
     private void toggle_expanded(bool expand) {
         _expanded = expand;
-        notify_property("expanded");
-        
         content_box.visible = expand;
 
         var icon_name = expand ? "pan-down-symbolic" : "pan-end-symbolic";
@@ -80,6 +80,14 @@ public class CollapsibleSectionView : Gtk.Widget {
             Gtk.TextDirection.NONE,
             Gtk.IconLookupFlags.FORCE_SYMBOLIC);
         arrow_icon.set_from_paintable(paintable);
+        
+        if (expand) {
+            header.remove_css_class("rounded_bottom");
+        } else {
+            header.add_css_class("rounded_bottom");
+        }
+        
+        notify_property("expanded");
     }
 
     public void set_child(Gtk.Widget child) {
