@@ -73,12 +73,28 @@ private GLib.ListStore build_pixbuf_filters() {
     return filters;
 }
 
+#if WIN32
+    private void load_windows_gegl_plugins() {
+        string user_gegl_dir =
+            Path.build_filename (
+                Environment.get_user_data_dir (),
+                "gegl-0.4",
+                "plug-ins"
+            );
+        Gegl.load_module_directory (user_gegl_dir);
+    }
+#endif
+
 public string initialize_image_plugin(Plugin.PluginContribution plugin_contribution) {
     string[] args = {};
     
     Gegl.config().application_license = "GPL3";
     Gegl.init(ref args);
-    
+
+#if WIN32
+    load_windows_gegl_plugins();
+#endif
+
     new Image.GeglOperationOverrides();
 
     plugin_contribution.contribute_file_data_node_factory(node_factory => {
