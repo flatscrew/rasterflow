@@ -11,7 +11,15 @@ finish-args:
   - --device=dri
   - --filesystem=home
   - --socket=session-bus
-  
+
+add-extensions:
+  io.flatscrew.RasterFlow.Extension:
+    directory: extensions
+    version: "1"
+    add-ld-path: "lib"
+    subdirectories: true
+    no-autodownload: true
+
 modules:
   - name: babl
     buildsystem: meson
@@ -73,3 +81,5 @@ modules:
     sources:
       - type: dir
         path: .
+    post-install:
+      - install -d /app/extensions
