@@ -23,19 +23,23 @@ elif host_machine.system() == 'linux'
 endif
 
 gnome = import('gnome')
+m = meson.get_compiler('c').find_library('m', required: true)
 
 # Dependencies
 dependencies = [
+    m,
     dependency('glib-2.0'),
     dependency('gobject-2.0'),
     dependency('gtk4'),
     dependency('gflow-1.0'),
-    dependency('gtkflow4-0.2'),
+    dependency('gtkflow4-0.2.3'),
     dependency('gee-0.8'),
     dependency('gio-2.0'),
     dependency('json-glib-1.0'),
+    dependency('babl-0.1'),
     dependency('gegl-0.4'),
-    dependency('libadwaita-1')
+    dependency('libadwaita-1'),
+    dependency('libexif')
 ]
 
 if host_machine.system() == 'linux'
@@ -53,12 +57,8 @@ gresources = gnome.compile_resources('rasterflow-resources', resource_files, sou
 
 vala_args = [
   '--vapidir', meson.current_source_dir() + '/vapi',
-  '--pkg=gegl_wrapper'
-]
-
-# VAPI directories
-vapi_dirs = [
-  'vapi/'
+  '--pkg=gegl_wrapper',
+  '--pkg=libexif'
 ]
 
 include_dirs = [
@@ -83,9 +83,12 @@ if host_machine.system() == 'windows'
   ]
 endif
 
+scale_entry = files('src/data/scale_entry.vala')
+
 # vala sources
 vala_sources = [
     config_vala,
+    'src/environment.vala',
     'src/main.vala',
     'src/application_settings.vala',
     'src/minimap.vala',
@@ -109,8 +112,8 @@ vala_sources = [
     'src/canvas_graph_properties_editor.vala',
     'src/add_graph_property_popover.vala',
     'src/colors.vala',
-    'src/panning_scrolled_window.vala',
-    'src/zoomable_area.vala',
+    'src/zoom_pan_area.vala',
+    'src/collapsible_section.vala',
 
     # serialization
     'src/serialize/canvas_serializer.vala',
@@ -133,8 +136,10 @@ vala_sources = [
     'src/data/data_property_file_location.vala',
     'src/data/file_origin_node_factory.vala',
     'src/data/file_origin_node_chooser.vala',
+    scale_entry,
 
     # image processing
+    'src/image/image_file_information.vala',
     'src/image/image_data_node.vala',
     'src/image/image_file_data_node.vala',
     'src/image/image_viewer.vala',
@@ -149,6 +154,7 @@ vala_sources = [
     'src/image/gegl_xml_file_node.vala',
     'src/image/gxml/gxml_export.vala',
     'src/image/color_property.vala',
+    'src/image/babl_format_property.vala',
     'src/image/history/gegl_node_property_control_taken_action.vala',
     'src/image/history/gegl_node_property_control_released_action.vala',
     'src/image/plugin.vala',
@@ -202,7 +208,7 @@ executable(
   vala_args: vala_args,
   install: true,
   install_dir: join_paths(get_option('prefix'), 'bin'),
-  gui_app: true
+  gui_app: true,
 )
 
 # Install the .gschema.xml file
@@ -222,5 +228,7 @@ install_data('data/io.flatscrew.RasterFlow.desktop',
 install_data('data/icons/scalable/apps/io.flatscrew.RasterFlow.svg',
              install_dir: join_paths(get_option('datadir'), 'icons/hicolor/scalable/apps'))
 
-# subdir('gegl-docs-generator')
-# subdir('linux-beaver-gegl-plugins')
+if get_option('local_development')
+  subdir('gegl-docs-generator')
+  subdir('spinner-test')
+endif

@@ -17,7 +17,7 @@
 
 namespace Data {
 
-    public delegate void DataPropertiesOverrideFunc (PropertyOverridesComposer composer);
+    public delegate void DataPropertiesOverrideFunc(PropertyOverridesComposer composer);
 
     public class DataPropertiesOverrideCallback {
         private PropertyOverridesComposer composer;
@@ -51,6 +51,7 @@ namespace Data {
             if (builder == null) {
                 return null;
             }
+            
             return builder.build_property(param_spec);
         }
 
@@ -79,7 +80,7 @@ namespace Data {
 
     class DataPropertyWrapper : Gtk.Widget {
 
-        public signal void property_value_changed(string property_name, GLib.Value property_value);
+        public signal void property_value_changed(string property_name, GLib.Value? property_value);
 
         private AbstractDataProperty? property_widget;
         
@@ -122,7 +123,7 @@ namespace Data {
             property_widget.set_value_from_model(new_value);
         }
         
-        private void property_changed(string property_name, GLib.Value property_value) {
+        private void property_changed(string property_name, GLib.Value? property_value) {
             property_value_changed(property_name, property_value);
         }
     }
@@ -218,15 +219,11 @@ namespace Data {
         }
 
         public bool populate_properties(
-            DataPropertyFilter filter = param_spec => true, 
             DataPropertiesOverrideFunc overrides_func = () => {},
             PropertyDecorator property_decorator = widget => widget
         ) {
             int row = 0;
             foreach (var param_spec in data_object.get_class().list_properties()) {
-                if (!filter(param_spec))
-                    continue;
-                    
                 var data_property_widget = override_property(param_spec, new DataPropertiesOverrideCallback(overrides_func));
                 if (data_property_widget == null) {
                     var factored_property_widget = DataPropertyFactory.instance.build(param_spec);
@@ -255,16 +252,7 @@ namespace Data {
             if (overrides_callback == null) {
                 return null;
             }
-            var property = overrides_callback.build_property(param_spec);
-            //  if (property != null) {
-            //      // TODO is it necessary?
-            //      var default_value = property.default_value();
-            //      if (default_value != null) {
-            //          property_changed(param_spec.name, default_value);
-            //      }
-            //      return property;
-            //  }
-            return property;
+            return overrides_callback.build_property(param_spec);
         }
         
         private PropertiesGridEntry create_properties_grid_entry(
@@ -312,6 +300,7 @@ namespace Data {
             // TODO make it possible to use a custom icon
             var take_property_control_button = new Gtk.Button.from_icon_name("list-add-symbolic");
             take_property_control_button.valign = Gtk.Align.CENTER;
+            take_property_control_button.focusable = false;
             
             take_property_control_button.add_css_class("flat");
             take_property_control_button.tooltip_text = this.take_control_tooltip;
@@ -362,17 +351,29 @@ namespace Data {
             var pspec = data_object.get_class().find_property(property_name);
             if (pspec == null)
                 return;
-
+        
             GLib.Value old_value = GLib.Value(pspec.value_type);
             data_object.get_property(property_name, ref old_value);
-            data_object.set_property(property_name, property_value);
-
+        
+            GLib.Value new_value;
+        
+            if (property_value == null) {
+                new_value = GLib.Value(pspec.value_type);
+                var default_value = pspec.get_default_value();
+                new_value.copy(ref default_value);
+            } else {
+                new_value = property_value;
+            }
+        
+            data_object.set_property(property_name, new_value);
+        
             history_recorder.record(
-                new History.ChangePropertyAction(data_object, property_name, old_value, property_value)
+                new History.ChangePropertyAction(data_object, property_name, old_value, new_value)
             );
-
-            this.data_property_changed(property_name, property_value);
+        
+            this.data_property_changed(property_name, new_value);
         }
+        
 
         private Gtk.Label property_label(GLib.ParamSpec param_spec, bool multiline = false) {
             var name = param_spec.get_nick();
@@ -397,7 +398,8 @@ namespace Data {
                 return null;
             }
 
-            var description_label = new Gtk.Label(description);
+            var description_label = new Gtk.Label(null);
+            description_label.set_markup(description);
             description_label.halign = Gtk.Align.START;
             description_label.wrap = true;
             description_label.wrap_mode = Pango.WrapMode.CHAR;

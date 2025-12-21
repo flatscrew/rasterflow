@@ -27,20 +27,22 @@ namespace Image {
                 }
 
                 var description = Gegl.Operation.get_key(gegl_operation, "description");
-                string pango_compatible_description = description
-                    .replace("<code>", "<tt>")
-                    .replace("</code>", "</tt>")
-                    .replace("<em>", "<i>")
-                    .replace("</em>", "</i>")
-                    .replace(" > ", " &gt;")
-                    .replace(" < ", " &lt;")
-                    .replace(" <= ", " &lt;=");
+                if (description != null) {
+                    description = description
+                        .replace("<code>", "<tt>")
+                        .replace("</code>", "</tt>")
+                        .replace("<em>", "<i>")
+                        .replace("</em>", "</i>")
+                        .replace(" > ", " &gt;")
+                        .replace(" < ", " &lt;")
+                        .replace(" <= ", " &lt;=");
+                }
 
                 node_factory.register(
                     new GeglOperationNodeBuilder(
                         title, 
                         gegl_operation, 
-                        pango_compatible_description
+                        description
                     )
                 );
             }
@@ -71,7 +73,7 @@ namespace Image {
         }
 
         public override string? description() {
-            return "<b>[%s]</b> %s".printf(gegl_operation, gegl_description);
+            return "<b>[%s]</b> %s".printf(gegl_operation, gegl_description == null ? "" : gegl_description);
         }
 
         public string id() {
@@ -194,12 +196,23 @@ namespace Image {
         }
 
         private void create_sinks() {
-            foreach (string padname in gegl_node.list_input_pads()) {
+            var order = new Gee.ArrayList<string>.wrap(
+                {"input", "aux"}
+            );
+            var pads = new Gee.ArrayList<string>.wrap(gegl_node.list_input_pads());
+            
+            pads.sort((a, b) => {
+                int ai = order.index_of(a);
+                int bi = order.index_of(b);
+                if (ai < 0) ai = int.MAX;
+                if (bi < 0) bi = int.MAX;
+                return ai - bi;
+            });
+            
+            foreach (var padname in pads) {
                 var sink = new PadSink(gegl_node, padname);
                 sink.name = padname[0].to_string().up().concat(padname.substring(1));
-                // TODO is this below necessary?
-                // sink.updated.connect(this.process_gegl);
-                this.add_sink(sink);
+                add_sink(sink);
             }
         }
 

@@ -18,6 +18,16 @@
 using GLib;
 using Gegl;
 
+class NamespaceInfo : Object {
+    public string label { get; construct set; }
+    public string url_format { get; construct set; }
+
+    public NamespaceInfo(string label, string url_format) {
+        this.label = label;
+        this.url_format = url_format;
+    }
+}
+
 class OperationDocGenerator : Object {
     private string template = 
 """
@@ -25,8 +35,8 @@ class OperationDocGenerator : Object {
 title: {{title}}
 description: "{{description}}"
 links:
-  - label: "{{id}}"
-    to: "https://gegl.org/operations/{{normalized_id}}"
+  - label: "{{ns_id}}"
+    to: "{{ns_url}}"
     target: "_blank"
     variant: "outline"
     icon: "i-lucide-external-link"
@@ -35,7 +45,6 @@ links:
 ::adwaita-card
 ---
 alt: {{title}}
-caption: {{caption}}
 src: /images/operations/{{normalized_id}}.png
 ---
 ::
@@ -57,6 +66,32 @@ has-output: {{has_output}}
 ::
 """;
 
+    private HashTable<string, NamespaceInfo> namespace_map;
+
+    construct {
+        namespace_map = new HashTable<string, NamespaceInfo>(str_hash, str_equal);
+        
+        namespace_map["gegl"] = new NamespaceInfo(
+            "{{id}}",
+            "https://gegl.org/operations/{{normalized_id}}"
+        );
+        
+        namespace_map["lb"] = new NamespaceInfo(
+            "LinuxBeaver",
+            "https://github.com/LinuxBeaver"
+        );
+        
+        namespace_map["ai/lb"] = new NamespaceInfo(
+            "LinuxBeaver",
+            "https://github.com/LinuxBeaver"
+        );
+        
+        namespace_map["port"] = new NamespaceInfo(
+            "LinuxBeaver",
+            "https://github.com/LinuxBeaver"
+        );
+    }
+    
     private string render(
         string id, 
         string title, 
@@ -67,9 +102,25 @@ has-output: {{has_output}}
         string props_md
     ) 
     {
+        
+        var op_namespace = id.split(":")[0].strip();
+        var ns_info = namespace_map[op_namespace];
+        if (ns_info == null) {
+            warning("NO NS INFO FOR>>> %s", op_namespace);
+            return "???";
+        }
+        
+        var normalized_id = id.replace(":", "-").replace("/", "-");
+        
+        var ns_id = ns_info.label.replace("{{normalized_id}}", normalized_id);
+        ns_id = ns_id.replace("{{id}}", id);
+        
+        var ns_url = ns_info.url_format.replace("{{normalized_id}}", normalized_id);
+        
         string out_text = template.strip();
-        out_text = out_text.replace("{{id}}", id);
-        out_text = out_text.replace("{{normalized_id}}", id.replace(":", "-"));
+        out_text = out_text.replace("{{ns_id}}", ns_id);
+        out_text = out_text.replace("{{ns_url}}", ns_url);
+        out_text = out_text.replace("{{normalized_id}}", normalized_id);
         out_text = out_text.replace("{{title}}", title);
         out_text = out_text.replace("{{description}}", desc);
         out_text = out_text.replace("{{caption}}", desc);
@@ -227,8 +278,7 @@ has-output: {{has_output}}
     
 
     public void generate_all(string out_dir) throws Error {
-        var tmp_dir = GLib.Path.build_filename("/tmp", "gegl-docs");
-        DirUtils.create_with_parents(tmp_dir, 0777);
+        DirUtils.create_with_parents(out_dir, 0777);
     
         var root = new Gegl.Node();
         var ops = Gegl.list_operations();
@@ -255,7 +305,7 @@ has-output: {{has_output}}
         int cat_index = 1;
         foreach (string category in sorted_categories) {
             string category_dirname = "%s".printf(category.replace(" ", "-"));
-            string category_dir = GLib.Path.build_filename(tmp_dir, category_dirname);
+            string category_dir = GLib.Path.build_filename(out_dir, category_dirname);
             DirUtils.create_with_parents(category_dir, 0777);
     
             message("Generating category: %s".printf(category));
@@ -269,6 +319,7 @@ has-output: {{has_output}}
                 var title = Gegl.Operation.get_key(op_name, "title") ?? "";
                 var desc = Gegl.Operation.get_key(op_name, "description") ?? "";
     
+                desc = desc.strip();
                 if (desc != null && !desc.has_suffix(".")) {
                     desc = desc + ".";
                 } 
@@ -292,13 +343,8 @@ has-output: {{has_output}}
                 string props = build_properties(operation_node);
                 string md = render(op_name, title, desc, has_input, has_aux, has_output, props);
     
-                //  string safe_name = "%d.%s".printf(op_index, op_name.replace(":", "-"));
-                //  string safe_name = op_name.contains(":") ? op_name.split(":")[1] : op_name;
-                
                 var safe_name = op_name.substring(op_name.index_of(":", 0) + 1, -1);
-                
                 string out_path = GLib.Path.build_filename(category_dir, "%s.md".printf(safe_name));
-    
                 try {
                     FileUtils.set_contents(out_path, md);
                 } catch (Error e) {
@@ -312,22 +358,64 @@ has-output: {{has_output}}
             cat_index++;
         }
     
-        message("✅ Generation complete: %s".printf(tmp_dir));
+        message("✅ Generation complete: %s".printf(out_dir));
     }
     
 }
 
 public static int main(string[] args) {
+    string output_dir = null;
+
+    OptionEntry[] options = {
+        {
+            "output",
+            0,
+            0,
+            OptionArg.STRING,
+            ref output_dir,
+            "Output directory for generated documentation",
+            "DIR"
+        },
+        {
+            "help",
+            'h',
+            0,
+            OptionArg.NONE,
+            null,
+            "Show help",
+            null
+        },
+        { null }
+    };
+
+    var context = new OptionContext("- GEGL documentation generator");
+    context.set_help_enabled(true);
+    context.add_main_entries(options, null);
+
+    try {
+        context.parse(ref args);
+    } catch (OptionError e) {
+        stderr.printf("%s\n", e.message);
+        return 1;
+    }
+
+    if (output_dir == null) {
+        stderr.printf("Missing required argument: --output DIR\n");
+        return 1;
+    }
+
     try {
         Gegl.init(ref args);
         Gegl.config().application_license = "GPL3";
 
         var gen = new OperationDocGenerator();
-        gen.generate_all("docs/operations");
+        gen.generate_all(output_dir);
+
         Gegl.exit();
     } catch (Error e) {
         stderr.printf("Generation failed: %s\n", e.message);
         return 1;
     }
+
     return 0;
 }

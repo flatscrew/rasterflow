@@ -23,7 +23,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.local/share/flatpak
-          key: ${{ runner.os }}-flatpak-runtime-v48
+          key: ${{ runner.os }}-flatpak-runtime-v49
           restore-keys: |
             ${{ runner.os }}-flatpak-runtime-
 
@@ -32,7 +32,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y flatpak flatpak-builder git
           flatpak --user remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-          flatpak --user install -y flathub org.gnome.Sdk//48 org.gnome.Platform//48
+          flatpak --user install -y flathub org.gnome.Sdk//49 org.gnome.Platform//49
 
       - name: Build Flatpak
         run: |

@@ -32,7 +32,6 @@ class CanvasApplication : Adw.Application {
   private AppShortcutsWindowInstance shortcuts_window;
   private About.AboutDialog about_dialog;
   private About.AboutRegistry about_registry;
-
   
   construct {
     base.application_id = "io.flatscrew.RasterFlow";
@@ -50,20 +49,9 @@ class CanvasApplication : Adw.Application {
     var display = Gdk.Display.get_default();
     var theme = Gtk.IconTheme.get_for_display(display);
     theme.add_resource_path("/icons");
-    
-    //  activate.connect(app_activated);
-  }
-  
-  public CanvasApplication(string[] args) {
-    
-  
   }
   
   public override void activate() {
-    app_activated();
-  }
-  
-  private void app_activated() {
     var header_widgets = new CanvasHeaderbarWidgets();
     var data_node_factory = new CanvasNodeFactory();
     var file_origin_node_factory = new Data.FileOriginNodeFactory();
@@ -127,20 +115,28 @@ class CanvasApplication : Adw.Application {
     actions.add_action(create_undo_action());
     actions.add_action(create_redo_action());
     actions.add_action(canvas_view.create_save_action());
+    actions.add_action(canvas_view.create_show_node_chooser_action());
+    //  actions.add_action(canvas_view.create_paste_action());
     actions.add_action(create_window_resize_action(window));
     window.insert_action_group("app", actions);
     
     set_accels_for_action("app.undo", { "<Control>z" });
     set_accels_for_action("app.redo", { "<Control><Shift>z" });
     set_accels_for_action("app.save", { "<Control>s" });
+    set_accels_for_action("app.show_node_chooser", { "<Control>k" });
     set_accels_for_action("app.window_resize", { "<Control><Shift><Alt>q" });
+    //  set_accels_for_action("app.paste", { "<Control>v" });
     
     this.shortcuts_window = new AppShortcutsWindowBuilder(this.window)
         .new_section("General")
+            .new_group("General")
+              .add("Save current graph", "<Ctrl>s")
+            .end_group()
             .new_group("Editing")
+                .add("Show node chooser", "<Ctrl>k")
                 .add("Undo last operation", "<Ctrl>z")
                 .add("Redo last operation", "<Ctrl><Shift>z")
-                .add("Save current graph", "<Ctrl>s")
+                //  .add("Paste image data", "<Ctrl>v")
             .end_group()
         .end_section()
         .build();
@@ -233,7 +229,10 @@ class CanvasApplication : Adw.Application {
 
     var nodes_properties_box = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 0);
     nodes_properties_box.add_css_class("linked");
-    nodes_properties_box.append(canvas_view.create_node_chooser().get_menu_button());
+    
+    var node_chooser = canvas_view.create_node_chooser();
+    
+    nodes_properties_box.append(node_chooser.get_menu_button());
     nodes_properties_box.append(canvas_view.create_properties_toggle());
     headerbar.pack_start(nodes_properties_box);
 
@@ -269,6 +268,8 @@ class CanvasApplication : Adw.Application {
 }
 
 int main (string[] args) {
-  var app = new CanvasApplication(args);
+  init_environment();
+
+  var app = new CanvasApplication();
   return app.run(args);
 }

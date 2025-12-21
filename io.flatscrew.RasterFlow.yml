@@ -1,6 +1,6 @@
 app-id: io.flatscrew.RasterFlow
 runtime: org.gnome.Platform
-runtime-version: "48"
+runtime-version: "49"
 sdk: org.gnome.Sdk
 command: rasterflow
 finish-args:
@@ -11,7 +11,15 @@ finish-args:
   - --device=dri
   - --filesystem=home
   - --socket=session-bus
-  
+
+add-extensions:
+  io.flatscrew.RasterFlow.Extension:
+    directory: extensions
+    version: "1"
+    add-ld-path: "lib"
+    subdirectories: true
+    no-autodownload: true
+
 modules:
   - name: babl
     buildsystem: meson
@@ -41,7 +49,7 @@ modules:
       - type: git
         url: https://github.com/flatscrew/libgflow
         tag: v1.0
-  - name: libgtflow4
+  - name: libgtkflow4
     buildsystem: meson
     config-opts:
       - --prefix=/app
@@ -50,7 +58,7 @@ modules:
     sources:
       - type: git
         url: https://github.com/flatscrew/libgtkflow4
-        tag: v0.2
+        tag: v0.2.3
   - name: libportal
     buildsystem: meson
     config-opts:
@@ -73,3 +81,5 @@ modules:
     sources:
       - type: dir
         path: .
+    post-install:
+      - install -d /app/extensions

@@ -12,12 +12,13 @@ The following tools must be installed and available in your system:
 Required libraries:
 - GTK4
 - Libadwaita
-- [libgtkflow](https://www.github.com/flatscrew/libgtkflow) (must be built and installed before RasterFlow)
+- [libgflow](https://www.github.com/flatscrew/libgflow) and [libgtkflow4](https://www.github.com/flatscrew/libgtkflow4) (must be built and installed before RasterFlow)
 - GEGL
 - BABL
 - GLib / GObject / GIO
 - JSON-GLib
 - LibGee
+- LibExif (for reading image file meta data)
 - GObject Introspection
 
 ---

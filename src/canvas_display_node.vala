@@ -15,88 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with RasterFlow.  If not, see <https://www.gnu.org/licenses/>.
 
-public class CanvasNodeDetailsView : Gtk.Widget {
-    private Gtk.Box vertical_box;
-    private Gtk.Box content_box;
-    private Gtk.Image arrow_icon;
-    private bool _expanded;
-
-    public bool expanded {
-        get { return _expanded; }
-        set { toggle_expanded(value); }
-    }
-
-    construct {
-        set_layout_manager(new Gtk.BinLayout());
-        add_css_class("canvas_node_expander");
-        add_css_class("card");
-        vexpand = hexpand = true;
-    }
-
-    public CanvasNodeDetailsView() {
-        vertical_box = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
-        vertical_box.vexpand = vertical_box.hexpand = true;
-
-        create_header();
-        create_content();
-    }
-
-    private void create_header() {
-        var header = new Adw.ActionRow();
-        header.add_css_class("rounded_top");
-        header.set_activatable(true);
-        
-        var title = new Gtk.Label("Node details");
-        title.halign = Gtk.Align.START;
-        title.hexpand = true;
-        title.wrap = false;
-        header.add_prefix(title);
-        
-        var click = new Gtk.GestureClick();
-        click.released.connect(() => toggle_expanded(!_expanded));
-        header.add_controller(click);
-
-        var icon_theme = Gtk.IconTheme.get_for_display(Gdk.Display.get_default());
-        var paintable = icon_theme.lookup_icon("pan-end-symbolic", null, 16, 1,
-            Gtk.TextDirection.NONE,
-            Gtk.IconLookupFlags.FORCE_SYMBOLIC);
-        arrow_icon = new Gtk.Image.from_paintable(paintable);
-        header.add_suffix(arrow_icon);
-
-        vertical_box.append(header);
-    }
-
-    private void create_content() {
-        content_box = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 0);
-        content_box.vexpand = content_box.hexpand = true;
-        content_box.visible = false;
-        vertical_box.append(content_box);
-        vertical_box.set_parent(this);
-    }
-
-    private void toggle_expanded(bool expand) {
-        _expanded = expand;
-        notify_property("expanded");
-        
-        content_box.visible = expand;
-
-        var icon_name = expand ? "pan-down-symbolic" : "pan-end-symbolic";
-        var icon_theme = Gtk.IconTheme.get_for_display(Gdk.Display.get_default());
-        var paintable = icon_theme.lookup_icon(icon_name, null, 16, 1,
-            Gtk.TextDirection.NONE,
-            Gtk.IconLookupFlags.FORCE_SYMBOLIC);
-        arrow_icon.set_from_paintable(paintable);
-    }
-
-    public void set_child(Gtk.Widget child) {
-        content_box.append(child);
-    }
-
-    ~CanvasNodeDetailsView() {
-        vertical_box.unparent();
-    }
-}
-
 public delegate void BuilderConsumer(CanvasNodeBuilder builder);
 
 public class CanvasNodeFactory : Object {
@@ -160,7 +78,7 @@ public class CanvasDisplayNode : GtkFlow.Node {
     private int y_initial;
     private Gtk.CssProvider? custom_backround_css;
     
-    private CanvasNodeDetailsView details_view;
+    private CollapsibleSectionView details_view;
     private Gtk.Box node_box;
     private CanvasActionBar action_bar;
     private Gtk.Button delete_button;
@@ -179,7 +97,7 @@ public class CanvasDisplayNode : GtkFlow.Node {
 
     public bool can_expand {
         set {
-            details_view.sensitive = value;
+            details_view.visible = value;
         }
     }
     
@@ -215,6 +133,17 @@ public class CanvasDisplayNode : GtkFlow.Node {
         
         create_node_content();
         create_action_bar();
+        
+        base.drag_started.connect(this.start_drag);
+        base.drag_ended.connect(this.end_drag);
+    }
+    
+    private void start_drag() {
+        details_view.collapsible = false;
+    }
+    
+    private void end_drag() {
+        details_view.collapsible = true;
     }
     
     public void init_position() {
@@ -285,7 +214,7 @@ public class CanvasDisplayNode : GtkFlow.Node {
         };
         
         if (new_width == 0 && new_height == 0) {
-            // TODO why is this happening?    
+            // FIXME why is this happening?    
             return;
         }
         
@@ -303,11 +232,44 @@ public class CanvasDisplayNode : GtkFlow.Node {
     public void build_default_title(GLib.Icon? icon = null) {
         build_title(new DefaultTitleWidgetBuilder(), null);
     }
+    
+    protected override bool is_drag_forbidden(Gtk.Widget? widget) {
+        var current = widget;
+        while (current != null) {
+            if (this.delete_button == current) {
+                return true;
+            }
+            current = current.get_parent();
+        }
+        
+        current = widget;
+        while (current != null) {
+            if (is_child_of(current, typeof(Gtk.Switch))) {
+                return true;
+            }
+            current = current.get_parent();
+        }
+        
+        return base.is_drag_forbidden(widget);
+    }
+    
+    private bool is_child_of(Gtk.Widget widget, GLib.Type parent_type) {
+        var parent = widget.get_parent();
+    
+        while (parent != null) {
+            if (parent.get_type().is_a(parent_type)) {
+                return true;
+            }
+            parent = parent.get_parent();
+        }
+    
+        return false;
+    }
 
     private void create_node_content() {
         this.size_changed.connect(this.node_resized);
 
-        this.details_view = new CanvasNodeDetailsView();
+        this.details_view = new CollapsibleSectionView("Node details");
         details_view.vexpand = details_view.hexpand = true;
         details_view.notify["expanded"].connect(node_expanded);
 
@@ -399,12 +361,9 @@ public class CanvasDisplayNode : GtkFlow.Node {
         title_bar.append_right(delete_button);
     }
 
-    private void remove_node() {
-        //  stop_sinks_history_recording();
-        {
-            removed(this);
-            this.remove();
-        }
+    public void remove_node() {
+        removed(this);
+        this.remove();
     }
 
     private void add_icon(Data.TitleBar title_bar, GLib.Icon? icon) {

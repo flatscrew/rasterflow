@@ -30,8 +30,7 @@ public class CanvasView : Gtk.Widget {
     private Gtk.Box node_view_box;
     private Adw.OverlaySplitView main_view;
     private Gtk.ScrolledWindow scrolled_window;
-    private ScrollPanner scroll_panner;
-    private ZoomableArea zoomable_area;
+    private ZoomPanArea zoom_pan_area;
     private GtkFlow.NodeView node_view;
 
     private Data.DataNodeChooser node_chooser;
@@ -53,8 +52,12 @@ public class CanvasView : Gtk.Widget {
     private DataDropHandler data_drop_handler;
     private PropertyDropHandler property_drop_handler;
     private string current_graph_file;
+    private bool graph_dirty;
+    
     private SimpleAction save_action;
-
+    private SimpleAction show_node_chooser_action;
+    private SimpleAction paste_action;
+    
     construct {
         set_layout_manager(new Gtk.BinLayout());
     }
@@ -95,13 +98,12 @@ public class CanvasView : Gtk.Widget {
         create_minimap_overlay();
         
         this.data_drop_handler = new DataDropHandler();
-        data_drop_handler.file_dropped.connect(this.add_file_data_node);
-        data_drop_handler.text_dropped.connect(this.add_text_data_node);
-        add_controller(data_drop_handler.data_drop_target);
+        data_drop_handler.file_dropped.connect(this.file_dropped);
+        zoom_pan_area.add_controller(data_drop_handler.data_drop_target);
         
         this.property_drop_handler = new PropertyDropHandler();
         property_drop_handler.property_dropped.connect(this.property_dropped);
-        node_view.add_controller(property_drop_handler.data_drop_target);
+        zoom_pan_area.add_controller(property_drop_handler.data_drop_target);
     }
     
     public void setup_popovers() {
@@ -132,6 +134,8 @@ public class CanvasView : Gtk.Widget {
     }
     
     private void graph_dirty_state_changed(bool is_dirty) {
+        this.graph_dirty = is_dirty;
+        
         if (this.current_graph_file == null) {
             this.save_button.sensitive = false;
             return;    
@@ -162,10 +166,9 @@ public class CanvasView : Gtk.Widget {
         node_view.dock_connection_missed.connect(choose_node_and_connect_dock);
         
         this.scrolled_window = new Gtk.ScrolledWindow();
-        scrolled_window.set_kinetic_scrolling(false);
-        scrolled_window.set_policy(Gtk.PolicyType.EXTERNAL, Gtk.PolicyType.EXTERNAL);
-        scrolled_window.add_css_class("canvas_view");
         scrolled_window.vexpand = scrolled_window.hexpand = true;
+        scrolled_window.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC);
+        scrolled_window.add_css_class("canvas_view");
         
         this.node_view_overlay = new Gtk.Overlay();
         node_view_overlay.set_hexpand(true);
@@ -173,9 +176,6 @@ public class CanvasView : Gtk.Widget {
         node_view_overlay.set_child(scrolled_window);
         this.node_view_box.append(node_view_overlay);
         
-        this.scroll_panner = new ScrollPanner();
-        scroll_panner.enable_panning(scrolled_window);
-
         create_zoom_control_overlay();
     }
     
@@ -184,24 +184,27 @@ public class CanvasView : Gtk.Widget {
             return;
         }
         
+        double scaled_x, scaled_y;
+        zoom_pan_area.child_to_viewport(x, y, out scaled_x, out scaled_y);
+        
         this.node_x = (int) x;
         this.node_y = (int) y;
         this.source_dock = dock;
         
         connect_source_popover.set_pointing_to({
-            x: node_x,
-            y: node_y
+            x: (int) scaled_x,
+            y: (int) scaled_y
         });
         connect_source_popover.popup();
     }
 
     private void create_zoom_control_overlay() {
-        this.zoomable_area = new ZoomableArea(scrolled_window, node_view);
+        this.zoom_pan_area = new ZoomPanArea(scrolled_window, node_view);
 
-        var scale_widget = zoomable_area.create_scale_widget();
+        var scale_widget = zoom_pan_area.create_scale_widget();
         scale_widget.set_can_focus(false);
 
-        var reset_scale = zoomable_area.create_reset_scale_button();
+        var reset_scale = zoom_pan_area.create_reset_scale_button();
         var control_box = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 5);
         control_box.append(scale_widget);
         control_box.append(reset_scale);
@@ -231,7 +234,7 @@ public class CanvasView : Gtk.Widget {
         node_view.add(node);
         node.init_position();
 
-        changes_recorder.record(new History.AddNodeAction(node_view, node));
+        changes_recorder.record(new History.AddNodeAction(canvas_graph, node));
     }
     
     private void node_removed(CanvasDisplayNode node) {
@@ -249,13 +252,12 @@ public class CanvasView : Gtk.Widget {
         changes_recorder.record(new History.RemoveNodeAction(canvas_graph, node, x, y));
     }
     
-    private void add_text_data_node(string text) {
-        debug("Text: %s\n", text);
-    }
-    
     private void property_dropped(CanvasGraphProperty property, double x, double y) {
+        double child_x, child_y;
+        zoom_pan_area.to_child_coords(x, y, out child_x, out child_y);
+        
         var property_n = new CanvasPropertyNode(property); 
-        var property_node = new CanvasPropertyDisplayNode(property_n, (int) x, (int) y);
+        var property_node = new CanvasPropertyDisplayNode(property_n, (int) child_x, (int) child_y);
         
         canvas_graph.add_property_node(property_node);
     }
@@ -295,14 +297,29 @@ public class CanvasView : Gtk.Widget {
         changes_recorder.record(new History.RemoveGraphPropertyAction(canvas_graph, property));
     }
     
-    private void add_file_data_node(GLib.File file, double x, double y) {
+    private bool is_graph_file(GLib.File file) {
+        return file.get_basename().has_suffix(".graph");
+    }
+    
+    private void file_dropped(GLib.File file, double x, double y) {
+        // check if this is .graph file
+        if (is_graph_file(file)) {
+            load_graph_async.begin(file);
+            return;
+        }
+        
+        // or load image from dropped file
+        try_add_file_data_node(file, x, y);
+    }
+    
+    private void try_add_file_data_node(GLib.File file, double x, double y) {
         try {
             var file_info = file.query_info ("*", FileQueryInfoFlags.NONE);
             var mimetype = ContentType.get_mime_type(file_info.get_content_type());
             var file_node_builders = file_origin_node_factory.available_builders(mimetype);
             
             if (file_node_builders.length == 0) {
-                show_error ("Not supported content type: <b>%s</b>".printf(mimetype));
+                warning("Not supported content type: <b>%s</b>".printf(mimetype));
                 return;
             }
 
@@ -310,11 +327,13 @@ public class CanvasView : Gtk.Widget {
                 var builder = file_node_builders[0];
                 var node_builder = builder.find_builder(node_factory);
                 try {
-                    var new_node = node_builder.create((int) x, (int) y);
+                    double child_x, child_y;
+                    zoom_pan_area.to_child_coords(x, y, out child_x, out child_y);
+                    
+                    var new_node = node_builder.create((int) child_x, (int) child_y);
                     canvas_graph.add_node(new_node);
-
                     builder.apply_file_data(new_node, file, file_info);
-                    new_node.set_position((int) x, (int) y);
+                    new_node.init_position();
                 } catch (Error e) {
                     warning(e.message);
                 }
@@ -342,12 +361,8 @@ public class CanvasView : Gtk.Widget {
             file_origin_popover.popup();
 
         } catch (Error e) {
-            stderr.printf(e.message);
+            warning(e.message);
         }
-    }
-
-    private void show_error(string error_markup) {
-        warning(error_markup);
     }
 
     private Gtk.FileFilter file_chooser_filter() {
@@ -407,7 +422,6 @@ public class CanvasView : Gtk.Widget {
             try {
                 var file = file_dialog.open.end(res);
                 if (file != null) {
-                    this.current_graph_file = file.get_path();
                     load_graph_async.begin(file);
                 }
             } catch (Error e) {
@@ -434,6 +448,7 @@ public class CanvasView : Gtk.Widget {
     
         after_file_load(selected_file.get_basename());
         modification_guard.reset();
+        this.current_graph_file = selected_file.get_path();
     }
 
     private void export_to_png() {
@@ -517,6 +532,8 @@ public class CanvasView : Gtk.Widget {
         
         this.save_action = new SimpleAction("save", null);
         save_action.activate.connect(() => {
+            if (!this.graph_dirty) return;
+            
             if (current_graph_file != null) {
                 save_graph();
                 return;
@@ -525,4 +542,50 @@ public class CanvasView : Gtk.Widget {
         });
         return save_action;
     }
+    
+    public GLib.Action create_show_node_chooser_action() {
+        if (this.show_node_chooser_action != null) {
+            return this.show_node_chooser_action;
+        } 
+        
+        this.show_node_chooser_action = new SimpleAction("show_node_chooser", null);
+        show_node_chooser_action.activate.connect(node_chooser.toggle);
+        return show_node_chooser_action;
+    }
+    
+    //  public GLib.Action create_paste_action() {
+    //      this.paste_action = new SimpleAction("paste", null);
+    //      paste_action.activate.connect(paste_image_data);
+    //      return paste_action;
+    //  }
+    
+    //  private async void paste_image_data() {
+    //      var display = Gdk.Display.get_default();
+    //      if (display == null)
+    //          return;
+
+    //      var clipboard = display.get_clipboard();
+
+    //      string out_mime;
+
+    //      try {
+    //          var stream = yield clipboard.read_async(
+    //              { "image/png", "image/jpeg", "image/webp", "image/*" },
+    //              GLib.Priority.DEFAULT,
+    //              null,
+    //              out out_mime
+    //          );
+            
+    //          var pixbuf = yield new Gdk.Pixbuf.from_stream_async(stream, null);
+
+    //          var pixbuf_loader_builder = node_factory.find_builder("gegl:pixbuf");
+    //          if (pixbuf_loader_builder == null) return;
+            
+    //          var display_node = pixbuf_loader_builder.create(10, 10) as Image.GeglOperationDisplayNode;
+    //          canvas_graph.add_node(display_node);
+    //          display_node.set_gegl_property("pixbuf", pixbuf);
+    //      } catch (Error e) {
+    //          warning(e.message);
+    //      }
+    //  }
 }

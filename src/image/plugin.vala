@@ -37,6 +37,13 @@ private Gtk.Widget gegl_load_title_override(Gegl.Operation operation) {
     return label;
 }
 
+private Gtk.Widget gegl_save_title_override(Gegl.Operation operation) {
+    var label = new Gtk.Label("Save file");
+    label.ellipsize = Pango.EllipsizeMode.MIDDLE;
+    label.set_size_request(120, -1);
+    return label;
+}
+
 private GLib.ListStore build_pixbuf_filters() {
     var filters = new GLib.ListStore(typeof(Gtk.FileFilter));
 
@@ -66,12 +73,28 @@ private GLib.ListStore build_pixbuf_filters() {
     return filters;
 }
 
+#if WIN32
+    private void load_windows_gegl_plugins() {
+        string user_gegl_dir =
+            Path.build_filename (
+                Environment.get_user_data_dir (),
+                "gegl-0.4",
+                "plug-ins"
+            );
+        Gegl.load_module_directory (user_gegl_dir);
+    }
+#endif
+
 public string initialize_image_plugin(Plugin.PluginContribution plugin_contribution) {
     string[] args = {};
     
     Gegl.config().application_license = "GPL3";
     Gegl.init(ref args);
-    
+
+#if WIN32
+    load_windows_gegl_plugins();
+#endif
+
     new Image.GeglOperationOverrides();
 
     plugin_contribution.contribute_file_data_node_factory(node_factory => {
@@ -135,11 +158,17 @@ public string initialize_image_plugin(Plugin.PluginContribution plugin_contribut
         overrides.override_title(gegl_load_title_override);
         overrides.override_property("path", (param_spec) => {
             var filters = build_pixbuf_filters();
-            return new Data.OpenFileLocationProperty.with_file_filters(param_spec as ParamSpecString, filters);
+            
+            var image_file_details = new Image.ImageFileDetails();
+            var property = new Data.OpenFileLocationProperty.with_file_filters(param_spec as ParamSpecString, filters);
+            property.new_file_info_group("Image Information", image_file_details.file_details);
+            property.new_file_info_group("EXIF Information", image_file_details.exif_details);
+            return property;
         });
     });
+    
     Image.GeglOperationOverrides.override_operation("gegl:save", overrides => {
-        overrides.override_title(gegl_load_title_override);
+        overrides.override_title(gegl_save_title_override);
         overrides.override_property("path", (param_spec) => {
             var filters = build_pixbuf_filters();
             return new Data.SaveFileLocationProperty.with_file_filters(param_spec as ParamSpecString, filters);
@@ -156,9 +185,20 @@ public string initialize_image_plugin(Plugin.PluginContribution plugin_contribut
         });
     });
     
+    Image.GeglOperationOverrides.override_operation("gegl:convert-format", overrides => {
+        overrides.override_property("format", (param_spec) => {
+            return new Image.FormatProperty(param_spec as ParamSpecPointer);
+        });
+    });
+    
     // TODO make it in plugin contribution instead?
     // custom data types for property editor
     Data.DataPropertyFactory.instance.register(typeof(Gegl.Color), param_spec => {
+        var default_color = param_spec.get_default_value() as Gegl.Color;
+        if (default_color != null) {
+            return new Image.ColorProperty(param_spec, default_color);
+        }
+        
         return new Image.ColorProperty(param_spec);
     });
 

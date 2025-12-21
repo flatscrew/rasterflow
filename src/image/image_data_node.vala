@@ -270,6 +270,7 @@ namespace Image {
         public Gtk.Button create_save_button() {
              this.save_button = image_viewer.create_save_image_button();
              save_button.visible = false;
+             save_button.tooltip_text = "Save image as file";
              save_button.set_icon_name("document-save-symbolic");
              return save_button;
         }

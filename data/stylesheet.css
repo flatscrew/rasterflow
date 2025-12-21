@@ -44,16 +44,8 @@
 }
 
 .rounded_bottom {
-    border-bottom-left-radius: 5px;
-    border-bottom-right-radius: 5px;
-}
-
-.rounded_bottom_left {
-    border-bottom-left-radius: 5px;
-}
-
-.rounded_bottom_right {
-    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
 }
 
 .badge {

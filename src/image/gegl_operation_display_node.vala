@@ -48,7 +48,7 @@ namespace Image {
             if (gegl_operation_node.is_output_node()) {
                 create_process_gegl_button();
             } else {
-                create_gegl_export_button();
+                //  create_gegl_export_button();
             }
             
             this.operation_overrides_callback = GeglOperationOverrides.find_operation_overrides(builder_id);
@@ -102,18 +102,18 @@ namespace Image {
         }
         
         private void create_process_gegl_button() {
-            var render_button = new Gtk.Button.from_icon_name("media-playback-start");
+            var render_button = new Gtk.Button.from_icon_name("media-playback-start-symbolic");
             render_button.clicked.connect(this.process_gegl);
             render_button.set_tooltip_text("Process");
             add_action_bar_child_start(render_button);
         }
 
-        private void create_gegl_export_button() {
-            var export_button = new Gtk.Button.from_icon_name("document-export-symbolic");
-            export_button.clicked.connect(export_graph_as_xml);
-            export_button.set_tooltip_text("Export to XML");
-            add_action_bar_child_end(export_button);
-        }
+        //  private void create_gegl_export_button() {
+        //      var export_button = new Gtk.Button.from_icon_name("document-export-symbolic");
+        //      export_button.clicked.connect(export_graph_as_xml);
+        //      export_button.set_tooltip_text("Export to XML");
+        //      add_action_bar_child_end(export_button);
+        //  }
 
         public void add_default_content(Gegl.Operation operation) {
             var scrolled_window = new Gtk.ScrolledWindow();
@@ -130,13 +130,7 @@ namespace Image {
                 "Promote as source pad",
                 this.on_property_control_taken
             );
-            properties_editor.populate_properties(
-                () => true,
-                compose_overrides
-            );
-
-            this.data_display_view.add_child(properties_editor);
-            data_display_view.set_margin(10);
+            properties_editor.populate_properties(compose_overrides);
 
             if (properties_editor.has_properties) {
                 scrolled_window.set_child(data_display_view);
@@ -145,6 +139,9 @@ namespace Image {
                 n.resizable = false;
                 base.can_expand = false;
             }
+            
+            this.data_display_view.add_child(properties_editor);
+            data_display_view.set_margin(10);
         }
         
         private void property_changed(string property_name, GLib.Value? property_value) {
